@@ -21,8 +21,8 @@
 ## 실행
 
 ```bash
-yarn install
-yarn dev
+pnpm install
+pnpm dev
 ```
 
 브라우저: `http://localhost:7000`
@@ -31,14 +31,14 @@ yarn dev
 
 | 명령 | 설명 |
 |------|------|
-| `yarn dev` | 개발 서버 (HMR) |
-| `yarn build` | 프로덕션 빌드 (`dist/`) |
-| `yarn preview` | 빌드 결과 미리보기 |
-| `yarn lint` | ESLint |
+| `pnpm dev` | 개발 서버 (HMR) |
+| `pnpm build` | 프로덕션 빌드 (`dist/`) |
+| `pnpm preview` | 빌드 결과 미리보기 |
+| `pnpm lint` | ESLint |
 
 ## 빌드 산출물
 
-`yarn build` 후 `dist/`가 생성됩니다. 정적 호스팅(Nginx, S3+CDN 등) 또는 백엔드 정적 리소스로 배포할 수 있습니다.
+`pnpm build` 후 `dist/`가 생성됩니다. 정적 호스팅(Nginx, S3+CDN 등) 또는 백엔드 정적 리소스로 배포할 수 있습니다.
 
 ## 모노레포 위치
 

@@ -28,8 +28,8 @@ mvn spring-boot:run
 
 # 프론트 (터미널 2)
 cd 316space-fe
-yarn install
-yarn dev
+pnpm install
+pnpm dev
 ```
 
 - 프론트: `http://localhost:7000`
@@ -37,7 +37,7 @@ yarn dev
 
 ## 사전 요구 사항
 
-- Node.js (LTS 권장), Yarn 또는 npm  
+- Node.js (LTS 권장), pnpm (`corepack enable` 후 사용 권장)  
 - JDK 17, Apache Maven  
 
 ## 버전 관리
