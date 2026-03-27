@@ -1,55 +1,44 @@
 # 316space
 
-프론트엔드(Vite + React)와 백엔드(Spring Boot)로 구성된 모노레포입니다.
+[316tower 홈(Canva 사이트)](https://316tower.my.canva.site/home)를 **자체 호스팅 웹앱으로 대체**하기 위한 저장소입니다. 디자인·콘텐츠는 해당 사이트를 기준으로 옮기거나 재구현하고, 배포·도메인·API는 이 프로젝트에서 관리합니다.
 
 **저장소:** [github.com/coverdreamit/316space](https://github.com/coverdreamit/316space)
 
+## 목표
+
+- Canva에 묶인 랜딩/소개 페이지를 **React 기반 프론트**로 이전
+- 폼·동적 데이터·연동이 필요할 때를 대비한 **Spring Boot API**
+- 버전 관리·CI·스테이징/프로덕션 환경을 코드로 일관되게 운영
+
 ## 구성
 
-| 디렉터리 | 스택 | 개발 서버 |
-|----------|------|-----------|
-| `316space-fe` | React 19, TypeScript, Vite 8 | `http://localhost:7000` |
-| `316space-be` | Spring Boot 3.4, Java 17 | `http://localhost:7001` |
+| 디렉터리 | 역할 | 자세한 설명 |
+|----------|------|-------------|
+| [`316space-fe`](316space-fe/README.md) | 공개 웹 UI (Vite + React) | [프론트 README](316space-fe/README.md) |
+| [`316space-be`](316space-be/README.md) | REST API (Spring Boot) | [백엔드 README](316space-be/README.md) |
 
-개발 시 Vite가 `/api` 요청을 `http://localhost:7001`로 프록시합니다.
+개발 시 프론트(`7000`)가 `/api` 요청을 백엔드(`7001`)로 프록시합니다.
 
-## 사전 요구 사항
-
-- **프론트:** Node.js (권장 LTS), Yarn 또는 npm
-- **백엔드:** JDK 17, Apache Maven
-
-## 실행 방법
-
-### 백엔드
+## 빠른 시작
 
 ```bash
+# 백엔드 (터미널 1)
 cd 316space-be
 mvn spring-boot:run
-```
 
-헬스 체크: `GET http://localhost:7001/api/health`
-
-### 프론트엔드
-
-```bash
+# 프론트 (터미널 2)
 cd 316space-fe
 yarn install
 yarn dev
 ```
 
-브라우저에서 `http://localhost:7000` 을 엽니다.
+- 프론트: `http://localhost:7000`
+- API 헬스: `GET http://localhost:7001/api/health`
 
-### 빌드
+## 사전 요구 사항
 
-```bash
-# 프론트 프로덕션 빌드
-cd 316space-fe
-yarn build
-
-# 백엔드 JAR
-cd 316space-be
-mvn -DskipTests package
-```
+- Node.js (LTS 권장), Yarn 또는 npm  
+- JDK 17, Apache Maven  
 
 ## 버전 관리
 
@@ -57,3 +46,7 @@ mvn -DskipTests package
 git clone https://github.com/coverdreamit/316space.git
 cd 316space
 ```
+
+## 참고 링크
+
+- 대체 대상(레퍼런스): [316tower.my.canva.site/home](https://316tower.my.canva.site/home)

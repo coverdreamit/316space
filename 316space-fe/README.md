@@ -1,73 +1,49 @@
-# React + TypeScript + Vite
+# 316space-fe
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+[316tower 홈(Canva)](https://316tower.my.canva.site/home)를 대체하는 **316space** 프로젝트의 프론트엔드입니다. 공개 페이지·랜딩·내부 링크 구조는 Canva 사이트를 참고해 React로 구현합니다.
 
-Currently, two official plugins are available:
+## 스택
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- React 19, TypeScript  
+- Vite 8  
+- 개발 서버 포트: **7000**
 
-## React Compiler
+## 백엔드와의 연동
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+`vite.config.ts`에서 `/api`를 `http://localhost:7001`로 프록시합니다. API 호출 시 브라우저에서는 상대 경로만 사용하면 됩니다.
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```ts
+// 예: fetch('/api/health')
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+백엔드를 먼저 띄우지 않으면 API 요청은 실패할 수 있습니다. 정적 UI만 볼 때는 프론트만 실행해도 됩니다.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 실행
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+yarn install
+yarn dev
 ```
+
+브라우저: `http://localhost:7000`
+
+## 스크립트
+
+| 명령 | 설명 |
+|------|------|
+| `yarn dev` | 개발 서버 (HMR) |
+| `yarn build` | 프로덕션 빌드 (`dist/`) |
+| `yarn preview` | 빌드 결과 미리보기 |
+| `yarn lint` | ESLint |
+
+## 빌드 산출물
+
+`yarn build` 후 `dist/`가 생성됩니다. 정적 호스팅(Nginx, S3+CDN 등) 또는 백엔드 정적 리소스로 배포할 수 있습니다.
+
+## 모노레포 위치
+
+저장소 루트의 `316space-fe` 디렉터리입니다. 전체 목적·실행 순서는 [상위 README](../README.md)를 참고하세요.
+
+## 레퍼런스
+
+- 대체 대상: [316tower.my.canva.site/home](https://316tower.my.canva.site/home)
