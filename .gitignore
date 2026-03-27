@@ -1,0 +1,4 @@
+# IDE / OS (repo root)
+.idea/
+.DS_Store
+Thumbs.db
