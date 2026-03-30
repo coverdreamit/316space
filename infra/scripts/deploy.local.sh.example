@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
-# 사용법: cp infra/scripts/deploy.local.sh.example infra/scripts/deploy.local.sh 후 수정
+# 선택: deploy.local.sh 로 복사 후 수정 (deploy.local.sh 는 .gitignore 로 커밋 안 함)
+#
+# • 이 파일을 deploy.local.sh 로 두고 아래 restart_app_services() 를 정의하면
+#   배포 스크립트 마지막에 systemd 등 **직접 지정한** 재시작만 실행됩니다.
+# • deploy.local.sh 가 없거나, restart_app_services 를 정의하지 않았으면
+#   배포 스크립트가 자동으로 nohup(java -jar + pnpm preview) 재시작을 수행합니다.
 
 restart_app_services() {
   sudo systemctl restart 316space-be.service

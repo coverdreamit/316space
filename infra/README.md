@@ -36,15 +36,17 @@ sudo bash infra/scripts/ufw-allow-docker-to-app-ports.sh
 - 프록시 대상: `nginx.conf`의 `proxy_pass`
 - 외부 포트: `docker-compose.yml`의 `"6280:80"`
 
-## 배포: git pull 후 빌드·Nginx 반영
+## 배포: git pull 후 빌드·Nginx 반영·앱 재시작
 
-`scripts/deploy-pull-restart.sh` (저장소 루트 기준):
+`scripts/deploy-pull-restart.sh` (저장소 루트에서 `./infra/scripts/deploy-pull-restart.sh`):
 
 1. `git pull --ff-only`
 2. `316space-be`: `mvn -B package -DskipTests`
 3. `316space-fe`: `pnpm install --frozen-lockfile` 후 `pnpm run build`
-4. `infra`: `docker compose up -d`
-5. (선택) `deploy.local.sh`의 `restart_app_services()` — BE·FE systemd 재시작
+4. `infra`: `docker compose up -d --build` (이미지/설정 반영)
+5. **BE·FE 재시작**
+   - `deploy.local.sh`에 `restart_app_services()`가 있으면 그 함수만 실행 (예: `systemctl restart …`)
+   - 없으면 **nohup**으로 `java -jar …/space-be-*.jar` + `pnpm run preview` 자동 재기동 (로그: `logs/be.log`, `logs/fe.log`)
 
 실행 권한:
 
