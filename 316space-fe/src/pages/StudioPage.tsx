@@ -41,9 +41,16 @@ export default function StudioPage() {
         <h2 id="studio-status-heading" className="page-document__section-title">
           연습실 현황
         </h2>
-        <div className="room-grid">
+        <div className="room-grid room-grid--studio-halls">
           {halls.map((h) => (
-            <article key={h.id} className="room-card room-card--studio">
+            <article
+              key={h.id}
+              className={
+                h.id === "s-5"
+                  ? "room-card room-card--studio room-card--studio-wide"
+                  : "room-card room-card--studio"
+              }
+            >
               <div className="room-card__media">
                 <img
                   className="room-card__photo"

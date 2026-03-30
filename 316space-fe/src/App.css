@@ -293,6 +293,17 @@
   grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
 }
 
+/* 연습실 현황: 2+2+1 (5호실은 한 줄 전체 폭) */
+.room-grid--studio-halls {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 640px) {
+  .room-grid--studio-halls {
+    grid-template-columns: 1fr;
+  }
+}
+
 .room-card {
   border: 1px solid var(--line);
   padding: 1.1rem 1.15rem;
@@ -304,11 +315,13 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-width: 0;
 }
 
 .room-card__media {
-  aspect-ratio: 5 / 3;
+  aspect-ratio: 3 / 2;
   background: var(--bg-deep);
+  overflow: hidden;
 }
 
 .room-card__photo {
@@ -316,6 +329,21 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
+}
+
+.room-card--studio-wide {
+  grid-column: 1 / -1;
+}
+
+.room-card--studio-wide .room-card__media {
+  aspect-ratio: 21 / 9;
+}
+
+@media (max-width: 640px) {
+  .room-card--studio-wide {
+    grid-column: auto;
+  }
 }
 
 .room-card--studio .room-card__body {
