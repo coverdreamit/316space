@@ -9,3 +9,6 @@ Thumbs.db
 .cursorrules
 .cursorignore
 AGENTS.md
+
+# 서버 전용 배포 훅 (예시는 deploy.local.sh.example)
+infra/scripts/deploy.local.sh

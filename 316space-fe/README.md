@@ -1,16 +1,18 @@
 # 316space-fe
 
-[316tower 홈(Canva)](https://316tower.my.canva.site/home)를 대체하는 **316space** 프로젝트의 프론트엔드입니다. 공개 페이지·랜딩·내부 링크 구조는 Canva 사이트를 참고해 React로 구현합니다.
+**316스페이스** 홈페이지의 프론트엔드입니다. Vite + React로 공개 페이지·랜딩·내부 링크를 구성합니다.
+
+*(초기 UI·문구는 기존 [316tower Canva 사이트](https://316tower.my.canva.site/home)를 참고해 구현했습니다.)*
 
 ## 스택
 
 - React 19, TypeScript  
 - Vite 8  
-- 개발 서버 포트: **7000**
+- 개발 서버 포트: **3000** (`pnpm preview`도 동일 포트)
 
 ## 백엔드와의 연동
 
-`vite.config.ts`에서 `/api`를 `http://localhost:7001`로 프록시합니다. API 호출 시 브라우저에서는 상대 경로만 사용하면 됩니다.
+`vite.config.ts`에서 `/api`를 `http://localhost:8080`로 프록시합니다. API 호출 시 브라우저에서는 상대 경로만 사용하면 됩니다.
 
 ```ts
 // 예: fetch('/api/health')
@@ -25,7 +27,7 @@ pnpm install
 pnpm dev
 ```
 
-브라우저: `http://localhost:7000`
+브라우저: `http://localhost:3000`
 
 ## 스크립트
 
@@ -44,6 +46,6 @@ pnpm dev
 
 저장소 루트의 `316space-fe` 디렉터리입니다. 전체 목적·실행 순서는 [상위 README](../README.md)를 참고하세요.
 
-## 레퍼런스
+## 참고
 
-- 대체 대상: [316tower.my.canva.site/home](https://316tower.my.canva.site/home)
+- 이전 공개 페이지(참고용): [316tower.my.canva.site/home](https://316tower.my.canva.site/home)

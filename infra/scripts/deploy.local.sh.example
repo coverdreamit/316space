@@ -1,0 +1,8 @@
+# 서버에만 두는 파일. 복사: cp deploy.local.sh.example deploy.local.sh
+# deploy.local.sh 는 .gitignore 에 넣지 않아도 되지만, 서버 전용 명령이면 레포에 커밋하지 않는 것을 권장.
+
+restart_app_services() {
+  # 예: systemd 유닛 이름에 맞게 수정
+  # sudo systemctl restart 316space-be 316space-fe
+  :
+}

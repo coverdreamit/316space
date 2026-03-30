@@ -1,0 +1,13 @@
+# Nginx만 컨테이너로 띄우고, FE(3000)·BE(8080)는 서버에서 프로세스로 실행하는 구성입니다.
+# 배포 시 서버에서 이 디렉터리로 이동한 뒤: docker compose up -d
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: 316space-nginx
+    ports:
+      - "6280:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
