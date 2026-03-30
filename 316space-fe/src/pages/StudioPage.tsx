@@ -34,12 +34,25 @@ export default function StudioPage() {
         </h2>
         <div className="room-grid">
           {halls.map((h) => (
-            <article key={h.id} className="room-card">
-              <p className="room-card__slug">{h.slug}</p>
-              <h3 className="room-card__name">{h.name}</h3>
-              <p className="room-card__guests">{h.guests}</p>
-              <p className="room-card__price">{h.price}</p>
-              <p className="room-card__area">{h.area}</p>
+            <article key={h.id} className="room-card room-card--studio">
+              <div className="room-card__media">
+                <img
+                  className="room-card__photo"
+                  src={h.photoSrc}
+                  alt={`${h.name} 연습실 내부`}
+                  width={1024}
+                  height={682}
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+              <div className="room-card__body">
+                <p className="room-card__slug">{h.slug}</p>
+                <h3 className="room-card__name">{h.name}</h3>
+                <p className="room-card__guests">{h.guests}</p>
+                <p className="room-card__price">{h.price}</p>
+                <p className="room-card__area">{h.area}</p>
+              </div>
             </article>
           ))}
         </div>

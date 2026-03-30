@@ -1,5 +1,4 @@
 import { useEffect } from 'react'
-import { halls } from '../data/halls'
 
 export default function FloorplanPage() {
   useEffect(() => {
@@ -11,29 +10,21 @@ export default function FloorplanPage() {
       <header className="page-document__hero">
         <h1 className="page-document__title">평면도 및 비상탈출로</h1>
         <p className="page-document__lead">
-          평면도 이미지는 준비되는 대로 이 영역에 배치하면 됩니다.
+          층 전체 배치, 승강기·계단, 비상탈출 동선을 한눈에 확인할 수 있습니다.
         </p>
       </header>
 
-      <div className="floorplan-placeholder" role="img" aria-label="평면도 자리">
-        <span>Floor plan</span>
-      </div>
-
-      <section className="page-document__section" aria-labelledby="floorplan-rooms-heading">
-        <h2 id="floorplan-rooms-heading" className="page-document__section-title">
-          Rooms
-        </h2>
-        <div className="room-grid room-grid--compact">
-          {halls.map((h) => (
-            <article key={h.id} className="room-card room-card--compact">
-              <p className="room-card__slug">{h.slug}</p>
-              <h3 className="room-card__name">{h.name}</h3>
-              <p className="room-card__guests">{h.guests}</p>
-              <p className="room-card__price">{h.price}</p>
-            </article>
-          ))}
-        </div>
-      </section>
+      <figure className="floorplan-figure">
+        <img
+          className="floorplan-image"
+          src="/floorplan.png"
+          alt="316 SPACE 층 평면도. 중앙 코어에 승강기와 계단, 좌우 개방 공간, MDF실·기계실 등이 표시되어 있으며 비상탈출로가 안내됩니다."
+          width={1024}
+          height={575}
+          loading="lazy"
+          decoding="async"
+        />
+      </figure>
     </main>
   )
 }
