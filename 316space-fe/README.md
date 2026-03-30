@@ -8,7 +8,7 @@
 
 - React 19, TypeScript  
 - Vite 8  
-- 개발 서버 포트: **3000** (`pnpm preview`도 동일 포트)
+- 개발 서버 포트: **3000** (`pnpm preview`는 `--port 3000 --host`로 동일 포트·도커 Nginx에서 접근 가능)
 
 ## 백엔드와의 연동
 

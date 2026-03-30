@@ -50,7 +50,7 @@ pnpm dev
 
 설정 파일과 Docker Compose는 [`infra/`](infra/README.md)에 둡니다. **Compose는 Nginx만 올리는 구성**이며, FE·BE는 서버에서 빌드·실행한 뒤 Nginx가 `host.docker.internal`로 붙습니다. 자세한 순서는 [인프라 README](infra/README.md)를 참고하세요.
 
-갱신 시에는 저장소 루트에서 [`infra/scripts/deploy-pull-restart.sh`](infra/scripts/deploy-pull-restart.sh)로 `git pull`·빌드·Compose 반영을 한 번에 할 수 있습니다. BE·FE 프로세스 재시작은 `deploy.local.sh` 훅으로 서버에 맞게 연결합니다.
+갱신 시에는 저장소 루트에서 [`infra/scripts/deploy-pull-restart.sh`](infra/scripts/deploy-pull-restart.sh)로 `git pull`·빌드·Compose 반영을 한 번에 할 수 있습니다. BE·FE 프로세스 재시작은 `deploy.local.sh` 훅으로 서버에 맞게 연결합니다. UFW `default deny` 환경이면 [`infra/scripts/ufw-allow-docker-to-app-ports.sh`](infra/scripts/ufw-allow-docker-to-app-ports.sh)로 Docker 브리지→호스트 3000·8080을 허용하세요.
 
 **레포 vs 서버:** `infra/`의 `nginx.conf`·`docker-compose.yml`은 **버전 관리해 두고**, 실제 `docker compose up`은 **배포할 서버**(또는 CD 파이프라인)에서 실행하는 방식이 일반적입니다. 로컬에서 미리 검증할 수 있어 재현성이 좋습니다.
 
