@@ -3,7 +3,9 @@
 .DS_Store
 Thumbs.db
 
-# Cursor — 로컬 전용 (규칙·설정 등 커밋하지 않음)
+# Cursor — 로컬 전용 (규칙·에이전트 설정 등 저장소에 포함하지 않음)
 .cursor/
+**/.cursor/
 .cursorrules
 .cursorignore
+AGENTS.md

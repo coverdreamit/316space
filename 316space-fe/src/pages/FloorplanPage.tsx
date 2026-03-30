@@ -1,9 +1,9 @@
-import { useEffect } from 'react'
+import { useEffect } from "react";
 
 export default function FloorplanPage() {
   useEffect(() => {
-    document.title = '평면도 · 316 SPACE'
-  }, [])
+    document.title = "평면도 · 316 SPACE";
+  }, []);
 
   return (
     <main className="page-document">
@@ -26,5 +26,5 @@ export default function FloorplanPage() {
         />
       </figure>
     </main>
-  )
+  );
 }

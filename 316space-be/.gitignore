@@ -3,6 +3,11 @@
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+# Cursor (로컬 전용)
+.cursor/
+.cursorrules
+.cursorignore
+
 .idea
 *.iml
 *.ipr
