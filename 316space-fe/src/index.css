@@ -1,6 +1,20 @@
+html {
+  scroll-behavior: smooth;
+}
+
 :root {
-  font-family: system-ui, sans-serif;
+  --bg: #f6f4f0;
+  --bg-deep: #ebe6de;
+  --fg: #1a1a18;
+  --fg-muted: #5c5a56;
+  --line: rgba(26, 26, 24, 0.08);
+  --line-strong: rgba(26, 26, 24, 0.2);
+  --accent: #9a7b4f;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'Manrope', system-ui, sans-serif;
+  font-family: var(--font-sans);
   line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
 }
 
 body {

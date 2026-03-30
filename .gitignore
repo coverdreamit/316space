@@ -2,3 +2,8 @@
 .idea/
 .DS_Store
 Thumbs.db
+
+# Cursor — 로컬 전용 (규칙·설정 등 커밋하지 않음)
+.cursor/
+.cursorrules
+.cursorignore
