@@ -1,10 +1,10 @@
-import { useEffect } from 'react'
-import { facilityBullets, halls, spaceIntro } from '../data/halls'
+import { useEffect } from "react";
+import { facilityBullets, halls, spaceIntro } from "../data/halls";
 
 export default function StudioPage() {
   useEffect(() => {
-    document.title = '연습실 소개 · 316 SPACE'
-  }, [])
+    document.title = "연습실 소개 · 316 SPACE";
+  }, []);
 
   return (
     <main className="page-document">
@@ -22,13 +22,22 @@ export default function StudioPage() {
         ))}
       </ul>
 
-      <section className="page-document__section" aria-labelledby="studio-facilities-heading">
-        <h2 id="studio-facilities-heading" className="page-document__section-title">
+      <section
+        className="page-document__section"
+        aria-labelledby="studio-facilities-heading"
+      >
+        <h2
+          id="studio-facilities-heading"
+          className="page-document__section-title"
+        >
           시설 및 현황
         </h2>
       </section>
 
-      <section className="page-document__section" aria-labelledby="studio-status-heading">
+      <section
+        className="page-document__section"
+        aria-labelledby="studio-status-heading"
+      >
         <h2 id="studio-status-heading" className="page-document__section-title">
           연습실 현황
         </h2>
@@ -58,5 +67,5 @@ export default function StudioPage() {
         </div>
       </section>
     </main>
-  )
+  );
 }

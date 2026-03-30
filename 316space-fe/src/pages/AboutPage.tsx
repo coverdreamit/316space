@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { facilityBullets, spaceIntro } from '../data/halls'
+import { facilityFeatures, spaceIntro } from '../data/halls'
 
 export default function AboutPage() {
   useEffect(() => {
@@ -20,9 +20,22 @@ export default function AboutPage() {
         <h2 id="about-features-heading" className="page-document__section-title">
           시설 특징
         </h2>
-        <ul className="page-document__bullets">
-          {facilityBullets.map((text) => (
-            <li key={text}>{text}</li>
+        <ul className="about-features">
+          {facilityFeatures.map(({ title, imageSrc, alt }) => (
+            <li key={title} className="about-feature-card">
+              <div className="about-feature-card__media">
+                <img
+                  className="about-feature-card__photo"
+                  src={imageSrc}
+                  alt={alt}
+                  width={1200}
+                  height={750}
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+              <p className="about-feature-card__title">{title}</p>
+            </li>
           ))}
         </ul>
       </section>
