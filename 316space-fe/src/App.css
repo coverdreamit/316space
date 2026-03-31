@@ -8,17 +8,45 @@
 
 .site-header {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: clamp(0.75rem, 2vw, 1.5rem);
   padding: 0.875rem clamp(1.25rem, 4vw, 3rem);
   border-bottom: 1px solid var(--line);
 }
 
+.header-admin-link {
+  justify-self: end;
+  align-self: start;
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--fg);
+  text-decoration: none;
+  opacity: 0.55;
+  padding: 0.2rem 0;
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s ease, opacity 0.2s ease, border-color 0.2s ease;
+}
+
+.header-admin-link:hover,
+.header-admin-link:focus-visible {
+  opacity: 1;
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
 @media (max-width: 900px) {
   .site-header {
     grid-template-columns: 1fr auto;
     grid-template-rows: auto auto;
+  }
+
+  .header-admin-link {
+    grid-column: 2;
+    grid-row: 1;
   }
 
   .site-nav {
