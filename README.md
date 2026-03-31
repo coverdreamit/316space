@@ -20,7 +20,7 @@
 | [`316space-be`](316space-be/README.md) | REST API (Spring Boot) | [백엔드 README](316space-be/README.md) |
 | [`docker-compose.yml`](docker-compose.yml) + [`infra/`](infra/README.md) | 테스트·스테이징용 Docker (Nginx + FE + BE) — Compose는 루트, Nginx 설정·스크립트는 `infra/` | [인프라 README](infra/README.md) |
 
-**로컬 개발** 시 프론트(**3000**)가 `/api`를 백엔드(**8080**)로 프록시합니다. **테스트 서버**에서는 Docker로 단일 URL(`:6280` 등)로 접속합니다.
+**로컬 개발** 시 프론트(**3000**)가 `/api`를 백엔드(**8080**)로 프록시합니다. **테스트 서버**에서는 Docker로 통합 URL(`:6280` 등)로 접속하고, 필요 시 FE·BE만 호스트 포트(`13000`·`18080` 기본)로도 열어둡니다.
 
 ## 빠른 시작
 
@@ -45,9 +45,10 @@ pnpm dev
 | 환경 | 접속 예 |
 |------|---------|
 | 로컬 | `http://localhost:3000` (API는 Vite 프록시로 8080) |
-| Docker | `http://<서버>:6280` |
+| Docker (통합) | `http://<서버>:6280` |
+| Docker (FE/BE 직접) | `http://<서버>:13000`, `http://<서버>:18080` (기본값, `.env`로 변경 가능) |
 
-갱신: [`infra/scripts/deploy-pull-restart.sh`](infra/scripts/deploy-pull-restart.sh) (`git pull` 후 `docker compose up -d --build`). UFW 사용 시 외부 포트 허용은 [`infra/scripts/ufw-allow-docker-to-app-ports.sh`](infra/scripts/ufw-allow-docker-to-app-ports.sh)를 참고하세요.
+갱신: [`scripts/deploy-pull-restart.sh`](scripts/deploy-pull-restart.sh) (`git pull` 후 `docker compose up -d --build`). UFW 사용 시 외부 포트 허용은 [`scripts/ufw-allow-docker-to-app-ports.sh`](scripts/ufw-allow-docker-to-app-ports.sh)를 참고하세요.
 
 자세한 내용은 [인프라 README](infra/README.md)를 참고하세요.
 
