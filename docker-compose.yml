@@ -1,0 +1,45 @@
+# 테스트·스테이징: Nginx(진입점) + FE(:3000, vite preview) + BE(:8080)
+# 로컬 개발은 도커 없이: FE http://localhost:3000 , BE http://localhost:8080
+#
+# 실행(저장소 루트): docker compose up -d --build
+# - 통합 URL: http://<서버>:${PUBLIC_PORT:-6280}
+# - FE 직접(참고 스타일): http://<서버>:3000  (/api 는 compose의 VITE_API_PROXY_TARGET 으로 be 로 프록시)
+
+services:
+  fe:
+    build:
+      context: ./316space-fe
+      dockerfile: Dockerfile
+      args:
+        # 브라우저 절대 URL이 필요하면 설정 (예: http://coverdreamit.iptime.org:6280/api)
+        - VITE_PUBLIC_API_URL=${VITE_PUBLIC_API_URL:-}
+    container_name: 316space-fe
+    ports:
+      - "${FE_HOST_PORT:-3000}:3000"
+    environment:
+      # :3000 직접 접속 시 /api → be (통합 URL(nginx)만 쓰면 브라우저는 /api 를 nginx가 처리)
+      - VITE_API_PROXY_TARGET=http://be:8080
+    restart: unless-stopped
+
+  be:
+    build:
+      context: ./316space-be
+      dockerfile: Dockerfile
+    container_name: 316space-be
+    expose:
+      - "8080"
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    container_name: 316space-nginx
+    ports:
+      - "${PUBLIC_PORT:-6280}:80"
+    volumes:
+      - ./infra/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      fe:
+        condition: service_healthy
+      be:
+        condition: service_healthy
+    restart: unless-stopped

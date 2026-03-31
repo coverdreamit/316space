@@ -1,64 +1,72 @@
-# 인프라 (Nginx 리버스 프록시)
+# 인프라 (테스트·스테이징: Docker Compose)
 
-서버에서 **외부 포트 6280**으로 접속하면 Nginx가 아래로 나눕니다.
+**로컬 개발**은 Docker·Nginx 없이 [루트 README](../README.md)대로 FE `:3000` + BE `:8080` 만 사용합니다.
 
-| 경로 | upstream | 설명 |
-|------|----------|------|
-| `/` | `host.docker.internal:3000` | 프론트 (`pnpm preview` 등) |
-| `/api/` | `host.docker.internal:8080` | Spring Boot API |
+**테스트·운영 서버**는 루트 Compose로 **Nginx(진입점) + FE(vite preview `:3000`) + BE(API)** 를 한 번에 띄웁니다.
 
-## 전제
+| 환경 | 브라우저 URL | API |
+|------|----------------|-----|
+| 로컬 | `http://localhost:3000` | Vite가 `/api` → `http://localhost:8080` 로 프록시 |
+| Docker (통합) | `http://<서버>:6280` 등 (`PUBLIC_PORT`) | 동일 출처 `/api/...` → Nginx → BE |
+| Docker (FE만 직접) | `http://<서버>:3000` (호스트 포트는 `FE_HOST_PORT`로 변경 가능) | `/api` → Vite preview 프록시 → `be:8080` |
 
-- FE가 **3000**, BE가 **8080**에서 수신 중이어야 합니다. `pnpm preview`는 `--host`로 외부(도커 브리지)에서 접근 가능하게 두는 것을 권장합니다.
-- 이 Compose는 **Nginx 컨테이너만** 올립니다. FE·BE는 systemd 등으로 호스트에서 실행합니다.
-- 설정 파일: 루트의 `nginx.conf`를 `conf.d/default.conf`로 마운트합니다.
+FE 코드에서는 **`/api/...` 상대 경로**만 쓰면 로컬·서버 모두 동작합니다.
+
+## 구성
+
+| 서비스 | 이미지/빌드 | 역할 |
+|--------|-------------|------|
+| `nginx` | `nginx:alpine` | 외부 포트 바인딩, `/` → `fe`, `/api` → `be` |
+| `fe` | `316space-fe/Dockerfile` | `pnpm build` 후 **vite preview** 로 **3000** 포트 서빙 (`3000:3000` 공개) |
+| `be` | `316space-be/Dockerfile` | Spring Boot JAR |
+
+Compose 파일: 저장소 루트의 [`docker-compose.yml`](../docker-compose.yml). Nginx 설정: 이 디렉터리의 `nginx.conf` → 컨테이너 `conf.d/default.conf` 로 마운트.
 
 ## 실행 (서버)
 
+**저장소 루트**(`316space/`)에서 Compose 파일을 사용합니다.
+
 ```bash
-cd infra
-docker compose up -d
+cd /path/to/316space   # 저장소 루트
+docker compose up -d --build
 ```
 
-접속: `http://<서버>:6280`  
-API 예: `http://<서버>:6280/api/health`
+- 통합 접속: `http://<서버>:6280`
+- FE만(디버그 등): `http://<서버>:3000`
+- API 예: `http://<서버>:6280/api/health`
+
+절대 URL이 빌드에 필요하면(Next `NEXT_PUBLIC_*` 와 유사) 루트에 `.env` 두고 `VITE_PUBLIC_API_URL=...` 설정 후 `docker compose build` — `docker-compose.yml`의 `fe.build.args`로 전달됩니다.
+
+게시 포트 변경:
+
+```bash
+PUBLIC_PORT=8080 docker compose up -d --build
+```
 
 ## UFW
 
-`default deny`이면 Docker 브리지에서 호스트 3000·8080으로의 트래픽이 막힐 수 있습니다. 한 번 실행:
+외부에서 위 포트로 들어오게 허용:
 
 ```bash
 sudo bash infra/scripts/ufw-allow-docker-to-app-ports.sh
+# 또는 PUBLIC_PORT=8080 sudo -E bash infra/scripts/ufw-allow-docker-to-app-ports.sh
 ```
+
+## 배포: git pull 후 이미지 재빌드·기동
+
+저장소 루트에서:
+
+```bash
+./infra/scripts/deploy-pull-restart.sh
+```
+
+(`chmod +x` 필요 시 한 번 실행)
+
+Compose가 FE·BE를 다시 빌드하고 Nginx까지 재기동합니다. 호스트에 Maven·pnpm으로 별도 빌드할 필요는 없습니다.
+
+선택 훅: `infra/scripts/deploy.local.sh.example` 을 `deploy.local.sh` 로 복사해 배포 후 추가 작업을 넣을 수 있습니다.
 
 ## 설정 변경
 
-- 프록시 대상: `nginx.conf`의 `proxy_pass`
-- 외부 포트: `docker-compose.yml`의 `"6280:80"`
-
-## 배포: git pull 후 빌드·Nginx 반영·앱 재시작
-
-`scripts/deploy-pull-restart.sh` (저장소 루트에서 `./infra/scripts/deploy-pull-restart.sh`):
-
-1. `git pull --ff-only`
-2. `316space-be`: `mvn -B package -DskipTests`
-3. `316space-fe`: `pnpm install --frozen-lockfile` 후 `pnpm run build`
-4. `infra`: `docker compose up -d --build` (이미지/설정 반영)
-5. **BE·FE 재시작**
-   - `deploy.local.sh`에 `restart_app_services()`가 있으면 그 함수만 실행 (예: `systemctl restart …`)
-   - 없으면 **nohup**으로 `java -jar …/space-be-*.jar` + `pnpm run preview` 자동 재기동 (로그: `logs/be.log`, `logs/fe.log`)
-
-실행 권한:
-
-```bash
-chmod +x infra/scripts/deploy-pull-restart.sh infra/scripts/ufw-allow-docker-to-app-ports.sh
-```
-
-서버에서 훅:
-
-```bash
-cp infra/scripts/deploy.local.sh.example infra/scripts/deploy.local.sh
-# 유닛 이름 등 수정
-```
-
-`deploy.local.sh`는 루트 `.gitignore`에 있어 커밋되지 않습니다.
+- 리버스 프록시 규칙: `infra/nginx.conf`
+- 외부 포트·서비스 정의: 루트 `docker-compose.yml` 의 `PUBLIC_PORT` 또는 `ports` 매핑
