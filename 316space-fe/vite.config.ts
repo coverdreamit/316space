@@ -10,6 +10,8 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 3000,
+    // LAN/도메인으로 dev 접속 시 Host 허용 (기본은 localhost만)
+    allowedHosts: true,
     proxy: {
       '/api': {
         target: apiProxyTarget,
@@ -21,6 +23,8 @@ export default defineConfig({
     port: 3000,
     strictPort: true,
     host: true,
+    // Docker + Nginx/DDNS(coverdreamit.iptime.org 등)로 들어오는 Host 허용
+    allowedHosts: true,
     proxy: {
       '/api': {
         target: apiProxyTarget,
