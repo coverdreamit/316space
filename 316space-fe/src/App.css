@@ -26,7 +26,7 @@
 .header-admin-link {
   justify-self: end;
   align-self: start;
-  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.6875rem;
   font-weight: 500;
   letter-spacing: 0.04em;
@@ -117,7 +117,7 @@
 }
 
 .site-nav-link {
-  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--font-sans);
   font-size: 0.8125rem;
   font-weight: 500;
   color: var(--fg);

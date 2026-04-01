@@ -36,7 +36,6 @@ export default function StudioPage() {
                 />
               </div>
               <div className="room-card__body">
-                <p className="room-card__slug">{h.slug}</p>
                 <h3 className="room-card__name">{h.name}</h3>
                 <p className="room-card__guests">{h.guests}</p>
                 <p className="room-card__price">{h.price}</p>
