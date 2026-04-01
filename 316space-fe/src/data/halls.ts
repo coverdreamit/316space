@@ -17,7 +17,7 @@ export const halls: Hall[] = [
     guests: 'Max 2 Guests / 1',
     price: '8000원/1시간',
     area: '1인~2인 연습이 가능한 5평 연습실',
-    photoSrc: '/studio/s-1.png',
+    photoSrc: '/studio/thumbs/s-1.webp',
   },
   {
     id: 's-2',
@@ -26,7 +26,7 @@ export const halls: Hall[] = [
     guests: 'Max 2 Guests / 1',
     price: '8000원/1시간',
     area: '1인~2인 연습이 가능한 5평 연습실',
-    photoSrc: '/studio/s-2.png',
+    photoSrc: '/studio/thumbs/s-2.webp',
   },
   {
     id: 's-3',
@@ -35,7 +35,7 @@ export const halls: Hall[] = [
     guests: 'Max 3 Guests / 1',
     price: '8000원/1시간',
     area: '1인~3인 연습이 가능한 5평 연습실',
-    photoSrc: '/studio/s-3.png',
+    photoSrc: '/studio/thumbs/s-3.webp',
   },
   {
     id: 's-4',
@@ -44,7 +44,7 @@ export const halls: Hall[] = [
     guests: 'Max 2 Guests / 1',
     price: '8000원/1시간',
     area: '1인~2인 연습이 가능한 5평 연습실',
-    photoSrc: '/studio/s-4.png',
+    photoSrc: '/studio/thumbs/s-4.webp',
   },
   {
     id: 's-5',
@@ -53,7 +53,7 @@ export const halls: Hall[] = [
     guests: 'Max 8 Guests / 1',
     price: '16000원/1시간',
     area: '5인이상이 가능한 연습이 가능한 연습실',
-    photoSrc: '/studio/s-5.png',
+    photoSrc: '/studio/thumbs/s-5.webp',
   },
 ]
 
