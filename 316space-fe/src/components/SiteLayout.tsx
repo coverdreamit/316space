@@ -1,12 +1,13 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { navItems } from '../nav'
 
 export default function SiteLayout() {
   const { pathname } = useLocation()
+  const contentRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    window.scrollTo(0, 0)
+    contentRef.current?.scrollTo(0, 0)
   }, [pathname])
 
   return (
@@ -37,17 +38,19 @@ export default function SiteLayout() {
         </a>
       </header>
 
-      <Outlet />
+      <div className="page-content" ref={contentRef}>
+        <Outlet />
 
-      <footer className="site-footer">
-        <nav className="footer-nav" aria-label="약관 및 지원">
-          <a href="#terms">Terms &amp; Support</a>
-          <span className="sep" aria-hidden>
-            ·
-          </span>
-          <a href="#privacy">Privacy Policy</a>
-        </nav>
-      </footer>
+        <footer className="site-footer">
+          <nav className="footer-nav" aria-label="약관 및 지원">
+            <a href="#terms">Terms &amp; Support</a>
+            <span className="sep" aria-hidden>
+              ·
+            </span>
+            <a href="#privacy">Privacy Policy</a>
+          </nav>
+        </footer>
+      </div>
     </div>
   )
 }
