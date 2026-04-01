@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { facilityBullets, halls, spaceIntro } from "../data/halls";
+import { halls } from "../data/halls";
 
 export default function StudioPage() {
   useEffect(() => {
@@ -14,33 +14,7 @@ export default function StudioPage() {
         <p className="page-document__lead">호실별 안내</p>
       </header>
 
-      <p className="page-document__prose">{spaceIntro}</p>
-
-      <ul className="page-document__bullets">
-        {facilityBullets.map((text) => (
-          <li key={text}>{text}</li>
-        ))}
-      </ul>
-
-      <section
-        className="page-document__section"
-        aria-labelledby="studio-facilities-heading"
-      >
-        <h2
-          id="studio-facilities-heading"
-          className="page-document__section-title"
-        >
-          시설 및 현황
-        </h2>
-      </section>
-
-      <section
-        className="page-document__section"
-        aria-labelledby="studio-status-heading"
-      >
-        <h2 id="studio-status-heading" className="page-document__section-title">
-          연습실 현황
-        </h2>
+      <section className="page-document__section" aria-label="연습실 현황">
         <div className="room-grid room-grid--studio-halls">
           {halls.map((h) => (
             <article

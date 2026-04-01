@@ -10,7 +10,7 @@ export default function HomePage() {
       <main className="site-main">
         <div className="hero-visual" aria-hidden />
         <div className="hero-copy">
-          <p className="eyebrow">316 SPACE</p>
+          <p className="eyebrow">316스페이스</p>
           <h1 className="title">Luxury Space Rent</h1>
           <p className="location">Grand City</p>
           <p className="closing">316 SPACE.</p>
