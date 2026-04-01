@@ -195,7 +195,7 @@
 
 .page-document__prose {
   font-family: var(--font-sans);
-  font-size: 0.9375rem;
+  font-size: 1.0625rem;
   line-height: 1.75;
   color: var(--fg);
   margin: 0 0 1.5rem;
