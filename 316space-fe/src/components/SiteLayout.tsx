@@ -1,10 +1,15 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { navItems } from '../nav'
+import LoginModal from './LoginModal'
+import SignupModal from './SignupModal'
+
+type ModalState = 'none' | 'login' | 'signup'
 
 export default function SiteLayout() {
   const { pathname } = useLocation()
   const contentRef = useRef<HTMLDivElement>(null)
+  const [modal, setModal] = useState<ModalState>('none')
 
   useEffect(() => {
     contentRef.current?.scrollTo(0, 0)
@@ -33,10 +38,27 @@ export default function SiteLayout() {
             ))}
           </ul>
         </nav>
-        <a className="header-admin-link" href="/admin">
+        <button
+          className="header-admin-link"
+          onClick={() => setModal('login')}
+          style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+        >
           Login
-        </a>
+        </button>
       </header>
+
+      {modal === 'login' && (
+        <LoginModal
+          onClose={() => setModal('none')}
+          onSwitchToSignup={() => setModal('signup')}
+        />
+      )}
+      {modal === 'signup' && (
+        <SignupModal
+          onClose={() => setModal('none')}
+          onSwitchToLogin={() => setModal('login')}
+        />
+      )}
 
       <div className="page-content" ref={contentRef}>
         <Outlet />

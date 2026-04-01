@@ -637,3 +637,214 @@
   color: var(--line-strong);
   user-select: none;
 }
+
+/* ── Login Modal ─────────────────────────────────── */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: rgba(26, 26, 24, 0.45);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  animation: overlay-in 0.18s ease;
+}
+
+@keyframes overlay-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.modal {
+  position: relative;
+  width: 100%;
+  max-width: 22rem;
+  background: var(--bg);
+  border: 1px solid var(--line-strong);
+  padding: 2.5rem 2.25rem 2.25rem;
+  animation: modal-in 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes modal-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal__header {
+  margin-bottom: 2rem;
+}
+
+.modal__eyebrow {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-bottom: 0.5rem;
+}
+
+.modal__title {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  margin: 0;
+  color: var(--fg);
+}
+
+.modal__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.modal__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.modal__label {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+
+.modal__input {
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  color: var(--fg);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--line-strong);
+  padding: 0.5rem 0;
+  outline: none;
+  transition: border-color 0.2s ease;
+  width: 100%;
+}
+
+.modal__input::placeholder {
+  color: var(--fg-muted);
+  opacity: 0.5;
+}
+
+.modal__input:focus {
+  border-bottom-color: var(--accent);
+}
+
+.modal__submit {
+  margin-top: 0.5rem;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bg);
+  background: var(--fg);
+  border: 1px solid var(--fg);
+  padding: 0.9rem 1.75rem;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.modal__submit:hover {
+  background: transparent;
+  color: var(--fg);
+}
+
+.modal__signup {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--fg-muted);
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--line-strong);
+  padding: 0.2rem 0;
+  cursor: pointer;
+  align-self: center;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.modal__signup:hover {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.modal__close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 0.9rem;
+  color: var(--fg-muted);
+  cursor: pointer;
+  padding: 0.25rem 0.4rem;
+  line-height: 1;
+  transition: color 0.2s ease;
+}
+
+.modal__close:hover {
+  color: var(--fg);
+}
+
+.modal--signup {
+  max-width: 26rem;
+}
+
+.modal__error {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  color: #c0392b;
+  margin-top: 0.2rem;
+}
+
+.modal__divider {
+  border: none;
+  border-top: 1px solid var(--line);
+  margin: 0.1rem 0;
+}
+
+.modal__agreements {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.modal__check-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+}
+
+.modal__checkbox {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--accent);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.modal__check-label {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  color: var(--fg);
+  line-height: 1.4;
+}
+
+.modal__required {
+  color: var(--accent);
+  font-weight: 600;
+  margin-right: 0.2rem;
+}
