@@ -34,7 +34,7 @@ export default function SiteLayout() {
           </ul>
         </nav>
         <a className="header-admin-link" href="/admin">
-          Admin
+          Login
         </a>
       </header>
 
