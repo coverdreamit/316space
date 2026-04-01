@@ -17,4 +17,4 @@ spring:
 
 jwt:
   secret: ${JWT_SECRET:dev-secret-key-change-in-production-must-be-256bits}
-  expiration-ms: 1800000  # 30분
+  expiration-ms: 1800000 # 30분

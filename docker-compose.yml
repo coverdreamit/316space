@@ -1,6 +1,8 @@
 # 테스트·스테이징: Nginx(진입점) + FE(vite preview 컨테이너 :3000) + BE(컨테이너 :8080)
 # 로컬 개발은 도커 없이: FE http://localhost:3000 , BE http://localhost:8080
 #
+# DB: 외부 PostgreSQL (coverdreamit.iptime.org:9432) — 컨테이너 없음
+#
 # 트래픽 (연쇄 아님 — 병렬 포트 매핑 + 내부 DNS):
 #   · :6280 → nginx:80 → (내부) fe:3000 또는 be:8080  ← infra/nginx.conf upstream
 #   · :13000 → fe:3000 만 (Nginx 안 탐)
@@ -36,6 +38,14 @@ services:
       - "8080"
     ports:
       - "${BE_HOST_PORT:-18080}:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - DB_HOST=${DB_HOST:-coverdreamit.iptime.org}
+      - DB_PORT=${DB_PORT:-9432}
+      - DB_NAME=${DB_NAME:-316space}
+      - DB_USERNAME=${DB_USERNAME:-hipms}
+      - DB_PASSWORD=${DB_PASSWORD:-hipms}
+      - JWT_SECRET=${JWT_SECRET:-dev-secret-key-change-in-production-must-be-256bits}
     restart: unless-stopped
 
   nginx:
@@ -51,3 +61,4 @@ services:
       be:
         condition: service_healthy
     restart: unless-stopped
+

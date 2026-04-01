@@ -2,10 +2,10 @@ spring:
   datasource:
     url: jdbc:postgresql://${DB_HOST:coverdreamit.iptime.org}:${DB_PORT:9432}/${DB_NAME:316space}
     driver-class-name: org.postgresql.Driver
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    username: ${DB_USERNAME:hipms}
+    password: ${DB_PASSWORD:hipms}
   jpa:
     hibernate:
-      ddl-auto: validate
-    show-sql: false
+      ddl-auto: update   # 개발 단계 — 스키마 자동 변경 허용, 운영 전 validate 로 교체
+    show-sql: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
