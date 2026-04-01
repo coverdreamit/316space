@@ -9,7 +9,6 @@ export default function BookingPage() {
   return (
     <main className="page-document">
       <header className="page-document__hero">
-        <p className="page-document__eyebrow">Reservation</p>
         <h1 className="page-document__title">예약</h1>
         <p className="page-document__lead">온라인 예약 기능을 준비 중입니다.</p>
       </header>

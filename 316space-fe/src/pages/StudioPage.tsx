@@ -9,7 +9,6 @@ export default function StudioPage() {
   return (
     <main className="page-document">
       <header className="page-document__hero">
-        <p className="page-document__eyebrow">Rooms</p>
         <h1 className="page-document__title">연습실 소개</h1>
         <p className="page-document__lead">호실별 안내</p>
       </header>

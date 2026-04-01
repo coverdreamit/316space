@@ -9,7 +9,6 @@ export default function AboutPage() {
   return (
     <main className="page-document">
       <header className="page-document__hero">
-        <p className="page-document__eyebrow">316 SPACE</p>
         <h1 className="page-document__title">About</h1>
         <p className="page-document__lead">316 스페이스를 소개합니다.</p>
       </header>
