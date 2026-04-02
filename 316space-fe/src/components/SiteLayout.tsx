@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
+import { useAuth } from '../auth/AuthContext'
 import { navItems } from '../nav'
 import LoginModal from './LoginModal'
 import SignupModal from './SignupModal'
@@ -8,6 +9,7 @@ type ModalState = 'none' | 'login' | 'signup'
 
 export default function SiteLayout() {
   const { pathname } = useLocation()
+  const { isAuthenticated, email, logout } = useAuth()
   const contentRef = useRef<HTMLDivElement>(null)
   const [modal, setModal] = useState<ModalState>('none')
 
@@ -38,13 +40,30 @@ export default function SiteLayout() {
             ))}
           </ul>
         </nav>
-        <button
-          className="header-admin-link"
-          onClick={() => setModal('login')}
-          style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-        >
-          Login
-        </button>
+        {isAuthenticated ? (
+          <div className="header-account">
+            <span className="header-account-email" title={email ?? undefined}>
+              {email}
+            </span>
+            <button
+              type="button"
+              className="header-admin-link"
+              onClick={() => logout()}
+              style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+            >
+              로그아웃
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            className="header-admin-link"
+            onClick={() => setModal('login')}
+            style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+          >
+            Login
+          </button>
+        )}
       </header>
 
       {modal === 'login' && (

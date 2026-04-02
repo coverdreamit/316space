@@ -1,4 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
+import { useAuth } from '../auth/AuthContext'
+
+function toRegisterPhone(input: string): string | null {
+  const d = input.replace(/\D/g, '')
+  if (d.length === 11 && d.startsWith('010')) {
+    return `${d.slice(0, 3)}-${d.slice(3, 7)}-${d.slice(7, 11)}`
+  }
+  return null
+}
 
 interface SignupModalProps {
   onClose: () => void
@@ -18,8 +27,11 @@ interface FormState {
 type FormErrors = Partial<Record<keyof FormState, string>>
 
 export default function SignupModal({ onClose, onSwitchToLogin }: SignupModalProps) {
+  const { register } = useAuth()
   const overlayRef = useRef<HTMLDivElement>(null)
   const nameRef = useRef<HTMLInputElement>(null)
+  const [submitError, setSubmitError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
 
   const [form, setForm] = useState<FormState>({
     name: '',
@@ -59,19 +71,34 @@ export default function SignupModal({ onClose, onSwitchToLogin }: SignupModalPro
     if (!form.email.trim()) next.email = '이메일을 입력해주세요.'
     if (form.password.length < 8) next.password = '비밀번호는 8자 이상이어야 합니다.'
     if (form.password !== form.passwordConfirm) next.passwordConfirm = '비밀번호가 일치하지 않습니다.'
-    if (!/^01[0-9]{8,9}$/.test(form.phone.replace(/-/g, '')))
-      next.phone = '올바른 휴대폰 번호를 입력해주세요.'
+    if (!toRegisterPhone(form.phone))
+      next.phone = '010으로 시작하는 11자리 번호를 입력해 주세요. (예: 01012345678)'
     if (!form.agreeTerms) next.agreeTerms = '이용약관에 동의해주세요.'
     if (!form.agreePrivacy) next.agreePrivacy = '개인정보 처리방침에 동의해주세요.'
     setErrors(next)
     return Object.keys(next).length === 0
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setSubmitError(null)
     if (!validate()) return
-    // TODO: 실제 회원가입 API 연결
-    console.log('signup:', form)
+    const phone = toRegisterPhone(form.phone)
+    if (!phone) return
+    setLoading(true)
+    try {
+      await register({
+        email: form.email.trim(),
+        password: form.password,
+        name: form.name.trim(),
+        phone,
+      })
+      onClose()
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : '회원가입에 실패했습니다.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -90,6 +117,9 @@ export default function SignupModal({ onClose, onSwitchToLogin }: SignupModalPro
         </div>
 
         <form className="modal__form" onSubmit={handleSubmit} noValidate>
+          {submitError && (
+            <p className="modal__error modal__error--banner">{submitError}</p>
+          )}
 
           <div className="modal__field">
             <label className="modal__label" htmlFor="signup-name">이름</label>
@@ -192,8 +222,8 @@ export default function SignupModal({ onClose, onSwitchToLogin }: SignupModalPro
             {errors.agreePrivacy && <span className="modal__error">{errors.agreePrivacy}</span>}
           </div>
 
-          <button className="modal__submit" type="submit">
-            가입하기
+          <button className="modal__submit" type="submit" disabled={loading}>
+            {loading ? '처리 중…' : '가입하기'}
           </button>
 
           <button className="modal__signup" type="button" onClick={onSwitchToLogin}>

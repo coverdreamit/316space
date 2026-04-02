@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useAuth } from '../auth/AuthContext'
 
 interface LoginModalProps {
   onClose: () => void
@@ -6,8 +7,11 @@ interface LoginModalProps {
 }
 
 export default function LoginModal({ onClose, onSwitchToSignup }: LoginModalProps) {
+  const { login } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
   const overlayRef = useRef<HTMLDivElement>(null)
   const emailRef = useRef<HTMLInputElement>(null)
 
@@ -25,10 +29,18 @@ export default function LoginModal({ onClose, onSwitchToSignup }: LoginModalProp
     if (e.target === overlayRef.current) onClose()
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // TODO: 실제 로그인 로직 연결
-    console.log('login:', email, password)
+    setError(null)
+    setLoading(true)
+    try {
+      await login(email, password)
+      onClose()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '로그인에 실패했습니다.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -47,6 +59,7 @@ export default function LoginModal({ onClose, onSwitchToSignup }: LoginModalProp
         </div>
 
         <form className="modal__form" onSubmit={handleSubmit}>
+          {error && <p className="modal__error modal__error--banner">{error}</p>}
           <div className="modal__field">
             <label className="modal__label" htmlFor="login-email">
               Email
@@ -80,8 +93,8 @@ export default function LoginModal({ onClose, onSwitchToSignup }: LoginModalProp
             />
           </div>
 
-          <button className="modal__submit" type="submit">
-            Login
+          <button className="modal__submit" type="submit" disabled={loading}>
+            {loading ? '처리 중…' : 'Login'}
           </button>
 
           <button className="modal__signup" type="button" onClick={onSwitchToSignup}>
