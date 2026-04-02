@@ -46,6 +46,10 @@ services:
       - DB_USERNAME=${DB_USERNAME:-hipms}
       - DB_PASSWORD=${DB_PASSWORD:-hipms}
       - JWT_SECRET=${JWT_SECRET:-dev-secret-key-change-in-production-must-be-256bits}
+      - ADMIN_EMAIL=${ADMIN_EMAIL:-admin@316space.com}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-Admin1234!}
+      - ADMIN_NAME=${ADMIN_NAME:-관리자}
+      - ADMIN_PHONE=${ADMIN_PHONE:-01000000000}
     restart: unless-stopped
 
   nginx:

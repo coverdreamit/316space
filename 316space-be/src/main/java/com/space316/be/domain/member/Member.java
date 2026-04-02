@@ -8,6 +8,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -21,7 +22,8 @@ import lombok.NoArgsConstructor;
 public class Member extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name = "member_seq", sequenceName = "member_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "member_seq")
     private Long id;
 
     @Column(nullable = false, unique = true, length = 100)
@@ -52,6 +54,10 @@ public class Member extends BaseEntity {
         this.phone = phone;
         this.role = MemberRole.USER;
         this.status = MemberStatus.ACTIVE;
+    }
+
+    public void promoteToAdmin() {
+        this.role = MemberRole.ADMIN;
     }
 
     public void changeStatus(MemberStatus status) {
