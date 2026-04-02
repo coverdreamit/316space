@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
+import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 import { navItems } from '../nav'
 import LoginModal from './LoginModal'
@@ -9,9 +9,12 @@ import SignupModal from './SignupModal'
 
 type ModalState = 'none' | 'login' | 'signup' | 'profile-reauth' | 'profile'
 
+const ADMIN_ROLE = 'ADMIN'
+
 export default function SiteLayout() {
   const { pathname } = useLocation()
-  const { isAuthenticated, loginId, logout } = useAuth()
+  const navigate = useNavigate()
+  const { isAuthenticated, loginId, logout, role } = useAuth()
   const contentRef = useRef<HTMLDivElement>(null)
   const [modal, setModal] = useState<ModalState>('none')
   const [profileAccessToken, setProfileAccessToken] = useState<string | null>(null)
@@ -54,7 +57,9 @@ export default function SiteLayout() {
               type="button"
               className="header-account-email"
               title={loginId ?? undefined}
-              onClick={() => setModal('profile-reauth')}
+              onClick={() =>
+                role === ADMIN_ROLE ? navigate('/admin') : setModal('profile-reauth')
+              }
             >
               {loginId}
             </button>
