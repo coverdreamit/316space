@@ -8,5 +8,5 @@ export interface TokenResponse {
 export interface StoredAuth {
   accessToken: string
   role: string
-  email: string
+  loginId: string
 }

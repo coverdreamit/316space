@@ -7,6 +7,9 @@ spring:
   profiles:
     active: dev
 
+  flyway:
+    enabled: false
+
   jpa:
     hibernate:
       ddl-auto: validate
@@ -18,9 +21,11 @@ spring:
 jwt:
   secret: ${JWT_SECRET:dev-secret-key-change-in-production-must-be-256bits}
   expiration-ms: 1800000 # 30분
+  profile-edit-expiration-ms: 600000 # 개인정보 변경 화면 진입용(10분)
 
 admin:
+  login-id: ${ADMIN_LOGIN_ID:admin}
   email: ${ADMIN_EMAIL:admin@316space.com}
   password: ${ADMIN_PASSWORD:Admin1234!}
   name: ${ADMIN_NAME:관리자}
-  phone: ${ADMIN_PHONE:01000000000}
+  phone: ${ADMIN_PHONE:010-0000-0000}

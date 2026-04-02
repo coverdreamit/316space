@@ -35,6 +35,11 @@ public class BookingService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
+        String memberPhone = member.getPhone();
+        if (memberPhone == null || memberPhone.isBlank()) {
+            throw new IllegalStateException("회원 예약은 프로필에 휴대폰 번호가 필요합니다. 마이페이지 등에서 번호를 등록해 주세요.");
+        }
+
         validateTime(req.startAt(), req.endAt());
         validateNoOverlap(req.hallId(), req.startAt(), req.endAt());
 
@@ -42,7 +47,7 @@ public class BookingService {
                 .bookingNo(generateBookingNo())
                 .member(member)
                 .guestName(member.getName())
-                .guestPhone(member.getPhone())
+                .guestPhone(memberPhone)
                 .hallId(req.hallId())
                 .startAt(req.startAt())
                 .endAt(req.endAt())

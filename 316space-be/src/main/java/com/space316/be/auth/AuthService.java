@@ -24,28 +24,32 @@ public class AuthService {
     private long expirationMs;
 
     @Transactional
-    public TokenResponse register(RegisterRequest req) {
-        if (memberRepository.existsByEmail(req.email())) {
-            throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
+    public void register(RegisterRequest req) {
+        String loginId = req.loginId().trim();
+        if (memberRepository.existsByLoginId(loginId)) {
+            throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
         }
 
+        String email = req.email().orElse(null);
+        String phone = req.phone().orElse(null);
+
         Member member = Member.builder()
-                .email(req.email())
+                .loginId(loginId)
+                .email(email)
                 .passwordHash(passwordEncoder.encode(req.password()))
-                .name(req.name())
-                .phone(req.phone())
+                .name(req.name().trim())
+                .phone(phone)
                 .build();
 
         memberRepository.save(member);
-
-        String token = jwtProvider.generate(member.getId(), member.getRole().name());
-        return TokenResponse.of(token, expirationMs, member.getRole().name());
     }
 
     @Transactional(readOnly = true)
     public TokenResponse login(LoginRequest req) {
-        Member member = memberRepository.findByEmail(req.email())
-                .orElseThrow(() -> new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다."));
+        String loginId = req.loginId().trim();
+        Member member = memberRepository
+                .findByLoginId(loginId)
+                .orElseThrow(() -> new IllegalArgumentException("아이디 또는 비밀번호가 올바르지 않습니다."));
 
         if (member.getStatus() == MemberStatus.WITHDRAWN) {
             throw new IllegalStateException("탈퇴한 계정입니다.");
@@ -54,7 +58,7 @@ public class AuthService {
             throw new IllegalStateException("정지된 계정입니다. 관리자에게 문의해 주세요.");
         }
         if (!passwordEncoder.matches(req.password(), member.getPasswordHash())) {
-            throw new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다.");
+            throw new IllegalArgumentException("아이디 또는 비밀번호가 올바르지 않습니다.");
         }
 
         String token = jwtProvider.generate(member.getId(), member.getRole().name());

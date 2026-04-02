@@ -45,6 +45,27 @@
   white-space: nowrap;
 }
 
+button.header-account-email {
+  max-width: 100%;
+  background: none;
+  border: none;
+  padding: 0.15rem 0;
+  cursor: pointer;
+  text-align: left;
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+button.header-account-email:hover,
+button.header-account-email:focus-visible {
+  opacity: 1;
+  color: var(--accent);
+}
+
+button.header-account-email:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 .header-admin-link {
   justify-self: end;
   align-self: start;
@@ -763,6 +784,41 @@
   border-bottom-color: var(--accent);
 }
 
+.modal__input--readonly {
+  color: var(--fg-muted);
+  cursor: default;
+  border-bottom-style: dashed;
+  border-bottom-color: var(--line-strong);
+}
+
+.modal__input--readonly:focus {
+  border-bottom-color: var(--line-strong);
+}
+
+.modal__hint {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  color: var(--fg-muted);
+  margin: -0.35rem 0 0;
+  line-height: 1.45;
+}
+
+.modal__hint--first {
+  margin-top: 0;
+}
+
+.modal__visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .modal__submit {
   margin-top: 0.5rem;
   font-family: var(--font-sans);
@@ -835,6 +891,24 @@
   max-width: 26rem;
 }
 
+.modal__header--signup {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.modal__header--signup .modal__header-main {
+  min-width: 0;
+}
+
+.modal__header--signup .modal__close {
+  position: static;
+  flex-shrink: 0;
+  margin: -0.15rem -0.25rem 0 0;
+  padding: 0.35rem 0.5rem;
+}
+
 .modal__error--banner {
   margin: 0 0 0.35rem;
   text-align: center;
@@ -885,4 +959,11 @@
   color: var(--accent);
   font-weight: 600;
   margin-right: 0.2rem;
+}
+
+.modal__optional {
+  font-size: 0.75rem;
+  font-weight: 500;
+  opacity: 0.55;
+  margin-left: 0.15rem;
 }

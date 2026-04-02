@@ -1,12 +1,20 @@
 import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '../auth/AuthContext'
 
+const LOGIN_ID_PATTERN = /^[a-zA-Z0-9._-]{3,30}$/
+
 function toRegisterPhone(input: string): string | null {
   const d = input.replace(/\D/g, '')
   if (d.length === 11 && d.startsWith('010')) {
     return `${d.slice(0, 3)}-${d.slice(3, 7)}-${d.slice(7, 11)}`
   }
   return null
+}
+
+function isValidOptionalEmail(s: string): boolean {
+  const t = s.trim()
+  if (!t) return true
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(t)
 }
 
 interface SignupModalProps {
@@ -16,7 +24,8 @@ interface SignupModalProps {
 
 interface FormState {
   name: string
-  email: string
+  loginId: string
+  contactEmail: string
   phone: string
   password: string
   passwordConfirm: string
@@ -28,14 +37,14 @@ type FormErrors = Partial<Record<keyof FormState, string>>
 
 export default function SignupModal({ onClose, onSwitchToLogin }: SignupModalProps) {
   const { register } = useAuth()
-  const overlayRef = useRef<HTMLDivElement>(null)
   const nameRef = useRef<HTMLInputElement>(null)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
   const [form, setForm] = useState<FormState>({
     name: '',
-    email: '',
+    loginId: '',
+    contactEmail: '',
     phone: '',
     password: '',
     passwordConfirm: '',
@@ -54,10 +63,6 @@ export default function SignupModal({ onClose, onSwitchToLogin }: SignupModalPro
     return () => document.removeEventListener('keydown', onKeyDown)
   }, [onClose])
 
-  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === overlayRef.current) onClose()
-  }
-
   const set = (key: keyof FormState) =>
     (e: React.ChangeEvent<HTMLInputElement>) =>
       setForm(prev => ({
@@ -68,11 +73,19 @@ export default function SignupModal({ onClose, onSwitchToLogin }: SignupModalPro
   const validate = (): boolean => {
     const next: FormErrors = {}
     if (!form.name.trim()) next.name = '이름을 입력해주세요.'
-    if (!form.email.trim()) next.email = '이메일을 입력해주세요.'
+    const id = form.loginId.trim()
+    if (!id) next.loginId = '아이디를 입력해주세요.'
+    else if (!LOGIN_ID_PATTERN.test(id)) {
+      next.loginId = '아이디는 3~30자, 영문·숫자·._- 만 사용할 수 있습니다.'
+    }
     if (form.password.length < 8) next.password = '비밀번호는 8자 이상이어야 합니다.'
     if (form.password !== form.passwordConfirm) next.passwordConfirm = '비밀번호가 일치하지 않습니다.'
-    if (!toRegisterPhone(form.phone))
-      next.phone = '010으로 시작하는 11자리 번호를 입력해 주세요. (예: 01012345678)'
+    if (!isValidOptionalEmail(form.contactEmail)) next.contactEmail = '이메일 형식을 확인해주세요.'
+    if (form.phone.trim()) {
+      if (!toRegisterPhone(form.phone)) {
+        next.phone = '010으로 시작하는 11자리 번호를 입력해 주세요. (예: 01012345678)'
+      }
+    }
     if (!form.agreeTerms) next.agreeTerms = '이용약관에 동의해주세요.'
     if (!form.agreePrivacy) next.agreePrivacy = '개인정보 처리방침에 동의해주세요.'
     setErrors(next)
@@ -83,17 +96,18 @@ export default function SignupModal({ onClose, onSwitchToLogin }: SignupModalPro
     e.preventDefault()
     setSubmitError(null)
     if (!validate()) return
-    const phone = toRegisterPhone(form.phone)
-    if (!phone) return
+    const phoneFormatted = form.phone.trim() ? toRegisterPhone(form.phone) : null
+    if (form.phone.trim() && !phoneFormatted) return
     setLoading(true)
     try {
       await register({
-        email: form.email.trim(),
+        loginId: form.loginId.trim(),
         password: form.password,
         name: form.name.trim(),
-        phone,
+        email: form.contactEmail.trim() || undefined,
+        phone: phoneFormatted ?? undefined,
       })
-      onClose()
+      onSwitchToLogin()
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : '회원가입에 실패했습니다.')
     } finally {
@@ -104,16 +118,19 @@ export default function SignupModal({ onClose, onSwitchToLogin }: SignupModalPro
   return (
     <div
       className="modal-overlay"
-      ref={overlayRef}
-      onClick={handleOverlayClick}
       role="dialog"
       aria-modal="true"
       aria-label="회원가입"
     >
       <div className="modal modal--signup">
-        <div className="modal__header">
-          <span className="modal__eyebrow">316스페이스</span>
-          <h2 className="modal__title">회원가입</h2>
+        <div className="modal__header modal__header--signup">
+          <div className="modal__header-main">
+            <span className="modal__eyebrow">316스페이스</span>
+            <h2 className="modal__title">회원가입</h2>
+          </div>
+          <button type="button" className="modal__close" onClick={onClose} aria-label="닫기">
+            ✕
+          </button>
         </div>
 
         <form className="modal__form" onSubmit={handleSubmit} noValidate>
@@ -122,7 +139,9 @@ export default function SignupModal({ onClose, onSwitchToLogin }: SignupModalPro
           )}
 
           <div className="modal__field">
-            <label className="modal__label" htmlFor="signup-name">이름</label>
+            <label className="modal__label" htmlFor="signup-name">
+              이름 <span className="modal__required">*</span>
+            </label>
             <input
               id="signup-name"
               ref={nameRef}
@@ -137,35 +156,25 @@ export default function SignupModal({ onClose, onSwitchToLogin }: SignupModalPro
           </div>
 
           <div className="modal__field">
-            <label className="modal__label" htmlFor="signup-email">이메일</label>
+            <label className="modal__label" htmlFor="signup-login-id">
+              아이디 <span className="modal__required">*</span>
+            </label>
             <input
-              id="signup-email"
+              id="signup-login-id"
               className="modal__input"
-              type="email"
-              value={form.email}
-              onChange={set('email')}
-              placeholder="example@email.com"
-              autoComplete="email"
+              type="text"
+              value={form.loginId}
+              onChange={set('loginId')}
+              placeholder="영문·숫자·._- (3~30자)"
+              autoComplete="username"
             />
-            {errors.email && <span className="modal__error">{errors.email}</span>}
+            {errors.loginId && <span className="modal__error">{errors.loginId}</span>}
           </div>
 
           <div className="modal__field">
-            <label className="modal__label" htmlFor="signup-phone">휴대폰 번호</label>
-            <input
-              id="signup-phone"
-              className="modal__input"
-              type="tel"
-              value={form.phone}
-              onChange={set('phone')}
-              placeholder="01012345678"
-              autoComplete="tel"
-            />
-            {errors.phone && <span className="modal__error">{errors.phone}</span>}
-          </div>
-
-          <div className="modal__field">
-            <label className="modal__label" htmlFor="signup-password">비밀번호</label>
+            <label className="modal__label" htmlFor="signup-password">
+              비밀번호 <span className="modal__required">*</span>
+            </label>
             <input
               id="signup-password"
               className="modal__input"
@@ -179,7 +188,9 @@ export default function SignupModal({ onClose, onSwitchToLogin }: SignupModalPro
           </div>
 
           <div className="modal__field">
-            <label className="modal__label" htmlFor="signup-password-confirm">비밀번호 확인</label>
+            <label className="modal__label" htmlFor="signup-password-confirm">
+              비밀번호 확인 <span className="modal__required">*</span>
+            </label>
             <input
               id="signup-password-confirm"
               className="modal__input"
@@ -190,6 +201,38 @@ export default function SignupModal({ onClose, onSwitchToLogin }: SignupModalPro
               autoComplete="new-password"
             />
             {errors.passwordConfirm && <span className="modal__error">{errors.passwordConfirm}</span>}
+          </div>
+
+          <div className="modal__field">
+            <label className="modal__label" htmlFor="signup-contact-email">
+              이메일 <span className="modal__optional">(선택)</span>
+            </label>
+            <input
+              id="signup-contact-email"
+              className="modal__input"
+              type="email"
+              value={form.contactEmail}
+              onChange={set('contactEmail')}
+              placeholder="연락용 이메일"
+              autoComplete="email"
+            />
+            {errors.contactEmail && <span className="modal__error">{errors.contactEmail}</span>}
+          </div>
+
+          <div className="modal__field">
+            <label className="modal__label" htmlFor="signup-phone">
+              휴대폰 번호 <span className="modal__optional">(선택)</span>
+            </label>
+            <input
+              id="signup-phone"
+              className="modal__input"
+              type="tel"
+              value={form.phone}
+              onChange={set('phone')}
+              placeholder="01012345678"
+              autoComplete="tel"
+            />
+            {errors.phone && <span className="modal__error">{errors.phone}</span>}
           </div>
 
           <div className="modal__divider" />
@@ -230,10 +273,6 @@ export default function SignupModal({ onClose, onSwitchToLogin }: SignupModalPro
             이미 계정이 있으신가요? 로그인
           </button>
         </form>
-
-        <button className="modal__close" onClick={onClose} aria-label="닫기">
-          ✕
-        </button>
       </div>
     </div>
   )

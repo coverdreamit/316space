@@ -26,7 +26,10 @@ public class Member extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "member_seq")
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 100)
+    @Column(nullable = false, unique = true, length = 30)
+    private String loginId;
+
+    @Column(length = 100)
     private String email;
 
     @Column(nullable = false, length = 255)
@@ -35,7 +38,7 @@ public class Member extends BaseEntity {
     @Column(nullable = false, length = 50)
     private String name;
 
-    @Column(nullable = false, length = 20)
+    @Column(length = 20)
     private String phone;
 
     @Enumerated(EnumType.STRING)
@@ -47,7 +50,8 @@ public class Member extends BaseEntity {
     private MemberStatus status;
 
     @Builder
-    private Member(String email, String passwordHash, String name, String phone) {
+    private Member(String loginId, String email, String passwordHash, String name, String phone) {
+        this.loginId = loginId;
         this.email = email;
         this.passwordHash = passwordHash;
         this.name = name;
@@ -64,8 +68,13 @@ public class Member extends BaseEntity {
         this.status = status;
     }
 
-    public void updateProfile(String name, String phone) {
+    public void updateProfile(String name, String email, String phone) {
         this.name = name;
+        this.email = email;
         this.phone = phone;
+    }
+
+    public void updatePasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 }

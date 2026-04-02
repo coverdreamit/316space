@@ -8,15 +8,14 @@ interface LoginModalProps {
 
 export default function LoginModal({ onClose, onSwitchToSignup }: LoginModalProps) {
   const { login } = useAuth()
-  const [email, setEmail] = useState('')
+  const [loginId, setLoginId] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
-  const overlayRef = useRef<HTMLDivElement>(null)
-  const emailRef = useRef<HTMLInputElement>(null)
+  const loginIdRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    emailRef.current?.focus()
+    loginIdRef.current?.focus()
 
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
@@ -25,16 +24,12 @@ export default function LoginModal({ onClose, onSwitchToSignup }: LoginModalProp
     return () => document.removeEventListener('keydown', onKeyDown)
   }, [onClose])
 
-  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === overlayRef.current) onClose()
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
     setLoading(true)
     try {
-      await login(email, password)
+      await login(loginId, password)
       onClose()
     } catch (err) {
       setError(err instanceof Error ? err.message : '로그인에 실패했습니다.')
@@ -46,8 +41,6 @@ export default function LoginModal({ onClose, onSwitchToSignup }: LoginModalProp
   return (
     <div
       className="modal-overlay"
-      ref={overlayRef}
-      onClick={handleOverlayClick}
       role="dialog"
       aria-modal="true"
       aria-label="로그인"
@@ -61,18 +54,18 @@ export default function LoginModal({ onClose, onSwitchToSignup }: LoginModalProp
         <form className="modal__form" onSubmit={handleSubmit}>
           {error && <p className="modal__error modal__error--banner">{error}</p>}
           <div className="modal__field">
-            <label className="modal__label" htmlFor="login-email">
-              Email
+            <label className="modal__label" htmlFor="login-id">
+              아이디
             </label>
             <input
-              id="login-email"
-              ref={emailRef}
+              id="login-id"
+              ref={loginIdRef}
               className="modal__input"
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              placeholder="example@email.com"
-              autoComplete="email"
+              type="text"
+              value={loginId}
+              onChange={e => setLoginId(e.target.value)}
+              placeholder="아이디"
+              autoComplete="username"
               required
             />
           </div>
@@ -102,7 +95,7 @@ export default function LoginModal({ onClose, onSwitchToSignup }: LoginModalProp
           </button>
         </form>
 
-        <button className="modal__close" onClick={onClose} aria-label="닫기">
+        <button type="button" className="modal__close" onClick={onClose} aria-label="닫기">
           ✕
         </button>
       </div>

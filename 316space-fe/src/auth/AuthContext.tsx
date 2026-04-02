@@ -14,22 +14,23 @@ import type { StoredAuth, TokenResponse } from './types'
 interface AuthContextValue {
   accessToken: string | null
   role: string | null
-  email: string | null
+  loginId: string | null
   isAuthenticated: boolean
-  login: (email: string, password: string) => Promise<void>
+  login: (loginId: string, password: string) => Promise<void>
   register: (payload: {
-    email: string
+    loginId: string
     password: string
     name: string
-    phone: string
+    email?: string | null
+    phone?: string | null
   }) => Promise<void>
   logout: () => void
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
 
-function toStoredAuth(data: TokenResponse, email: string): StoredAuth {
-  return { accessToken: data.accessToken, role: data.role, email }
+function toStoredAuth(data: TokenResponse, loginId: string): StoredAuth {
+  return { accessToken: data.accessToken, role: data.role, loginId }
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -39,36 +40,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setAccessTokenGetter(() => auth?.accessToken ?? null)
   }, [auth?.accessToken])
 
-  const login = useCallback(async (email: string, password: string) => {
+  const login = useCallback(async (loginId: string, password: string) => {
     const res = await fetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ loginId: loginId.trim(), password }),
     })
     if (!res.ok) throw new Error(await readErrorMessage(res))
     const data = (await res.json()) as TokenResponse
-    const next = toStoredAuth(data, email.trim())
+    const next = toStoredAuth(data, loginId.trim())
     saveStoredAuth(next)
     setAuth(next)
   }, [])
 
   const register = useCallback(
-    async (payload: { email: string; password: string; name: string; phone: string }) => {
+    async (payload: {
+      loginId: string
+      password: string
+      name: string
+      email?: string | null
+      phone?: string | null
+    }) => {
+      const body: Record<string, unknown> = {
+        loginId: payload.loginId.trim(),
+        password: payload.password,
+        name: payload.name.trim(),
+      }
+      const email = payload.email?.trim()
+      if (email) body.email = email
+      const phone = payload.phone?.trim()
+      if (phone) body.phone = phone
+
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: payload.email.trim(),
-          password: payload.password,
-          name: payload.name.trim(),
-          phone: payload.phone,
-        }),
+        body: JSON.stringify(body),
       })
       if (!res.ok) throw new Error(await readErrorMessage(res))
-      const data = (await res.json()) as TokenResponse
-      const next = toStoredAuth(data, payload.email.trim())
-      saveStoredAuth(next)
-      setAuth(next)
     },
     [],
   )
@@ -82,7 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     () => ({
       accessToken: auth?.accessToken ?? null,
       role: auth?.role ?? null,
-      email: auth?.email ?? null,
+      loginId: auth?.loginId ?? null,
       isAuthenticated: Boolean(auth?.accessToken),
       login,
       register,

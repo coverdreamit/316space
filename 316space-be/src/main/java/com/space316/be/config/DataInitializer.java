@@ -19,7 +19,10 @@ public class DataInitializer implements ApplicationRunner {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @Value("${admin.email}")
+    @Value("${admin.login-id}")
+    private String adminLoginId;
+
+    @Value("${admin.email:}")
     private String adminEmail;
 
     @Value("${admin.password}")
@@ -28,26 +31,30 @@ public class DataInitializer implements ApplicationRunner {
     @Value("${admin.name}")
     private String adminName;
 
-    @Value("${admin.phone}")
+    @Value("${admin.phone:}")
     private String adminPhone;
 
     @Override
     @Transactional
     public void run(ApplicationArguments args) {
-        if (memberRepository.existsByEmail(adminEmail)) {
-            log.info("어드민 계정이 이미 존재합니다: {}", adminEmail);
+        if (memberRepository.existsByLoginId(adminLoginId)) {
+            log.info("어드민 계정이 이미 존재합니다: {}", adminLoginId);
             return;
         }
 
+        String email = adminEmail != null && !adminEmail.isBlank() ? adminEmail.trim() : null;
+        String phone = adminPhone != null && !adminPhone.isBlank() ? adminPhone.trim() : null;
+
         Member admin = Member.builder()
-                .email(adminEmail)
+                .loginId(adminLoginId.trim())
+                .email(email)
                 .passwordHash(passwordEncoder.encode(adminPassword))
                 .name(adminName)
-                .phone(adminPhone)
+                .phone(phone)
                 .build();
         admin.promoteToAdmin();
         memberRepository.save(admin);
 
-        log.info("어드민 계정 생성 완료: {}", adminEmail);
+        log.info("어드민 계정 생성 완료: {}", adminLoginId);
     }
 }

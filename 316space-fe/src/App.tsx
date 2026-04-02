@@ -8,6 +8,7 @@ import FloorplanPage from './pages/FloorplanPage'
 import HomePage from './pages/HomePage'
 import SpecialOffersPage from './pages/SpecialOffersPage'
 import StudioPage from './pages/StudioPage'
+import AdminPage from './pages/AdminPage'
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
         <Route path="special-offers" element={<SpecialOffersPage />} />
         <Route path="booking" element={<BookingPage />} />
         <Route path="contact" element={<ContactPage />} />
+        <Route path="admin" element={<AdminPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>

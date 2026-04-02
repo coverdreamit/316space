@@ -3,15 +3,23 @@ import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 import { navItems } from '../nav'
 import LoginModal from './LoginModal'
+import ProfileModal from './ProfileModal'
+import ProfileReauthModal from './ProfileReauthModal'
 import SignupModal from './SignupModal'
 
-type ModalState = 'none' | 'login' | 'signup'
+type ModalState = 'none' | 'login' | 'signup' | 'profile-reauth' | 'profile'
 
 export default function SiteLayout() {
   const { pathname } = useLocation()
-  const { isAuthenticated, email, logout } = useAuth()
+  const { isAuthenticated, loginId, logout } = useAuth()
   const contentRef = useRef<HTMLDivElement>(null)
   const [modal, setModal] = useState<ModalState>('none')
+  const [profileAccessToken, setProfileAccessToken] = useState<string | null>(null)
+
+  const closeProfileFlow = () => {
+    setProfileAccessToken(null)
+    setModal('none')
+  }
 
   useEffect(() => {
     contentRef.current?.scrollTo(0, 0)
@@ -42,9 +50,14 @@ export default function SiteLayout() {
         </nav>
         {isAuthenticated ? (
           <div className="header-account">
-            <span className="header-account-email" title={email ?? undefined}>
-              {email}
-            </span>
+            <button
+              type="button"
+              className="header-account-email"
+              title={loginId ?? undefined}
+              onClick={() => setModal('profile-reauth')}
+            >
+              {loginId}
+            </button>
             <button
               type="button"
               className="header-admin-link"
@@ -77,6 +90,18 @@ export default function SiteLayout() {
           onClose={() => setModal('none')}
           onSwitchToLogin={() => setModal('login')}
         />
+      )}
+      {modal === 'profile-reauth' && (
+        <ProfileReauthModal
+          onClose={() => setModal('none')}
+          onVerified={token => {
+            setProfileAccessToken(token)
+            setModal('profile')
+          }}
+        />
+      )}
+      {modal === 'profile' && profileAccessToken && (
+        <ProfileModal profileAccessToken={profileAccessToken} onClose={closeProfileFlow} />
       )}
 
       <div className="page-content" ref={contentRef}>
