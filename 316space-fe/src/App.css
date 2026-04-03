@@ -967,3 +967,209 @@ button.header-account-email:focus-visible {
   opacity: 0.55;
   margin-left: 0.15rem;
 }
+
+/* —— Admin (탭 · 필드 · 목록 뼈대) —— */
+.admin-tabs {
+  margin-top: 0.5rem;
+}
+
+.admin-tablist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.5rem;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0;
+  margin-bottom: 1.25rem;
+}
+
+.admin-tab {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0.65rem 0.85rem;
+  margin-bottom: -1px;
+  cursor: pointer;
+  outline: none;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.admin-tab:hover {
+  color: var(--fg);
+}
+
+.admin-tab:focus-visible {
+  color: var(--fg);
+  border-bottom-color: var(--accent);
+}
+
+.admin-tab[aria-selected='true'] {
+  color: var(--fg);
+  border-bottom-color: var(--fg);
+}
+
+.admin-tabpanel {
+  outline: none;
+}
+
+.admin-tabpanel:focus-visible {
+  box-shadow: 0 0 0 2px var(--accent);
+  border-radius: 2px;
+}
+
+.admin-module {
+  margin-top: 0;
+}
+
+.admin-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1.25rem 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.admin-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: min(100%, 11rem);
+}
+
+.admin-label {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+
+.admin-input,
+.admin-select {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  color: var(--fg);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--line-strong);
+  padding: 0.45rem 0;
+  outline: none;
+  transition: border-color 0.2s ease;
+  min-width: 0;
+}
+
+.admin-input:focus,
+.admin-select:focus {
+  border-bottom-color: var(--accent);
+}
+
+.admin-select {
+  cursor: pointer;
+  padding-right: 1.25rem;
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--fg-muted) 50%),
+    linear-gradient(135deg, var(--fg-muted) 50%, transparent 50%);
+  background-position: calc(100% - 0.65rem) 55%, calc(100% - 0.4rem) 55%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+
+.admin-table-scroll {
+  overflow-x: auto;
+  margin: 0 -0.25rem;
+  padding: 0 0.25rem;
+}
+
+.admin-table {
+  width: 100%;
+  min-width: 48rem;
+  border-collapse: collapse;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 0.65rem 0.75rem;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--line);
+}
+
+.admin-table th {
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--fg-muted);
+  white-space: nowrap;
+}
+
+.admin-table__empty {
+  text-align: center;
+  color: var(--fg-muted);
+  font-style: italic;
+  padding: 2rem 1rem !important;
+}
+
+.admin-field--grow {
+  flex: 1 1 14rem;
+  min-width: min(100%, 14rem);
+}
+
+.admin-btn-table {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.5rem 0.85rem;
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  color: var(--fg);
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+  align-self: flex-end;
+}
+
+.admin-btn-table:hover:not(:disabled) {
+  border-color: var(--fg);
+}
+
+.admin-btn-table:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.admin-banner {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  color: var(--fg-muted);
+  margin: 0 0 0.75rem;
+}
+
+.admin-banner--error {
+  color: #c0392b;
+}
+
+.admin-modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem 1.25rem;
+  margin-top: 1rem;
+}
+
+.admin-modal-actions .modal__submit {
+  margin-top: 0;
+}
+
+.admin-select--modal {
+  width: 100%;
+}
