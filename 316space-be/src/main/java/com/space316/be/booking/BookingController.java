@@ -1,15 +1,22 @@
 package com.space316.be.booking;
 
+import com.space316.be.booking.dto.AdminBookingCreateRequest;
+import com.space316.be.booking.dto.AvailabilityResponse;
 import com.space316.be.booking.dto.BookingResponse;
 import com.space316.be.booking.dto.CancelRequest;
 import com.space316.be.booking.dto.GuestBookingRequest;
 import com.space316.be.booking.dto.MemberBookingRequest;
+import com.space316.be.domain.booking.BookingStatus;
 import jakarta.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -28,6 +35,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class BookingController {
 
     private final BookingService bookingService;
+    private final BookingAvailabilityService bookingAvailabilityService;
+
+    /** 홀·기간별 예약·블록 점유 (캘린더용, 비인증) */
+    @GetMapping("/api/bookings/availability")
+    public ResponseEntity<AvailabilityResponse> availability(
+            @RequestParam String hallId,
+            @RequestParam LocalDateTime from,
+            @RequestParam LocalDateTime to) {
+        return ResponseEntity.ok(bookingAvailabilityService.getAvailability(hallId, from, to));
+    }
 
     // ── 회원 예약 ─────────────────────────────────────────────
 
@@ -79,12 +96,23 @@ public class BookingController {
 
     // ── 관리자 전용 ───────────────────────────────────────────
 
-    /** 전체 예약 목록 (페이징) */
+    /** 예약 목록 (필터·페이징) */
     @GetMapping("/api/admin/bookings")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<BookingResponse>> getAllBookings(
-            @PageableDefault(size = 20, sort = "createdAt") Pageable pageable) {
-        return ResponseEntity.ok(bookingService.getAllBookings(pageable));
+    public ResponseEntity<Page<BookingResponse>> adminSearchBookings(
+            @RequestParam(required = false) String hallId,
+            @RequestParam(required = false) BookingStatus status,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
+            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        return ResponseEntity.ok(bookingService.searchAdminBookings(hallId, status, from, to, pageable));
+    }
+
+    /** 관리자 대리 예약 등록 */
+    @PostMapping("/api/admin/bookings")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<BookingResponse> adminCreateBooking(@Valid @RequestBody AdminBookingCreateRequest req) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(bookingService.adminCreateBooking(req));
     }
 
     /** 예약 확정 */

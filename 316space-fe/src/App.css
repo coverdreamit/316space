@@ -52,7 +52,9 @@ button.header-account-email {
   padding: 0.15rem 0;
   cursor: pointer;
   text-align: left;
-  transition: color 0.2s ease, opacity 0.2s ease;
+  transition:
+    color 0.2s ease,
+    opacity 0.2s ease;
 }
 
 button.header-account-email:hover,
@@ -79,7 +81,10 @@ button.header-account-email:focus-visible {
   opacity: 0.55;
   padding: 0.2rem 0;
   border-bottom: 1px solid transparent;
-  transition: color 0.2s ease, opacity 0.2s ease, border-color 0.2s ease;
+  transition:
+    color 0.2s ease,
+    opacity 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .header-admin-link:hover,
@@ -169,7 +174,9 @@ button.header-account-email:focus-visible {
   white-space: nowrap;
   padding: 0.35rem 0;
   border-bottom: 1px solid transparent;
-  transition: color 0.2s ease, border-color 0.2s ease;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .site-nav-link:hover,
@@ -202,7 +209,8 @@ button.header-account-email:focus-visible {
   width: 100%;
   max-width: min(72rem, 100%);
   margin: 0 auto;
-  padding: clamp(2rem, 5vw, 3.5rem) clamp(1.25rem, 5vw, 3.5rem) clamp(3rem, 8vw, 4.5rem);
+  padding: clamp(2rem, 5vw, 3.5rem) clamp(1.25rem, 5vw, 3.5rem)
+    clamp(3rem, 8vw, 4.5rem);
   box-sizing: border-box;
 }
 
@@ -322,7 +330,8 @@ button.header-account-email:focus-visible {
   letter-spacing: 0.02em;
   text-align: center;
   margin: 0;
-  padding: clamp(1.1rem, 3vw, 1.45rem) clamp(1rem, 3vw, 1.5rem) clamp(1.2rem, 3vw, 1.55rem);
+  padding: clamp(1.1rem, 3vw, 1.45rem) clamp(1rem, 3vw, 1.5rem)
+    clamp(1.2rem, 3vw, 1.55rem);
   color: var(--fg);
 }
 
@@ -552,7 +561,9 @@ button.header-account-email:focus-visible {
   background: var(--fg);
   padding: 0.85rem 1.75rem;
   border: 1px solid var(--fg);
-  transition: background 0.2s ease, color 0.2s ease;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
 }
 
 .contact-cta:hover {
@@ -565,10 +576,22 @@ button.header-account-email:focus-visible {
   inset: 0;
   background-color: var(--bg-deep);
   background-image:
-    linear-gradient(165deg, rgba(246, 244, 240, 0.78) 0%, rgba(235, 230, 222, 0.85) 100%),
-    radial-gradient(ellipse 80% 60% at 70% 20%, rgba(201, 162, 107, 0.16), transparent 55%),
-    radial-gradient(ellipse 60% 50% at 15% 80%, rgba(90, 110, 130, 0.14), transparent 50%),
-    url('/studio-hero-bg.png');
+    linear-gradient(
+      165deg,
+      rgba(246, 244, 240, 0.78) 0%,
+      rgba(235, 230, 222, 0.85) 100%
+    ),
+    radial-gradient(
+      ellipse 80% 60% at 70% 20%,
+      rgba(201, 162, 107, 0.16),
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 60% 50% at 15% 80%,
+      rgba(90, 110, 130, 0.14),
+      transparent 50%
+    ),
+    url("/studio-hero-bg.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -576,7 +599,7 @@ button.header-account-email:focus-visible {
 }
 
 .hero-visual::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
@@ -642,7 +665,10 @@ button.header-account-email:focus-visible {
   background: var(--fg);
   padding: 1rem 2.25rem;
   border: 1px solid var(--fg);
-  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .cta:hover {
@@ -698,8 +724,12 @@ button.header-account-email:focus-visible {
 }
 
 @keyframes overlay-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .modal {
@@ -713,8 +743,14 @@ button.header-account-email:focus-visible {
 }
 
 @keyframes modal-in {
-  from { opacity: 0; transform: translateY(12px) scale(0.98); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .modal__header {
@@ -831,7 +867,9 @@ button.header-account-email:focus-visible {
   border: 1px solid var(--fg);
   padding: 0.9rem 1.75rem;
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
 }
 
 .modal__submit:hover {
@@ -861,7 +899,9 @@ button.header-account-email:focus-visible {
   padding: 0.2rem 0;
   cursor: pointer;
   align-self: center;
-  transition: color 0.2s ease, border-color 0.2s ease;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .modal__signup:hover {
@@ -996,7 +1036,9 @@ button.header-account-email:focus-visible {
   margin-bottom: -1px;
   cursor: pointer;
   outline: none;
-  transition: color 0.2s ease, border-color 0.2s ease;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .admin-tab:hover {
@@ -1008,7 +1050,7 @@ button.header-account-email:focus-visible {
   border-bottom-color: var(--accent);
 }
 
-.admin-tab[aria-selected='true'] {
+.admin-tab[aria-selected="true"] {
   color: var(--fg);
   border-bottom-color: var(--fg);
 }
@@ -1024,6 +1066,18 @@ button.header-account-email:focus-visible {
 
 .admin-module {
   margin-top: 0;
+}
+
+.admin-tabpanel .admin-module + .admin-module {
+  margin-top: 2.25rem;
+}
+
+.admin-panel-section-title {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 1rem;
+  color: var(--fg);
 }
 
 .admin-toolbar {
@@ -1073,10 +1127,15 @@ button.header-account-email:focus-visible {
   cursor: pointer;
   padding-right: 1.25rem;
   appearance: none;
-  background-image: linear-gradient(45deg, transparent 50%, var(--fg-muted) 50%),
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--fg-muted) 50%),
     linear-gradient(135deg, var(--fg-muted) 50%, transparent 50%);
-  background-position: calc(100% - 0.65rem) 55%, calc(100% - 0.4rem) 55%;
-  background-size: 5px 5px, 5px 5px;
+  background-position:
+    calc(100% - 0.65rem) 55%,
+    calc(100% - 0.4rem) 55%;
+  background-size:
+    5px 5px,
+    5px 5px;
   background-repeat: no-repeat;
 }
 
@@ -1133,7 +1192,9 @@ button.header-account-email:focus-visible {
   background: transparent;
   color: var(--fg);
   cursor: pointer;
-  transition: border-color 0.2s ease, color 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease;
   align-self: flex-end;
 }
 
@@ -1172,4 +1233,553 @@ button.header-account-email:focus-visible {
 
 .admin-select--modal {
   width: 100%;
+}
+
+/* ── 예약 페이지 ─────────────────────────────────────────── */
+.booking-panel {
+  max-width: min(52rem, 100%);
+  margin-top: 1.5rem;
+}
+
+.booking-toolbar {
+  margin-bottom: 1.25rem;
+}
+
+.booking-field--hall {
+  max-width: 22rem;
+}
+
+.booking-cal-wrap {
+  display: grid;
+  grid-template-columns: minmax(0, 20rem) minmax(0, 1fr);
+  gap: clamp(1.25rem, 3vw, 2rem);
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .booking-cal-wrap {
+    grid-template-columns: 1fr;
+  }
+}
+
+.booking-cal {
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 0.75rem 0.65rem 0.65rem;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.booking-cal__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.65rem;
+}
+
+.booking-cal__title {
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.booking-cal__nav {
+  font-family: var(--font-sans);
+  font-size: 1.15rem;
+  line-height: 1;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--bg);
+  color: var(--fg);
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.booking-cal__nav:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.booking-cal__weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  margin-bottom: 0.35rem;
+}
+
+.booking-cal__weekday {
+  font-family: var(--font-sans);
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--fg);
+  opacity: 0.45;
+  padding: 0.2rem 0;
+}
+
+.booking-cal__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.booking-cal__grid--loading {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.booking-cal__cell--empty {
+  min-height: 2.35rem;
+}
+
+.booking-cal__day {
+  position: relative;
+  min-height: 2.35rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0.35rem 0.15rem 0.25rem;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  background: transparent;
+  color: var(--fg);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.booking-cal__day-num {
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.booking-cal__day:hover:not(:disabled):not(.booking-cal__day--selected) {
+  border-color: var(--line);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.booking-cal__day--past {
+  opacity: 0.28;
+  cursor: not-allowed;
+}
+
+.booking-cal__day--selected {
+  border-color: var(--accent);
+  background: rgba(255, 255, 255, 0.06);
+  font-weight: 600;
+}
+
+.booking-cal__day:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.booking-cal__dot {
+  display: block;
+  width: 5px;
+  height: 5px;
+  margin-top: 3px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.85;
+}
+
+.booking-cal__legend {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  color: var(--fg);
+  opacity: 0.5;
+  margin: 0.65rem 0 0;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.booking-cal--wide {
+  max-width: 100%;
+}
+
+.booking-cal__grid--large .booking-cal__day--monthcell {
+  min-height: 3.75rem;
+  align-items: stretch;
+  justify-content: flex-start;
+  padding: 0.4rem 0.25rem 0.35rem;
+}
+
+.booking-cal__halls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  justify-content: center;
+  margin-top: 0.35rem;
+  width: 100%;
+}
+
+.booking-cal__hall-mark {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.booking-cal__hall-mark--free {
+  background: rgba(46, 160, 67, 0.55);
+  border-color: rgba(46, 160, 67, 0.85);
+}
+
+.booking-cal__hall-mark--busy {
+  background: rgba(230, 126, 34, 0.55);
+  border-color: rgba(230, 126, 34, 0.9);
+}
+
+.booking-cal__hall-mark--past {
+  background: rgba(120, 120, 120, 0.25);
+  border-color: rgba(120, 120, 120, 0.4);
+}
+
+.booking-cal__sublegend {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  color: var(--fg);
+  opacity: 0.48;
+  margin: 0.75rem 0 0;
+  line-height: 1.4;
+}
+
+.booking-legend {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  color: var(--fg);
+  opacity: 0.75;
+  margin: 0 0 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem 1.25rem;
+  align-items: center;
+}
+
+.booking-legend--day {
+  margin-top: 0.25rem;
+}
+
+.booking-legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.booking-slot-legend {
+  display: inline-block;
+  width: 1.1rem;
+  height: 0.65rem;
+  border-radius: 2px;
+  border: 1px solid var(--line);
+}
+
+.booking-slot-legend--free {
+  background: rgba(46, 160, 67, 0.45);
+  border-color: rgba(46, 160, 67, 0.75);
+}
+
+.booking-slot-legend--busy {
+  background: rgba(230, 126, 34, 0.45);
+  border-color: rgba(230, 126, 34, 0.8);
+}
+
+.booking-slot-legend--past {
+  background: rgba(192, 57, 43, 0.42);
+  border-color: rgba(192, 57, 43, 0.85);
+}
+
+.booking-slot-legend--picked {
+  background: rgba(46, 160, 67, 0.25);
+  border: 2px solid rgba(46, 160, 67, 0.95);
+}
+
+.booking-day-view {
+  margin-top: 0.5rem;
+}
+
+.booking-day-view__top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.75rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.booking-back {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--bg);
+  color: var(--fg);
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.booking-back:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.booking-day-view__title {
+  font-family: var(--font-sans);
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+.booking-field--day {
+  max-width: 22rem;
+  margin-bottom: 0.75rem;
+}
+
+.booking-slot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+  gap: 0.45rem;
+  margin: 0.75rem 0 1.25rem;
+}
+
+.booking-slot {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  text-align: left;
+  padding: 0.55rem 0.6rem;
+  border-radius: 3px;
+  border: 1px solid var(--line);
+  cursor: pointer;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+.booking-slot__time {
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.booking-slot--free {
+  background: rgba(46, 160, 67, 0.22);
+  border-color: rgba(46, 160, 67, 0.55);
+  color: var(--fg);
+}
+
+.booking-slot--free:hover:not(:disabled) {
+  box-shadow: 0 0 0 1px rgba(46, 160, 67, 0.5);
+}
+
+.booking-slot--busy {
+  background: rgba(230, 126, 34, 0.28);
+  border-color: rgba(230, 126, 34, 0.55);
+  color: var(--fg);
+  opacity: 0.85;
+  cursor: not-allowed;
+}
+
+.booking-slot--past {
+  background: rgba(192, 57, 43, 0.22);
+  border-color: rgba(192, 57, 43, 0.55);
+  color: var(--fg);
+  opacity: 0.92;
+  cursor: not-allowed;
+}
+
+.booking-slot--picked {
+  box-shadow: 0 0 0 2px rgba(46, 160, 67, 0.95);
+  font-weight: 600;
+}
+
+.booking-slot--picked-past {
+  box-shadow: 0 0 0 2px rgba(192, 57, 43, 0.9);
+  font-weight: 600;
+}
+
+.booking-selection-summary {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  margin: 0 0 1rem;
+  color: var(--fg);
+  opacity: 0.9;
+}
+
+.booking-selection-summary__hint {
+  font-weight: 400;
+  opacity: 0.65;
+  font-size: 0.8125rem;
+}
+
+.booking-busy--compact {
+  margin: 0 0 1.25rem;
+  padding: 0.75rem 0.85rem;
+}
+
+.booking-busy--compact .booking-busy__title {
+  font-size: 0.8125rem;
+  margin-bottom: 0.35rem;
+}
+
+.booking-side {
+  min-width: 0;
+}
+
+.booking-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  gap: 1rem 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.booking-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.booking-field--full {
+  grid-column: 1 / -1;
+  margin-bottom: 0.75rem;
+}
+
+.booking-label {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg);
+  opacity: 0.55;
+}
+
+.booking-input,
+.booking-textarea {
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.booking-input:focus,
+.booking-textarea:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.booking-textarea {
+  resize: vertical;
+  min-height: 4rem;
+}
+
+.booking-form {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+}
+
+.booking-hint {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  color: var(--fg);
+  opacity: 0.65;
+  margin: 0 0 0.75rem;
+}
+
+.booking-hint--warn {
+  opacity: 0.85;
+  color: #a67c00;
+}
+
+.booking-banner {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  margin: 0 0 1rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 2px;
+  border: 1px solid var(--line);
+}
+
+.booking-banner--error {
+  color: #c0392b;
+  border-color: rgba(192, 57, 43, 0.35);
+}
+
+.booking-banner--ok {
+  color: var(--fg);
+  border-color: var(--accent);
+  opacity: 0.95;
+}
+
+.booking-busy {
+  margin: 1rem 0;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.booking-busy__title {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+  letter-spacing: 0.02em;
+}
+
+.booking-busy__list {
+  margin: 0;
+  padding-left: 1.15rem;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  line-height: 1.45;
+  opacity: 0.9;
+}
+
+.booking-submit {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.65rem 1.25rem;
+  margin-top: 0.5rem;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: var(--bg);
+  cursor: pointer;
+  border-radius: 2px;
+  transition:
+    opacity 0.2s ease,
+    transform 0.15s ease;
+}
+
+.booking-submit:hover:not(:disabled) {
+  opacity: 0.92;
+}
+
+.booking-submit:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }

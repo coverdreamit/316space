@@ -1,5 +1,7 @@
 package com.space316.be.config;
 
+import com.space316.be.domain.hall.Hall;
+import com.space316.be.domain.hall.HallRepository;
 import com.space316.be.domain.member.Member;
 import com.space316.be.domain.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DataInitializer implements ApplicationRunner {
 
     private final MemberRepository memberRepository;
+    private final HallRepository hallRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Value("${admin.login-id}")
@@ -37,24 +40,36 @@ public class DataInitializer implements ApplicationRunner {
     @Override
     @Transactional
     public void run(ApplicationArguments args) {
-        if (memberRepository.existsByLoginId(adminLoginId)) {
+        if (!memberRepository.existsByLoginId(adminLoginId)) {
+            String email = adminEmail != null && !adminEmail.isBlank() ? adminEmail.trim() : null;
+            String phone = adminPhone != null && !adminPhone.isBlank() ? adminPhone.trim() : null;
+
+            Member admin = Member.builder()
+                    .loginId(adminLoginId.trim())
+                    .email(email)
+                    .passwordHash(passwordEncoder.encode(adminPassword))
+                    .name(adminName)
+                    .phone(phone)
+                    .build();
+            admin.promoteToAdmin();
+            memberRepository.save(admin);
+            log.info("어드민 계정 생성 완료: {}", adminLoginId);
+        } else {
             log.info("어드민 계정이 이미 존재합니다: {}", adminLoginId);
-            return;
         }
 
-        String email = adminEmail != null && !adminEmail.isBlank() ? adminEmail.trim() : null;
-        String phone = adminPhone != null && !adminPhone.isBlank() ? adminPhone.trim() : null;
+        seedHallsIfEmpty();
+    }
 
-        Member admin = Member.builder()
-                .loginId(adminLoginId.trim())
-                .email(email)
-                .passwordHash(passwordEncoder.encode(adminPassword))
-                .name(adminName)
-                .phone(phone)
-                .build();
-        admin.promoteToAdmin();
-        memberRepository.save(admin);
-
-        log.info("어드민 계정 생성 완료: {}", adminLoginId);
+    private void seedHallsIfEmpty() {
+        if (hallRepository.count() > 0) {
+            return;
+        }
+        hallRepository.save(Hall.builder().hallId("s-1").name("S-1 HALL").sortOrder(0).active(true).build());
+        hallRepository.save(Hall.builder().hallId("s-2").name("S-2 HALL").sortOrder(1).active(true).build());
+        hallRepository.save(Hall.builder().hallId("s-3").name("S-3 HALL").sortOrder(2).active(true).build());
+        hallRepository.save(Hall.builder().hallId("s-4").name("S-4 HALL").sortOrder(3).active(true).build());
+        hallRepository.save(Hall.builder().hallId("s-5").name("S-5 HALL").sortOrder(4).active(true).build());
+        log.info("기본 홀(S-1 ~ S-5) 시드 완료");
     }
 }

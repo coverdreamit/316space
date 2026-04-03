@@ -11,9 +11,18 @@ async function readErrorMessage(res: Response): Promise<string> {
     const msg =
       (typeof j.message === 'string' && j.message) ||
       (typeof j.detail === 'string' && j.detail) ||
-      (typeof j.error === 'string' && j.error)
-    return msg || text || res.statusText
+      (typeof j.title === 'string' && j.title)
+    if (msg) return msg
+    // Spring 기본 에러 JSON 등에서 message가 비어 있고 error만 있는 경우(예: Forbidden)
+    if (typeof j.error === 'string' && j.error && res.status === 403) {
+      return '로그인이 만료되었거나 권한이 없습니다. 다시 로그인한 뒤 시도해 주세요.'
+    }
+    if (typeof j.error === 'string' && j.error) return j.error
+    return text || res.statusText
   } catch {
+    if (res.status === 403) {
+      return '로그인이 만료되었거나 권한이 없습니다. 다시 로그인한 뒤 시도해 주세요.'
+    }
     return text || res.statusText
   }
 }

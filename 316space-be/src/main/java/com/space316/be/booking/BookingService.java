@@ -1,12 +1,15 @@
 package com.space316.be.booking;
 
+import com.space316.be.booking.dto.AdminBookingCreateRequest;
 import com.space316.be.booking.dto.BookingResponse;
 import com.space316.be.booking.dto.CancelRequest;
 import com.space316.be.booking.dto.GuestBookingRequest;
 import com.space316.be.booking.dto.MemberBookingRequest;
 import com.space316.be.domain.booking.Booking;
 import com.space316.be.domain.booking.BookingRepository;
+import com.space316.be.domain.booking.BookingSpecifications;
 import com.space316.be.domain.booking.BookingStatus;
+import com.space316.be.domain.hall.ScheduleBlockRepository;
 import com.space316.be.domain.member.Member;
 import com.space316.be.domain.member.MemberRepository;
 import com.space316.be.domain.sms.SmsVerificationRepository;
@@ -18,6 +21,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class BookingService {
 
     private final BookingRepository bookingRepository;
+    private final ScheduleBlockRepository scheduleBlockRepository;
     private final MemberRepository memberRepository;
     private final SmsVerificationRepository smsVerificationRepository;
 
@@ -37,7 +42,8 @@ public class BookingService {
 
         String memberPhone = member.getPhone();
         if (memberPhone == null || memberPhone.isBlank()) {
-            throw new IllegalStateException("회원 예약은 프로필에 휴대폰 번호가 필요합니다. 마이페이지 등에서 번호를 등록해 주세요.");
+            throw new IllegalStateException(
+                    "예약하려면 마이페이지에서 휴대폰 번호를 먼저 등록해 주세요. 등록 후 다시 시도하면 됩니다.");
         }
 
         validateTime(req.startAt(), req.endAt());
@@ -140,9 +146,32 @@ public class BookingService {
     // ── 관리자 전용 ──────────────────────────────────────────
 
     @Transactional(readOnly = true)
-    public Page<BookingResponse> getAllBookings(Pageable pageable) {
-        return bookingRepository.findAllByOrderByCreatedAtDesc(pageable)
-                .map(BookingResponse::from);
+    public Page<BookingResponse> searchAdminBookings(
+            String hallId, BookingStatus status, LocalDateTime from, LocalDateTime to, Pageable pageable) {
+        Specification<Booking> spec =
+                BookingSpecifications.forAdminSearch(blankToNull(hallId), status, from, to);
+        return bookingRepository.findAll(spec, pageable).map(BookingResponse::from);
+    }
+
+    @Transactional
+    public BookingResponse adminCreateBooking(AdminBookingCreateRequest req) {
+        validateTime(req.startAt(), req.endAt());
+        validateNoOverlap(req.hallId().trim(), req.startAt(), req.endAt());
+
+        Booking booking = Booking.builder()
+                .bookingNo(generateBookingNo())
+                .member(null)
+                .guestName(req.guestName().trim())
+                .guestPhone(req.guestPhone().trim())
+                .hallId(req.hallId().trim())
+                .startAt(req.startAt())
+                .endAt(req.endAt())
+                .headcount(req.headcount())
+                .purpose(req.purpose())
+                .note(req.note())
+                .build();
+
+        return BookingResponse.from(bookingRepository.save(booking));
     }
 
     @Transactional
@@ -176,11 +205,21 @@ public class BookingService {
         if (bookingRepository.existsOverlap(hallId, startAt, endAt)) {
             throw new IllegalStateException("해당 시간대에 이미 예약이 존재합니다.");
         }
+        if (scheduleBlockRepository.existsOverlap(hallId, startAt, endAt)) {
+            throw new IllegalStateException("해당 시간대는 정검·청소 등으로 예약할 수 없습니다.");
+        }
     }
 
     private String generateBookingNo() {
         String date = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);
         String suffix = UUID.randomUUID().toString().substring(0, 6).toUpperCase();
         return "BK-" + date + "-" + suffix;
+    }
+
+    private static String blankToNull(String s) {
+        if (s == null || s.isBlank()) {
+            return null;
+        }
+        return s.trim();
     }
 }

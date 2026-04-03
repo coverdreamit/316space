@@ -1,17 +1,20 @@
 import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
+import AdminBookingsPanel from '../components/admin/AdminBookingsPanel'
+import AdminScheduleBlocksPanel from '../components/admin/AdminScheduleBlocksPanel'
 import AdminUsersPanel from '../components/admin/AdminUsersPanel'
 
 const ADMIN_ROLE = 'ADMIN'
 
-type TabId = 'users' | 'bookings' | 'inquiries' | 'logs'
+type TabId = 'users' | 'bookings' | 'blocks' | 'inquiries' | 'logs'
 
-const TAB_ORDER: TabId[] = ['users', 'bookings', 'inquiries', 'logs']
+const TAB_ORDER: TabId[] = ['users', 'bookings', 'blocks', 'inquiries', 'logs']
 
 const TAB_LABELS: Record<TabId, string> = {
   users: '유저 관리',
   bookings: '예약 관리',
+  blocks: '스케줄 블록',
   inquiries: '문의 관리',
   logs: '로그',
 }
@@ -93,7 +96,7 @@ export default function AdminPage() {
     <main className="page-document">
       <header className="page-document__hero">
         <h1 className="page-document__title">관리자</h1>
-        <p className="page-document__lead">유저·예약·문의·로그를 한 곳에서 관리합니다.</p>
+        <p className="page-document__lead">유저·예약·스케줄 블록·문의·로그를 한 곳에서 관리합니다.</p>
       </header>
 
       <div className="admin-tabs">
@@ -125,63 +128,9 @@ export default function AdminPage() {
         >
           {activeTab === 'users' && <AdminUsersPanel />}
 
-          {activeTab === 'bookings' && (
-            <AdminDataSection
-              columns={[
-                '예약 ID',
-                '예약자',
-                '연락처',
-                '호실',
-                '시작일시',
-                '종료일시',
-                '상태',
-                '등록일시',
-              ]}
-              filters={
-                <>
-                  <div className="admin-field">
-                    <label className="admin-label" htmlFor="admin-booking-from">
-                      시작일
-                    </label>
-                    <input
-                      id="admin-booking-from"
-                      className="admin-input"
-                      type="date"
-                      name="bookingFrom"
-                    />
-                  </div>
-                  <div className="admin-field">
-                    <label className="admin-label" htmlFor="admin-booking-to">
-                      종료일
-                    </label>
-                    <input
-                      id="admin-booking-to"
-                      className="admin-input"
-                      type="date"
-                      name="bookingTo"
-                    />
-                  </div>
-                  <div className="admin-field">
-                    <label className="admin-label" htmlFor="admin-booking-status">
-                      상태
-                    </label>
-                    <select
-                      id="admin-booking-status"
-                      className="admin-select"
-                      name="bookingStatus"
-                      defaultValue=""
-                    >
-                      <option value="">전체</option>
-                      <option value="REQUESTED">요청</option>
-                      <option value="CONFIRMED">확정</option>
-                      <option value="CANCELLED">취소</option>
-                      <option value="COMPLETED">이용완료</option>
-                    </select>
-                  </div>
-                </>
-              }
-            />
-          )}
+          {activeTab === 'blocks' && <AdminScheduleBlocksPanel />}
+
+          {activeTab === 'bookings' && <AdminBookingsPanel />}
 
           {activeTab === 'inquiries' && (
             <AdminDataSection

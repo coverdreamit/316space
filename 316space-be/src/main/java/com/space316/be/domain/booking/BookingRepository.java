@@ -6,10 +6,11 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface BookingRepository extends JpaRepository<Booking, Long> {
+public interface BookingRepository extends JpaRepository<Booking, Long>, JpaSpecificationExecutor<Booking> {
 
     Optional<Booking> findByBookingNo(String bookingNo);
 
@@ -29,4 +30,17 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             @Param("hallId") String hallId,
             @Param("startAt") LocalDateTime startAt,
             @Param("endAt") LocalDateTime endAt);
+
+    @Query("""
+            SELECT b FROM Booking b
+            WHERE b.hallId = :hallId
+              AND b.status <> 'CANCELLED'
+              AND b.startAt < :rangeEnd
+              AND b.endAt > :rangeStart
+            ORDER BY b.startAt
+            """)
+    List<Booking> findActiveInRange(
+            @Param("hallId") String hallId,
+            @Param("rangeStart") LocalDateTime rangeStart,
+            @Param("rangeEnd") LocalDateTime rangeEnd);
 }
