@@ -46,6 +46,12 @@
 : end batch / begin powershell #>
 
 $ErrorActionPreference = "Stop"
+
+# Auto-detect local JDK 17
+if (Test-Path "$scriptDir/utils/jdk17") {
+    $env:JAVA_HOME = "$scriptDir/utils/jdk17"
+}
+
 if ($env:MVNW_VERBOSE -eq "true") {
   $VerbosePreference = "Continue"
 }

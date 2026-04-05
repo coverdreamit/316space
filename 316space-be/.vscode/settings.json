@@ -1,0 +1,16 @@
+{
+    "java.jdt.ls.java.home": "c:\\Users\\Administrator\\git\\316space\\316space-be\\utils\\jdk17",
+    "java.configuration.runtimes": [
+        {
+            "name": "JavaSE-17",
+            "path": "c:\\Users\\Administrator\\git\\316space\\316space-be\\utils\\jdk17",
+            "default": true
+        }
+    ],
+    "maven.terminal.customEnv": [
+        {
+            "environmentVariable": "JAVA_HOME",
+            "value": "c:\\Users\\Administrator\\git\\316space\\316space-be\\utils\\jdk17"
+        }
+    ]
+}

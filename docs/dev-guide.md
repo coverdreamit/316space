@@ -22,19 +22,18 @@ powershell -ExecutionPolicy Bypass -File docs/setup-node.ps1
 
 ### 🍃 백엔드 (Backend)
 - **실행 위치**: `316space-be` 폴더 진입 후 실행
+- **특징**: **`mvnw.cmd`를 실행하면 현재 프로젝트의 JDK(`utils/jdk17`)를 자동으로 인식합니다.**
+  (만약 설치되지 않았다면, 루트에서 `docs/setup-jdk17.ps1`를 먼저 실행하세요.)
+
 - **명령어 (PowerShell)**: 
   ```powershell
   # 1. 백엔드 폴더 이동
   cd 316space-be
 
-  # 2. JDK 환경변수 설정 (현재 터미널 전용)
-  # 만약 설치되지 않았다면, 루트에서 docs/setup-jdk17.ps1 를 먼저 실행하세요.
-  $env:JAVA_HOME = "$PWD\utils\jdk17"
-
-  # 3. 개발 모드 실행
+  # 2. 개발 모드 실행 (JAVA_HOME이 자동으로 잡힙니다)
   .\mvnw.cmd spring-boot:run
 
-  # 4. (선택) 빌드/JAR 생성
+  # 3. (선택) 빌드/JAR 생성
   .\mvnw.cmd clean package -DskipTests
   ```
 
