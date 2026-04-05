@@ -67,3 +67,22 @@ cd 316space
 ## 참고 링크
 
 - 이전 공개 페이지(참고용): [316tower.my.canva.site/home](https://316tower.my.canva.site/home)
+
+---
+
+## 트러블슈팅 (Troubleshooting)
+
+### PowerShell 스크립트(.ps1) 한글 깨짐 현상
+윈도우 기본 셸(PowerShell 5.1)에서 스크립트 내 한글이 깨져 보일 경우, 해당 파일의 **인코딩 설정**이 필요합니다.
+
+- **원인**: PowerShell 5.1은 BOM(Byte Order Mark)이 없는 UTF-8 파일을 인식하지 못해 시스템 기본값(ANSI)으로 읽기 때문입니다.
+- **해결 방법**:
+    1.  VS Code에서 해당 파일을 엽니다.
+    2.  우측 하단 상태바의 **`UTF-8`** 표시를 클릭합니다.
+    3.  **`Save with Encoding`**을 선택합니다.
+    4.  **`UTF-8 with BOM`**을 선택하여 저장합니다.
+- **팁**: 스크립트 상단에 아래 코드를 추가하면 터미널 출력 시에도 한글 깨짐을 방지할 수 있습니다.
+    ```powershell
+    [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+    $OutputEncoding = [System.Text.Encoding]::UTF8
+    ```
