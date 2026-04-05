@@ -1,0 +1,13 @@
+{
+  "name": "316space-root",
+  "private": true,
+  "scripts": {
+    "fe:install": "pnpm --filter 316space-fe install",
+    "fe:dev": "pnpm --filter 316space-fe dev",
+    "be:run": "cd 316space-be && mvnw.cmd spring-boot:run",
+    "be:build": "cd 316space-be && mvnw.cmd clean package -DskipTests",
+    "be:kill": "powershell -Command \"Get-NetTCPConnection -LocalPort 8080 -ErrorAction SilentlyContinue | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force }\"",
+    "all:install": "pnpm install",
+    "all:dev": "pnpm recursive run dev"
+  }
+}
