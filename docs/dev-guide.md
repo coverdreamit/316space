@@ -6,10 +6,14 @@
 윈도우 환경에서 백엔드 개발을 위해 JDK 17이 필요합니다. 아래 명령어로 자동 설치할 수 있습니다:
 
 ```powershell
-# 프로젝트 루트(316space)에서 실행
+# 1. JDK 17 설치 (316space-be/utils/jdk17 경로)
 powershell -ExecutionPolicy Bypass -File docs/setup-jdk17.ps1
+
+# 2. Node.js & pnpm 설치 (NVM 활용)
+# *반드시 관리자 권한으로 실행된 PowerShell에서 수행하세요*
+powershell -ExecutionPolicy Bypass -File docs/setup-node.ps1
 ```
-> 이 스크립트는 `316space-be/utils/jdk17`에 휴대용 JDK를 다운로드하여 설정합니다.
+> 이 스크립트들은 개발에 필요한 최소 도구들을 자동으로 세팅해 줍니다. 특히 `setup-node.ps1`은 NVM-Windows를 설치하므로, 시스템에 이미 Node.js가 깔려 있다면 삭제 후 진행하는 것을 권장합니다.
 
 ---
 
