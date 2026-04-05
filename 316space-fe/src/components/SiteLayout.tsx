@@ -1,10 +1,28 @@
-import { useEffect, useRef } from 'react'
-import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { useAuth } from '../auth/AuthContext'
 import { navItems } from '../nav'
+import LoginModal from './LoginModal'
+import ProfileModal from './ProfileModal'
+import ProfileReauthModal from './ProfileReauthModal'
+import SignupModal from './SignupModal'
+
+type ModalState = 'none' | 'login' | 'signup' | 'profile-reauth' | 'profile'
+
+const ADMIN_ROLE = 'ADMIN'
 
 export default function SiteLayout() {
   const { pathname } = useLocation()
+  const navigate = useNavigate()
+  const { isAuthenticated, loginId, logout, role } = useAuth()
   const contentRef = useRef<HTMLDivElement>(null)
+  const [modal, setModal] = useState<ModalState>('none')
+  const [profileAccessToken, setProfileAccessToken] = useState<string | null>(null)
+
+  const closeProfileFlow = () => {
+    setProfileAccessToken(null)
+    setModal('none')
+  }
 
   useEffect(() => {
     contentRef.current?.scrollTo(0, 0)
@@ -33,10 +51,63 @@ export default function SiteLayout() {
             ))}
           </ul>
         </nav>
-        <a className="header-admin-link" href="/admin">
-          Admin
-        </a>
+        {isAuthenticated ? (
+          <div className="header-account">
+            <button
+              type="button"
+              className="header-account-email"
+              title={loginId ?? undefined}
+              onClick={() =>
+                role === ADMIN_ROLE ? navigate('/admin') : setModal('profile-reauth')
+              }
+            >
+              {loginId}
+            </button>
+            <button
+              type="button"
+              className="header-admin-link"
+              onClick={() => logout()}
+              style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+            >
+              로그아웃
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            className="header-admin-link"
+            onClick={() => setModal('login')}
+            style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+          >
+            Login
+          </button>
+        )}
       </header>
+
+      {modal === 'login' && (
+        <LoginModal
+          onClose={() => setModal('none')}
+          onSwitchToSignup={() => setModal('signup')}
+        />
+      )}
+      {modal === 'signup' && (
+        <SignupModal
+          onClose={() => setModal('none')}
+          onSwitchToLogin={() => setModal('login')}
+        />
+      )}
+      {modal === 'profile-reauth' && (
+        <ProfileReauthModal
+          onClose={() => setModal('none')}
+          onVerified={token => {
+            setProfileAccessToken(token)
+            setModal('profile')
+          }}
+        />
+      )}
+      {modal === 'profile' && profileAccessToken && (
+        <ProfileModal profileAccessToken={profileAccessToken} onClose={closeProfileFlow} />
+      )}
 
       <div className="page-content" ref={contentRef}>
         <Outlet />

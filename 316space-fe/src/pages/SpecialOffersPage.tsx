@@ -1,24 +1,21 @@
 import { useEffect } from 'react'
 
-const offerPlaceholder =
-  'List your offers, promos, or special membership privileges and perks here to entice people to book your property.'
-
 const offers = [
   {
     title: '1일 통임대',
-    body: offerPlaceholder,
+    body: '하루 동안 공간 전체를 자유롭게 이용할 수 있는 상품입니다. 단체 연습, 촬영, 행사, 워크숍 등 긴 시간 여유 있게 사용하고 싶은 분들께 적합합니다.',
     imageSrc: '/offers/offer-1day.png',
     imageAlt: '스튜디오 음향 장비(믹싱 앰프)',
   },
   {
     title: '1달 정기권',
-    body: offerPlaceholder,
+    body: '정기적으로 연습하거나 레슨을 운영하는 분들을 위한 월 이용 상품입니다. 반복 예약이 필요한 개인 및 팀에게 실용적인 선택입니다.',
     imageSrc: '/offers/offer-1month.png',
     imageAlt: '316 스페이스 1개월 정기권 티켓 이미지',
   },
   {
     title: '1년 정기권',
-    body: offerPlaceholder,
+    body: '장기간 꾸준히 공간을 이용하는 분들을 위한 연간 이용 상품입니다. 팀 운영, 클래스 진행, 장기 프로젝트에 더욱 합리적으로 이용하실 수 있습니다.',
     imageSrc: '/offers/offer-1year.png',
     imageAlt: '316 스페이스 1년 월간회원권 티켓 이미지',
   },
@@ -35,7 +32,7 @@ export default function SpecialOffersPage() {
         <h1 className="page-document__title">Special Offers</h1>
         <p className="page-document__lead">요금 안내</p>
         <p className="page-document__prose page-document__prose--tight">
-          댄스나 춤연습뿐만 아니라 모임등 원하는 목적으로 편하시게 이용하실수 있습니다.
+          댄스, 보컬, 연습, 모임, 촬영 등 다양한 목적으로 이용할 수 있는 공간입니다. 이용 패턴에 맞춰 1일 통임대부터 월·연 정기권까지 선택해 보세요.
         </p>
       </header>
 

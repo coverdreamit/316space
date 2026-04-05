@@ -1,0 +1,14 @@
+# 로컬 개발(dev): 기본 DB 이름은 316space-dev (Docker 프로필은 316space 유지).
+# DB_HOST, DB_PORT, DB_NAME, DB_USERNAME, DB_PASSWORD 환경 변수로 덮어쓸 수 있습니다.
+
+spring:
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:coverdreamit.iptime.org}:${DB_PORT:9432}/${DB_NAME:316space-dev}
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USERNAME:hipms}
+    password: ${DB_PASSWORD:hipms}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
