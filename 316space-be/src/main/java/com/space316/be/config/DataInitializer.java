@@ -40,26 +40,22 @@ public class DataInitializer implements ApplicationRunner {
     @Override
     @Transactional
     public void run(ApplicationArguments args) {
-        if (memberRepository.existsByLoginId(adminLoginId)) {
-            log.info("어드민 계정이 이미 존재합니다: {}", adminLoginId);
-        } else {
+        if (!memberRepository.existsByLoginId(adminLoginId)) {
             String email = adminEmail != null && !adminEmail.isBlank() ? adminEmail.trim() : null;
-            if (email != null && memberRepository.existsByEmail(email)) {
-                log.info("어드민 시드 생략: 이메일이 이미 사용 중");
-            } else {
-                String phone = adminPhone != null && !adminPhone.isBlank() ? adminPhone.trim() : null;
+            String phone = adminPhone != null && !adminPhone.isBlank() ? adminPhone.trim() : null;
 
-                Member admin = Member.builder()
-                        .loginId(adminLoginId.trim())
-                        .email(email)
-                        .passwordHash(passwordEncoder.encode(adminPassword))
-                        .name(adminName)
-                        .phone(phone)
-                        .build();
-                admin.promoteToAdmin();
-                memberRepository.save(admin);
-                log.info("어드민 계정 생성 완료: {}", adminLoginId);
-            }
+            Member admin = Member.builder()
+                    .loginId(adminLoginId.trim())
+                    .email(email)
+                    .passwordHash(passwordEncoder.encode(adminPassword))
+                    .name(adminName)
+                    .phone(phone)
+                    .build();
+            admin.promoteToAdmin();
+            memberRepository.save(admin);
+            log.info("어드민 계정 생성 완료: {}", adminLoginId);
+        } else {
+            log.info("어드민 계정이 이미 존재합니다: {}", adminLoginId);
         }
 
         seedHallsIfEmpty();
