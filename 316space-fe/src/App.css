@@ -887,6 +887,22 @@ button.header-account-email:focus-visible {
   color: var(--bg);
 }
 
+.modal__form-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem 0.65rem;
+  align-self: center;
+}
+
+.modal__form-links-sep {
+  font-size: 0.8125rem;
+  color: var(--fg-muted);
+  opacity: 0.65;
+  user-select: none;
+}
+
 .modal__signup {
   font-family: var(--font-sans);
   font-size: 0.8125rem;

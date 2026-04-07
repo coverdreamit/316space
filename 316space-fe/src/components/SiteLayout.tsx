@@ -88,6 +88,10 @@ export default function SiteLayout() {
         <LoginModal
           onClose={() => setModal('none')}
           onSwitchToSignup={() => setModal('signup')}
+          onForgotPassword={() => {
+            setModal('none')
+            navigate('/contact')
+          }}
         />
       )}
       {modal === 'signup' && (

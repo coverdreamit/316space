@@ -4,9 +4,10 @@ import { useAuth } from '../auth/AuthContext'
 interface LoginModalProps {
   onClose: () => void
   onSwitchToSignup: () => void
+  onForgotPassword: () => void
 }
 
-export default function LoginModal({ onClose, onSwitchToSignup }: LoginModalProps) {
+export default function LoginModal({ onClose, onSwitchToSignup, onForgotPassword }: LoginModalProps) {
   const { login } = useAuth()
   const [loginId, setLoginId] = useState('')
   const [password, setPassword] = useState('')
@@ -90,9 +91,17 @@ export default function LoginModal({ onClose, onSwitchToSignup }: LoginModalProp
             {loading ? '처리 중…' : 'Login'}
           </button>
 
-          <button className="modal__signup" type="button" onClick={onSwitchToSignup}>
-            회원가입
-          </button>
+          <div className="modal__form-links" role="group" aria-label="계정 관련">
+            <button className="modal__signup" type="button" onClick={onSwitchToSignup}>
+              회원가입
+            </button>
+            <span className="modal__form-links-sep" aria-hidden>
+              ·
+            </span>
+            <button className="modal__signup" type="button" onClick={onForgotPassword}>
+              비밀번호 찾기
+            </button>
+          </div>
         </form>
 
         <button type="button" className="modal__close" onClick={onClose} aria-label="닫기">
