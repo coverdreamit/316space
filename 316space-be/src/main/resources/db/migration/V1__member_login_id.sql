@@ -2,7 +2,11 @@
 
 ALTER TABLE member ADD COLUMN IF NOT EXISTS login_id VARCHAR(30);
 
-UPDATE member SET login_id = email WHERE login_id IS NULL;
+-- email 이 없는 행은 id 기반 임시 값 (NOT NULL 전제)
+UPDATE member SET login_id = SUBSTRING(REPLACE(CAST(id AS TEXT), '-', '') FROM 1 FOR 30)
+WHERE login_id IS NULL AND (email IS NULL OR TRIM(email) = '');
+
+UPDATE member SET login_id = SUBSTRING(TRIM(email) FROM 1 FOR 30) WHERE login_id IS NULL;
 
 ALTER TABLE member ALTER COLUMN login_id SET NOT NULL;
 

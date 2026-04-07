@@ -1,4 +1,9 @@
 spring:
+  # 배포(316space DB)는 dev DB(316space-dev)와 별개 — 부팅 시 Flyway로 스키마를 맞춤.
+  # Hibernate update 는 기존 행이 있는 테이블에 NOT NULL 컬럼 추가 등에서 실패하기 쉬움.
+  flyway:
+    enabled: true
+
   datasource:
     url: jdbc:postgresql://${DB_HOST:coverdreamit.iptime.org}:${DB_PORT:9432}/${DB_NAME:316space}
     driver-class-name: org.postgresql.Driver
@@ -6,6 +11,6 @@ spring:
     password: ${DB_PASSWORD:hipms}
   jpa:
     hibernate:
-      ddl-auto: update   # 개발 단계 — 스키마 자동 변경 허용, 운영 전 validate 로 교체
+      ddl-auto: validate
     show-sql: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect

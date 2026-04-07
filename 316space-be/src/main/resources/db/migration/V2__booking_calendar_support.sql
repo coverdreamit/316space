@@ -1,8 +1,8 @@
 -- 예약 캘린더 확장: 홀 마스터, 점유 블록(정검·청소 등), 요일별 영업시간, 휴무/예외일
--- PostgreSQL. (현재 application.yml 에서 flyway.enabled: false 인 경우 수동 적용 또는 활성화 후 사용)
+-- PostgreSQL. IF NOT EXISTS: 운영 DB에 Hibernate 등으로 일부 테이블만 있을 때도 적용 가능
 
 -- 홀(룸) 마스터 — Booking.hall_id 문자열과 동일 코드를 쓰면 조인·검증이 수월합니다.
-CREATE TABLE hall (
+CREATE TABLE IF NOT EXISTS hall (
     id              BIGSERIAL PRIMARY KEY,
     hall_id         VARCHAR(30) NOT NULL UNIQUE,
     name            VARCHAR(100) NOT NULL,
@@ -12,10 +12,10 @@ CREATE TABLE hall (
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX ix_hall_active_sort ON hall (active, sort_order);
+CREATE INDEX IF NOT EXISTS ix_hall_active_sort ON hall (active, sort_order);
 
 -- 예약과 별도로 시간대를 막는 구간 (정검, 청소, 내부 사용 등)
-CREATE TABLE schedule_block (
+CREATE TABLE IF NOT EXISTS schedule_block (
     id              BIGSERIAL PRIMARY KEY,
     hall_id         VARCHAR(30) NOT NULL,
     start_at        TIMESTAMPTZ NOT NULL,
@@ -28,10 +28,10 @@ CREATE TABLE schedule_block (
     CONSTRAINT chk_schedule_block_range CHECK (end_at > start_at)
 );
 
-CREATE INDEX ix_schedule_block_hall_time ON schedule_block (hall_id, start_at, end_at);
+CREATE INDEX IF NOT EXISTS ix_schedule_block_hall_time ON schedule_block (hall_id, start_at, end_at);
 
 -- 홀별 요일 기본 영업 구간 (자정 넘김 영업은 별도 행/정책으로 확장)
-CREATE TABLE business_hours (
+CREATE TABLE IF NOT EXISTS business_hours (
     id              BIGSERIAL PRIMARY KEY,
     hall_id         VARCHAR(30) NOT NULL,
     day_of_week     VARCHAR(10) NOT NULL,
@@ -42,7 +42,7 @@ CREATE TABLE business_hours (
 );
 
 -- 특정 일 휴무·부분 휴무 (hall_id NULL = 전체 시설)
-CREATE TABLE hall_closure (
+CREATE TABLE IF NOT EXISTS hall_closure (
     id              BIGSERIAL PRIMARY KEY,
     hall_id         VARCHAR(30),
     closure_date    DATE NOT NULL,
@@ -58,4 +58,4 @@ CREATE TABLE hall_closure (
     )
 );
 
-CREATE INDEX ix_hall_closure_date_hall ON hall_closure (closure_date, hall_id);
+CREATE INDEX IF NOT EXISTS ix_hall_closure_date_hall ON hall_closure (closure_date, hall_id);
