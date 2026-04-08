@@ -4,7 +4,7 @@
 # DB: 외부 PostgreSQL (coverdreamit.iptime.org:9432) — 컨테이너 없음
 #
 # 트래픽 (연쇄 아님 — 병렬 포트 매핑 + 내부 DNS):
-#   · :6280 → nginx:80 → (내부) fe:3000 또는 be:8080  ← infra/nginx.conf upstream
+#   · :6280 → nginx:80 → (내부) fe:3000 또는 be:8080  ← infra/nginx.conf (resolver + 변수 proxy_pass)
 #   · :13000 → fe:3000 만 (Nginx 안 탐)
 #   · :18080 → be:8080 만 (Nginx 안 탐)
 #
