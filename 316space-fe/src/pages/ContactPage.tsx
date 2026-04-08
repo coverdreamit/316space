@@ -826,7 +826,7 @@ export default function ContactPage() {
           연락처
         </h2>
         <ul className="page-document__bullets">
-          <li>전화: (실제 번호로 교체)</li>
+          <li>전화: 010-5746-8376</li>
           <li>카카오채널 / 인스타그램: (실제 계정으로 교체)</li>
           <li className="contact-address-item">
             <div className="contact-address-item__inner">
