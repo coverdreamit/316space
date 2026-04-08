@@ -4,19 +4,21 @@ import { useAuth } from '../auth/AuthContext'
 import AdminBookingsPanel from '../components/admin/AdminBookingsPanel'
 import AdminInquiriesPanel from '../components/admin/AdminInquiriesPanel'
 import AdminScheduleBlocksPanel from '../components/admin/AdminScheduleBlocksPanel'
+import AdminNotificationSettingsPanel from '../components/admin/AdminNotificationSettingsPanel'
 import AdminUsersPanel from '../components/admin/AdminUsersPanel'
 
 const ADMIN_ROLE = 'ADMIN'
 
-type TabId = 'users' | 'bookings' | 'blocks' | 'inquiries' | 'logs'
+type TabId = 'users' | 'bookings' | 'blocks' | 'inquiries' | 'notifications' | 'logs'
 
-const TAB_ORDER: TabId[] = ['users', 'bookings', 'blocks', 'inquiries', 'logs']
+const TAB_ORDER: TabId[] = ['users', 'bookings', 'blocks', 'inquiries', 'notifications', 'logs']
 
 const TAB_LABELS: Record<TabId, string> = {
   users: '유저 관리',
   bookings: '예약 관리',
   blocks: '스케줄 블록',
   inquiries: '문의 관리',
+  notifications: '알림 · 연동',
   logs: '로그',
 }
 
@@ -97,7 +99,9 @@ export default function AdminPage() {
     <main className="page-document">
       <header className="page-document__hero">
         <h1 className="page-document__title">관리자</h1>
-        <p className="page-document__lead">유저·예약·스케줄 블록·문의·로그를 한 곳에서 관리합니다.</p>
+        <p className="page-document__lead">
+          유저·예약·스케줄 블록·문의·Slack 알림·로그를 한 곳에서 관리합니다.
+        </p>
       </header>
 
       <div className="admin-tabs">
@@ -134,6 +138,8 @@ export default function AdminPage() {
           {activeTab === 'bookings' && <AdminBookingsPanel />}
 
           {activeTab === 'inquiries' && <AdminInquiriesPanel />}
+
+          {activeTab === 'notifications' && <AdminNotificationSettingsPanel />}
 
           {activeTab === 'logs' && (
             <AdminDataSection

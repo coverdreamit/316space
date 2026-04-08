@@ -50,6 +50,8 @@ services:
       - ADMIN_PASSWORD=${ADMIN_PASSWORD:-Admin1234!}
       - ADMIN_NAME=${ADMIN_NAME:-관리자}
       - ADMIN_PHONE=${ADMIN_PHONE:-01000000000}
+      # Slack 예약·문의 알림 (비우면 전송 안 함). 서버 루트 .env 또는 호스트 환경 변수로 설정.
+      - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL:-}
     restart: unless-stopped
 
   nginx:

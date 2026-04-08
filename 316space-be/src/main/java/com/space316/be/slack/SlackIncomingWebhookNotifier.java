@@ -2,6 +2,8 @@ package com.space316.be.slack;
 
 import com.space316.be.booking.dto.BookingResponse;
 import com.space316.be.domain.inquiry.Inquiry;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -17,7 +19,7 @@ public class SlackIncomingWebhookNotifier {
 
   private static final Logger log = LoggerFactory.getLogger(SlackIncomingWebhookNotifier.class);
 
-  private final SlackProperties slackProperties;
+  private final SlackWebhookUrlProvider slackWebhookUrlProvider;
   private final RestClient restClient = RestClient.create();
 
   public void notifyNewBooking(String sourceLabel, BookingResponse b) {
@@ -83,21 +85,39 @@ public class SlackIncomingWebhookNotifier {
     sendText(text);
   }
 
+  /** 현재 적용 중인 웹훅(DB 또는 환경 변수)으로 테스트 메시지 전송 */
+  public boolean sendTestMessage() {
+    return slackWebhookUrlProvider
+        .currentWebhookUrl()
+        .map(
+            url -> {
+              String when = DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(LocalDateTime.now());
+              String body =
+                  ":white_check_mark: *316 SPACE* 알림 연동 테스트\n이 메시지가 보이면 웹훅이 정상입니다.\n_"
+                      + escapeSlack(when)
+                      + "_";
+              return postSlackText(url, body);
+            })
+        .orElse(false);
+  }
+
   private void sendText(String text) {
-    String url = slackProperties.incomingWebhookUrl();
-    if (url == null || url.isBlank()) {
-      return;
-    }
+    slackWebhookUrlProvider.currentWebhookUrl().ifPresent(url -> postSlackText(url, text));
+  }
+
+  private boolean postSlackText(String url, String text) {
     try {
       restClient
-              .post()
-              .uri(url)
-              .contentType(MediaType.APPLICATION_JSON)
-              .body(new SlackTextBody(text))
-              .retrieve()
-              .toBodilessEntity();
+          .post()
+          .uri(url)
+          .contentType(MediaType.APPLICATION_JSON)
+          .body(new SlackTextBody(text))
+          .retrieve()
+          .toBodilessEntity();
+      return true;
     } catch (RestClientException e) {
       log.warn("Slack Incoming Webhook 전송 실패: {}", e.getMessage());
+      return false;
     }
   }
 

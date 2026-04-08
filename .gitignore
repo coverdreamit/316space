@@ -12,6 +12,9 @@ AGENTS.md
 
 logs/
 
+# Docker Compose / 서버 전용 비밀 (SLACK_WEBHOOK_URL 등)
+.env
+
 # 서버 전용 배포 훅 (예시는 deploy.local.sh.example)
 scripts/deploy.local.sh
 
