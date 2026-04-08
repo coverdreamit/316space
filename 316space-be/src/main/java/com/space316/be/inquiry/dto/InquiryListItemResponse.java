@@ -11,6 +11,7 @@ public record InquiryListItemResponse(
         String title,
         String authorName,
         boolean isPrivate,
+        boolean guestPost,
         InquiryStatus status,
         LocalDateTime createdAt
 ) {
@@ -23,6 +24,7 @@ public record InquiryListItemResponse(
                 canAccess ? inquiry.getTitle() : PRIVATE_TITLE,
                 maskName(inquiry.getAuthorName()),
                 inquiry.isPrivate(),
+                inquiry.getMember() == null,
                 inquiry.getStatus(),
                 inquiry.getCreatedAt()
         );

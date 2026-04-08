@@ -26,5 +26,9 @@ public record CreateInquiryRequest(
         @NotBlank
         String content,
 
-        boolean isPrivate
+        boolean isPrivate,
+
+        /** 비회원 필수(4~72자). 회원 작성 시 null 또는 생략 */
+        @Size(min = 4, max = 72)
+        String guestPassword
 ) {}

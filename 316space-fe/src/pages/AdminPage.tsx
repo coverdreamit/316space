@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 import AdminBookingsPanel from '../components/admin/AdminBookingsPanel'
+import AdminInquiriesPanel from '../components/admin/AdminInquiriesPanel'
 import AdminScheduleBlocksPanel from '../components/admin/AdminScheduleBlocksPanel'
 import AdminUsersPanel from '../components/admin/AdminUsersPanel'
 
@@ -132,62 +133,7 @@ export default function AdminPage() {
 
           {activeTab === 'bookings' && <AdminBookingsPanel />}
 
-          {activeTab === 'inquiries' && (
-            <AdminDataSection
-              columns={[
-                '문의 ID',
-                '제목',
-                '문의자',
-                '이메일',
-                '전화',
-                '상태',
-                '접수일시',
-                '답변일시',
-              ]}
-              filters={
-                <>
-                  <div className="admin-field">
-                    <label className="admin-label" htmlFor="admin-inquiry-status">
-                      상태
-                    </label>
-                    <select
-                      id="admin-inquiry-status"
-                      className="admin-select"
-                      name="inquiryStatus"
-                      defaultValue=""
-                    >
-                      <option value="">전체</option>
-                      <option value="NEW">신규</option>
-                      <option value="IN_PROGRESS">처리중</option>
-                      <option value="RESOLVED">완료</option>
-                    </select>
-                  </div>
-                  <div className="admin-field">
-                    <label className="admin-label" htmlFor="admin-inquiry-from">
-                      접수 시작
-                    </label>
-                    <input
-                      id="admin-inquiry-from"
-                      className="admin-input"
-                      type="date"
-                      name="inquiryFrom"
-                    />
-                  </div>
-                  <div className="admin-field">
-                    <label className="admin-label" htmlFor="admin-inquiry-to">
-                      접수 종료
-                    </label>
-                    <input
-                      id="admin-inquiry-to"
-                      className="admin-input"
-                      type="date"
-                      name="inquiryTo"
-                    />
-                  </div>
-                </>
-              }
-            />
-          )}
+          {activeTab === 'inquiries' && <AdminInquiriesPanel />}
 
           {activeTab === 'logs' && (
             <AdminDataSection
