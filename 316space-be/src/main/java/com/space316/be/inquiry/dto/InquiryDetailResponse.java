@@ -14,9 +14,18 @@ public record InquiryDetailResponse(
         boolean isPrivate,
         InquiryStatus status,
         AnswerResponse answer,
-        LocalDateTime createdAt
-) {
-    public static InquiryDetailResponse from(Inquiry inquiry) {
+        LocalDateTime createdAt,
+        boolean guestPost,
+        boolean mine,
+        boolean canEdit,
+        boolean canDelete) {
+
+    public static InquiryDetailResponse of(
+            Inquiry inquiry,
+            boolean guestPost,
+            boolean mine,
+            boolean canEdit,
+            boolean canDelete) {
         AnswerResponse answerResponse = inquiry.getAnswer() != null
                 ? AnswerResponse.from(inquiry.getAnswer())
                 : null;
@@ -30,7 +39,10 @@ public record InquiryDetailResponse(
                 inquiry.isPrivate(),
                 inquiry.getStatus(),
                 answerResponse,
-                inquiry.getCreatedAt()
-        );
+                inquiry.getCreatedAt(),
+                guestPost,
+                mine,
+                canEdit,
+                canDelete);
     }
 }

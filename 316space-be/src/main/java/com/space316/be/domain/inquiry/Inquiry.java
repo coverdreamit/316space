@@ -65,9 +65,13 @@ public class Inquiry extends BaseEntity {
     @OneToOne(mappedBy = "inquiry", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private InquiryAnswer answer;
 
+    /** 비회원 문의만 BCrypt 해시 저장, 회원 문의는 null */
+    @Column(length = 72)
+    private String guestPasswordHash;
+
     @Builder
     private Inquiry(Member member, String authorName, String authorPhone, String authorEmail,
-            InquiryCategory category, String title, String content, boolean isPrivate) {
+            InquiryCategory category, String title, String content, boolean isPrivate, String guestPasswordHash) {
         this.member = member;
         this.authorName = authorName;
         this.authorPhone = authorPhone;
@@ -76,7 +80,15 @@ public class Inquiry extends BaseEntity {
         this.title = title;
         this.content = content;
         this.isPrivate = isPrivate;
+        this.guestPasswordHash = guestPasswordHash;
         this.status = InquiryStatus.WAITING;
+    }
+
+    public void updateInquiry(InquiryCategory category, String title, String content, boolean isPrivate) {
+        this.category = category;
+        this.title = title;
+        this.content = content;
+        this.isPrivate = isPrivate;
     }
 
     public boolean isAccessibleBy(Long memberId, boolean isAdmin) {

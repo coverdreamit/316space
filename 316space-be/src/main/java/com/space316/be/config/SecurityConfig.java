@@ -35,8 +35,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/health").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
-                        // 문의 목록/상세 조회는 비인증도 허용
+                        // 문의: 목록·상세 조회·작성은 비인증 허용 (작성은 서비스에서 회원/비회원 모두 지원)
                         .requestMatchers(HttpMethod.GET, "/api/inquiries/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/inquiries").permitAll()
+                        .requestMatchers(HttpMethod.PATCH, "/api/inquiries/*").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/api/inquiries/*").permitAll()
                         // 예약: 홀 목록·가용 시간 조회는 비인증 허용
                         .requestMatchers(HttpMethod.GET, "/api/halls").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/bookings/availability").permitAll()

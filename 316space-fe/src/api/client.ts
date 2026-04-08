@@ -52,9 +52,19 @@ export async function apiFetch(path: string, init: RequestInit = {}): Promise<Re
   return res
 }
 
+export class HttpError extends Error {
+  readonly status: number
+
+  constructor(message: string, status: number) {
+    super(message)
+    this.name = 'HttpError'
+    this.status = status
+  }
+}
+
 export async function apiFetchJson<T>(path: string, init: RequestInit = {}): Promise<T> {
   const res = await apiFetch(path, init)
-  if (!res.ok) throw new Error(await readErrorMessage(res))
+  if (!res.ok) throw new HttpError(await readErrorMessage(res), res.status)
   return res.json() as Promise<T>
 }
 

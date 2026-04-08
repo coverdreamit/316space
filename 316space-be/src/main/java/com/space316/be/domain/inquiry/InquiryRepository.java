@@ -11,6 +11,8 @@ public interface InquiryRepository extends JpaRepository<Inquiry, Long> {
 
     Page<Inquiry> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
+    Page<Inquiry> findByStatusOrderByCreatedAtDesc(InquiryStatus status, Pageable pageable);
+
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE Inquiry i SET i.member = null WHERE i.member.id = :memberId")
     void detachMember(@Param("memberId") Long memberId);
