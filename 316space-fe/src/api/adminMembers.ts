@@ -1,4 +1,4 @@
-import { apiFetchJson } from './client'
+import { apiFetch, apiFetchJson, readErrorMessage } from './client'
 
 export type MemberStatus = 'ACTIVE' | 'SUSPENDED' | 'WITHDRAWN'
 
@@ -19,12 +19,23 @@ export async function fetchAdminMembers(q?: string): Promise<AdminMemberDto[]> {
 
 export async function patchAdminMember(
   id: number,
-  body: { name: string; email: string | null; phone: string | null; status: MemberStatus },
+  body: {
+    name: string
+    email: string | null
+    phone: string | null
+    status: MemberStatus
+    password?: string | null
+  },
 ): Promise<AdminMemberDto> {
   return apiFetchJson<AdminMemberDto>(`/api/admin/members/${id}`, {
     method: 'PATCH',
     body: JSON.stringify(body),
   })
+}
+
+export async function deleteAdminMember(id: number): Promise<void> {
+  const res = await apiFetch(`/api/admin/members/${id}`, { method: 'DELETE' })
+  if (!res.ok) throw new Error(await readErrorMessage(res))
 }
 
 export const MEMBER_STATUS_LABEL: Record<MemberStatus, string> = {

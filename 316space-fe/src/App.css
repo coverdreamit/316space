@@ -1237,14 +1237,42 @@ button.header-account-email:focus-visible {
 .admin-modal-actions {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   gap: 1rem 1.25rem;
   margin-top: 1rem;
 }
 
+.admin-modal-actions__end {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.25rem;
+  margin-left: auto;
+}
+
 .admin-modal-actions .modal__submit {
   margin-top: 0;
+}
+
+.admin-btn-danger {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  padding: 0.45rem 0.85rem;
+  border: 1px solid #c0392b;
+  background: transparent;
+  color: #c0392b;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.admin-btn-danger:hover:not(:disabled) {
+  background: rgba(192, 57, 43, 0.08);
+}
+
+.admin-btn-danger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .admin-select--modal {

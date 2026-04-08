@@ -121,7 +121,12 @@ export default function AdminUsersPanel() {
       </div>
 
       {editing && (
-        <AdminMemberEditModal member={editing} onClose={() => setEditing(null)} onSaved={handleSaved} />
+        <AdminMemberEditModal
+          member={editing}
+          onClose={() => setEditing(null)}
+          onSaved={handleSaved}
+          onDeleted={id => setMembers(prev => prev.filter(m => m.id !== id))}
+        />
       )}
     </div>
   )

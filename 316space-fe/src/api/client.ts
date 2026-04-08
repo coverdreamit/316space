@@ -1,7 +1,20 @@
 let getAccessToken: () => string | null = () => null
+let onAuthFailure: (() => void) | null = null
 
 export function setAccessTokenGetter(fn: () => string | null): void {
   getAccessToken = fn
+}
+
+/** 로그아웃 등 세션 정리. AuthProvider에서 등록합니다. */
+export function setAuthFailureHandler(fn: (() => void) | null): void {
+  onAuthFailure = fn
+}
+
+function maybeInvalidateSession(res: Response): void {
+  if (res.ok) return
+  if (res.status !== 401 && res.status !== 403) return
+  if (!getAccessToken()) return
+  onAuthFailure?.()
 }
 
 async function readErrorMessage(res: Response): Promise<string> {
@@ -34,7 +47,9 @@ export async function apiFetch(path: string, init: RequestInit = {}): Promise<Re
   if (init.body != null && !headers.has('Content-Type')) {
     headers.set('Content-Type', 'application/json')
   }
-  return fetch(path, { ...init, headers })
+  const res = await fetch(path, { ...init, headers })
+  maybeInvalidateSession(res)
+  return res
 }
 
 export async function apiFetchJson<T>(path: string, init: RequestInit = {}): Promise<T> {

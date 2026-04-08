@@ -3,6 +3,7 @@ import {
   type AdminMemberDto,
   type MemberStatus,
   MEMBER_STATUS_LABEL,
+  deleteAdminMember,
   patchAdminMember,
 } from '../../api/adminMembers'
 
@@ -10,16 +11,24 @@ interface AdminMemberEditModalProps {
   member: AdminMemberDto
   onClose: () => void
   onSaved: (updated: AdminMemberDto) => void
+  onDeleted: (id: number) => void
 }
 
-export default function AdminMemberEditModal({ member, onClose, onSaved }: AdminMemberEditModalProps) {
+export default function AdminMemberEditModal({
+  member,
+  onClose,
+  onSaved,
+  onDeleted,
+}: AdminMemberEditModalProps) {
   const closeBtnRef = useRef<HTMLButtonElement>(null)
   const [name, setName] = useState(member.name)
   const [email, setEmail] = useState(member.email ?? '')
   const [phone, setPhone] = useState(member.phone ?? '')
   const [status, setStatus] = useState<MemberStatus>(member.status)
+  const [newPassword, setNewPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
+  const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
     closeBtnRef.current?.focus()
@@ -33,20 +42,41 @@ export default function AdminMemberEditModal({ member, onClose, onSaved }: Admin
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
+    const pw = newPassword.trim()
     setSaving(true)
     try {
-      const updated = await patchAdminMember(member.id, {
+      const body: Parameters<typeof patchAdminMember>[1] = {
         name: name.trim(),
         email: email.trim() === '' ? null : email.trim(),
         phone: phone.trim() === '' ? null : phone.trim(),
         status,
-      })
+      }
+      if (pw !== '') body.password = pw
+      const updated = await patchAdminMember(member.id, body)
       onSaved(updated)
       onClose()
     } catch (err) {
       setError(err instanceof Error ? err.message : '저장에 실패했습니다.')
     } finally {
       setSaving(false)
+    }
+  }
+
+  const handleDelete = async () => {
+    setError(null)
+    const ok = window.confirm(
+      `회원「${member.loginId}」을(를) DB에서 완전히 삭제할까요?\n연결된 예약·문의의 회원 참조는 해제됩니다. 이 작업은 되돌릴 수 없습니다.`,
+    )
+    if (!ok) return
+    setDeleting(true)
+    try {
+      await deleteAdminMember(member.id)
+      onDeleted(member.id)
+      onClose()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '삭제에 실패했습니다.')
+    } finally {
+      setDeleting(false)
     }
   }
 
@@ -139,14 +169,38 @@ export default function AdminMemberEditModal({ member, onClose, onSaved }: Admin
               ))}
             </select>
           </div>
+          <div className="modal__field">
+            <label className="modal__label" htmlFor="admin-edit-password">
+              새 비밀번호 <span className="modal__optional">(선택)</span>
+            </label>
+            <input
+              id="admin-edit-password"
+              className="modal__input"
+              type="password"
+              value={newPassword}
+              onChange={e => setNewPassword(e.target.value)}
+              autoComplete="new-password"
+              placeholder="변경하지 않으려면 비워 두세요"
+            />
+          </div>
           {error && <p className="modal__error modal__error--banner">{error}</p>}
           <div className="admin-modal-actions">
-            <button type="button" className="modal__signup" onClick={onClose}>
-              취소
+            <button
+              type="button"
+              className="admin-btn-danger"
+              onClick={() => void handleDelete()}
+              disabled={saving || deleting}
+            >
+              {deleting ? '삭제 중…' : '회원 삭제'}
             </button>
-            <button type="submit" className="modal__submit" disabled={saving}>
-              {saving ? '저장 중…' : '저장'}
-            </button>
+            <div className="admin-modal-actions__end">
+              <button type="button" className="modal__signup" onClick={onClose} disabled={saving || deleting}>
+                취소
+              </button>
+              <button type="submit" className="modal__submit" disabled={saving || deleting}>
+                {saving ? '저장 중…' : '저장'}
+              </button>
+            </div>
           </div>
         </form>
       </div>

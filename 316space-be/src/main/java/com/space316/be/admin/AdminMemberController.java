@@ -6,6 +6,8 @@ import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,5 +32,12 @@ public class AdminMemberController {
     public ResponseEntity<AdminMemberResponse> update(
             @PathVariable Long id, @Valid @RequestBody AdminMemberUpdateRequest req) {
         return ResponseEntity.ok(adminMemberService.updateMember(id, req));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(
+            @PathVariable Long id, @AuthenticationPrincipal Long actingAdminId) {
+        adminMemberService.deleteMember(id, actingAdminId);
+        return ResponseEntity.noContent().build();
     }
 }

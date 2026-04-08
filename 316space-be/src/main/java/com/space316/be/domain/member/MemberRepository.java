@@ -11,4 +11,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     boolean existsByLoginId(String loginId);
 
     List<Member> findByLoginIdContainingIgnoreCaseOrNameContainingIgnoreCase(String loginIdPart, String namePart);
+
+    long countByRole(MemberRole role);
 }

@@ -7,7 +7,7 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import { readErrorMessage, setAccessTokenGetter } from '../api/client'
+import { readErrorMessage, setAccessTokenGetter, setAuthFailureHandler } from '../api/client'
 import { clearStoredAuth, loadStoredAuth, saveStoredAuth } from './storage'
 import type { StoredAuth, TokenResponse } from './types'
 
@@ -85,6 +85,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     clearStoredAuth()
     setAuth(null)
   }, [])
+
+  useEffect(() => {
+    setAuthFailureHandler(logout)
+    return () => setAuthFailureHandler(null)
+  }, [logout])
 
   const value = useMemo<AuthContextValue>(
     () => ({
