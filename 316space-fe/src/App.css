@@ -548,6 +548,47 @@ button.header-account-email:focus-visible {
   margin-top: 0.5rem;
 }
 
+.contact-address-item__inner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.contact-address-item__label {
+  flex-shrink: 0;
+}
+
+.contact-address-item__lines {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.contact-address-item__row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.contact-address-tag {
+  flex-shrink: 0;
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+  padding: 0.2em 0.5em;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  color: var(--fg-muted);
+}
+
+.contact-address-item__addr {
+  flex: 1;
+  min-width: 12rem;
+}
+
 .contact-cta {
   display: inline-flex;
   margin-top: 1.25rem;

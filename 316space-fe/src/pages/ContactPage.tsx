@@ -828,7 +828,23 @@ export default function ContactPage() {
         <ul className="page-document__bullets">
           <li>전화: (실제 번호로 교체)</li>
           <li>카카오채널 / 인스타그램: (실제 계정으로 교체)</li>
-          <li>주소: (실제 주소로 교체)</li>
+          <li className="contact-address-item">
+            <div className="contact-address-item__inner">
+              <span className="contact-address-item__label">주소 :</span>
+              <div className="contact-address-item__lines">
+                <div className="contact-address-item__row">
+                  <span className="contact-address-tag">도로명</span>
+                  <span className="contact-address-item__addr">
+                    서울 서초구 서초중앙로24길 10 지하2층
+                  </span>
+                </div>
+                <div className="contact-address-item__row">
+                  <span className="contact-address-tag">지번</span>
+                  <span className="contact-address-item__addr">서울 서초구 서초동 1692-3</span>
+                </div>
+              </div>
+            </div>
+          </li>
         </ul>
       </section>
 
