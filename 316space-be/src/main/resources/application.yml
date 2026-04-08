@@ -23,6 +23,10 @@ jwt:
   expiration-ms: 1800000 # 30분
   profile-edit-expiration-ms: 600000 # 개인정보 변경 화면 진입용(10분)
 
+slack:
+  # 예약·문의 알림. GitHub push protection: 웹훅 URL은 커밋 금지 → SLACK_WEBHOOK_URL 환경 변수로만 설정.
+  incoming-webhook-url: ${SLACK_WEBHOOK_URL:}
+
 admin:
   login-id: ${ADMIN_LOGIN_ID:admin}
   email: ${ADMIN_EMAIL:admin@316space.com}

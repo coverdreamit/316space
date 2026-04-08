@@ -13,6 +13,7 @@ import com.space316.be.domain.hall.ScheduleBlockRepository;
 import com.space316.be.domain.member.Member;
 import com.space316.be.domain.member.MemberRepository;
 import com.space316.be.domain.sms.SmsVerificationRepository;
+import com.space316.be.slack.SlackIncomingWebhookNotifier;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -33,6 +34,7 @@ public class BookingService {
     private final ScheduleBlockRepository scheduleBlockRepository;
     private final MemberRepository memberRepository;
     private final SmsVerificationRepository smsVerificationRepository;
+    private final SlackIncomingWebhookNotifier slackIncomingWebhookNotifier;
 
     // 회원 예약
     @Transactional
@@ -62,7 +64,9 @@ public class BookingService {
                 .note(req.note())
                 .build();
 
-        return BookingResponse.from(bookingRepository.save(booking));
+        BookingResponse saved = BookingResponse.from(bookingRepository.save(booking));
+        slackIncomingWebhookNotifier.notifyNewBooking("회원", saved);
+        return saved;
     }
 
     // 비회원 예약 (SMS 인증 완료된 전화번호만 허용)
@@ -90,7 +94,9 @@ public class BookingService {
                 .note(req.note())
                 .build();
 
-        return BookingResponse.from(bookingRepository.save(booking));
+        BookingResponse saved = BookingResponse.from(bookingRepository.save(booking));
+        slackIncomingWebhookNotifier.notifyNewBooking("비회원", saved);
+        return saved;
     }
 
     // 예약 조회 (회원: memberId 일치 확인, 비회원: 전화번호 확인)
@@ -171,7 +177,9 @@ public class BookingService {
                 .note(req.note())
                 .build();
 
-        return BookingResponse.from(bookingRepository.save(booking));
+        BookingResponse saved = BookingResponse.from(bookingRepository.save(booking));
+        slackIncomingWebhookNotifier.notifyNewBooking("관리자 등록", saved);
+        return saved;
     }
 
     @Transactional

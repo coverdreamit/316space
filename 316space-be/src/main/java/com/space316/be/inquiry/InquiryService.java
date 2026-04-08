@@ -13,6 +13,7 @@ import com.space316.be.inquiry.dto.CreateInquiryRequest;
 import com.space316.be.inquiry.dto.InquiryDetailResponse;
 import com.space316.be.inquiry.dto.InquiryListItemResponse;
 import com.space316.be.inquiry.dto.UpdateInquiryRequest;
+import com.space316.be.slack.SlackIncomingWebhookNotifier;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +31,7 @@ public class InquiryService {
     private final InquiryAnswerRepository inquiryAnswerRepository;
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final SlackIncomingWebhookNotifier slackIncomingWebhookNotifier;
 
     @Transactional(readOnly = true)
     public Page<InquiryListItemResponse> getList(
@@ -95,6 +97,7 @@ public class InquiryService {
                 .build();
 
         Inquiry saved = inquiryRepository.save(inquiry);
+        slackIncomingWebhookNotifier.notifyNewInquiry(saved);
         return toDetailResponse(saved, memberId, plainForDetail);
     }
 
