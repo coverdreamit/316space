@@ -1,5 +1,7 @@
 package com.space316.be.admin;
 
+import com.space316.be.audit.ActivityAuditAction;
+import com.space316.be.audit.AuditLogService;
 import com.space316.be.admin.dto.NotificationSettingsResponse;
 import com.space316.be.admin.dto.NotificationSettingsUpdateRequest;
 import com.space316.be.domain.settings.AppSetting;
@@ -19,6 +21,7 @@ public class AdminNotificationSettingsService {
   private final SlackWebhookUrlProvider slackWebhookUrlProvider;
   private final SlackNotificationsEnabled slackNotificationsEnabled;
   private final SlackIncomingWebhookNotifier slackIncomingWebhookNotifier;
+  private final AuditLogService auditLogService;
 
   @Transactional(readOnly = true)
   public NotificationSettingsResponse getNotificationSettings() {
@@ -41,6 +44,10 @@ public class AdminNotificationSettingsService {
       } else {
         saveNotificationsEnabledFlag(false);
       }
+    }
+    if (req.slackIncomingWebhookUrl() != null || req.slackNotificationsEnabled() != null) {
+      auditLogService.recordForCurrentAdmin(
+          ActivityAuditAction.ADMIN_NOTIFICATION_SETTINGS_UPDATE, "SETTINGS", "notifications", null);
     }
     return getNotificationSettings();
   }
@@ -87,6 +94,8 @@ public class AdminNotificationSettingsService {
     if (!slackIncomingWebhookNotifier.sendTestMessage()) {
       throw new IllegalArgumentException("Slack으로 테스트 메시지를 보내지 못했습니다. URL을 확인하세요.");
     }
+    auditLogService.recordForCurrentAdmin(
+        ActivityAuditAction.ADMIN_NOTIFICATION_TEST, "SETTINGS", "notifications", "Slack 테스트 전송");
   }
 
 }

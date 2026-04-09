@@ -1,5 +1,7 @@
 package com.space316.be.sms;
 
+import com.space316.be.audit.ActivityAuditAction;
+import com.space316.be.audit.AuditLogService;
 import com.space316.be.domain.sms.SmsVerification;
 import com.space316.be.domain.sms.SmsVerificationRepository;
 import java.time.LocalDateTime;
@@ -18,6 +20,7 @@ public class SmsService {
     private static final int EXPIRE_MINUTES = 5;
 
     private final SmsVerificationRepository smsVerificationRepository;
+    private final AuditLogService auditLogService;
 
     @Transactional
     public void sendCode(String phone) {
@@ -34,6 +37,14 @@ public class SmsService {
 
         // TODO: 실제 SMS 발송 연동 (알리고, 네이버 클라우드, CoolSMS 등)
         log.info("[SMS 발송] phone={} code={} expiresAt={}", phone, code, expiresAt);
+        auditLogService.record(
+                ActivityAuditAction.SMS_VERIFICATION_SEND,
+                null,
+                "guest",
+                "PHONE",
+                maskPhone(phone),
+                null,
+                null);
     }
 
     @Transactional
@@ -53,6 +64,21 @@ public class SmsService {
         }
 
         verification.verify();
+        auditLogService.record(
+                ActivityAuditAction.SMS_VERIFICATION_SUCCESS,
+                null,
+                "guest",
+                "PHONE",
+                maskPhone(phone),
+                null,
+                null);
+    }
+
+    private static String maskPhone(String phone) {
+        if (phone == null || phone.length() < 4) {
+            return phone;
+        }
+        return phone.substring(0, Math.max(0, phone.length() - 4)) + "****";
     }
 
     private String generateCode() {

@@ -1,5 +1,7 @@
 package com.space316.be.admin;
 
+import com.space316.be.audit.ActivityAuditAction;
+import com.space316.be.audit.AuditLogService;
 import com.space316.be.admin.dto.HallAdminResponse;
 import com.space316.be.admin.dto.HallCreateRequest;
 import com.space316.be.admin.dto.HallUpdateRequest;
@@ -17,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class AdminHallService {
 
     private final HallRepository hallRepository;
+    private final AuditLogService auditLogService;
 
     @Transactional(readOnly = true)
     public List<HallAdminResponse> listAll() {
@@ -37,6 +40,11 @@ public class AdminHallService {
                 .sortOrder(req.sortOrder())
                 .active(req.active())
                 .build());
+        auditLogService.recordForCurrentAdmin(
+                ActivityAuditAction.ADMIN_HALL_CREATE,
+                "HALL",
+                saved.getHallId(),
+                "id=" + saved.getId());
         return HallAdminResponse.from(saved);
     }
 
@@ -46,6 +54,8 @@ public class AdminHallService {
                 .findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 홀입니다."));
         hall.update(req.name().trim(), req.sortOrder(), req.active());
+        auditLogService.recordForCurrentAdmin(
+                ActivityAuditAction.ADMIN_HALL_UPDATE, "HALL", hall.getHallId(), "id=" + id);
         return HallAdminResponse.from(hall);
     }
 }

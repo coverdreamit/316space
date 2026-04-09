@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
+import AdminAuditLogsPanel from '../components/admin/AdminAuditLogsPanel'
 import AdminBookingsPanel from '../components/admin/AdminBookingsPanel'
 import AdminInquiriesPanel from '../components/admin/AdminInquiriesPanel'
 import AdminNotificationSettingsPanel from '../components/admin/AdminNotificationSettingsPanel'
@@ -18,39 +19,6 @@ const TAB_LABELS: Record<TabId, string> = {
   inquiries: '문의 관리',
   notifications: '알림 · 연동',
   logs: '로그',
-}
-
-type AdminDataSectionProps = {
-  filters: ReactNode
-  columns: readonly string[]
-}
-
-function AdminDataSection({ filters, columns }: AdminDataSectionProps) {
-  return (
-    <div className="admin-module">
-      <div className="admin-toolbar">{filters}</div>
-      <div className="admin-table-scroll">
-        <table className="admin-table">
-          <thead>
-            <tr>
-              {columns.map(col => (
-                <th key={col} scope="col">
-                  {col}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td className="admin-table__empty" colSpan={columns.length}>
-                데이터 연동 예정
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  )
 }
 
 export default function AdminPage() {
@@ -149,63 +117,7 @@ export default function AdminPage() {
 
           {activeTab === 'notifications' && <AdminNotificationSettingsPanel />}
 
-          {activeTab === 'logs' && (
-            <AdminDataSection
-              columns={[
-                '로그 ID',
-                '발생일시',
-                '수행자',
-                '액션',
-                '대상 유형',
-                '대상 ID',
-                'IP',
-                '상세',
-              ]}
-              filters={
-                <>
-                  <div className="admin-field">
-                    <label className="admin-label" htmlFor="admin-log-from">
-                      시작일시
-                    </label>
-                    <input
-                      id="admin-log-from"
-                      className="admin-input"
-                      type="datetime-local"
-                      name="logFrom"
-                    />
-                  </div>
-                  <div className="admin-field">
-                    <label className="admin-label" htmlFor="admin-log-to">
-                      종료일시
-                    </label>
-                    <input
-                      id="admin-log-to"
-                      className="admin-input"
-                      type="datetime-local"
-                      name="logTo"
-                    />
-                  </div>
-                  <div className="admin-field">
-                    <label className="admin-label" htmlFor="admin-log-action">
-                      액션
-                    </label>
-                    <select
-                      id="admin-log-action"
-                      className="admin-select"
-                      name="logAction"
-                      defaultValue=""
-                    >
-                      <option value="">전체</option>
-                      <option value="LOGIN">로그인</option>
-                      <option value="USER_UPDATE">회원 수정</option>
-                      <option value="BOOKING_UPDATE">예약 수정</option>
-                      <option value="INQUIRY_REPLY">문의 답변</option>
-                    </select>
-                  </div>
-                </>
-              }
-            />
-          )}
+          {activeTab === 'logs' && <AdminAuditLogsPanel />}
         </div>
       </div>
     </main>

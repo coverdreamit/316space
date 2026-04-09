@@ -1,5 +1,7 @@
 package com.space316.be.admin;
 
+import com.space316.be.audit.ActivityAuditAction;
+import com.space316.be.audit.AuditLogService;
 import com.space316.be.admin.dto.ScheduleBlockResponse;
 import com.space316.be.admin.dto.ScheduleBlockUpsertRequest;
 import com.space316.be.domain.booking.BookingRepository;
@@ -19,6 +21,7 @@ public class AdminScheduleBlockService {
 
     private final ScheduleBlockRepository scheduleBlockRepository;
     private final BookingRepository bookingRepository;
+    private final AuditLogService auditLogService;
 
     @Transactional(readOnly = true)
     public List<ScheduleBlockResponse> list(LocalDateTime from, LocalDateTime to, String hallId) {
@@ -43,6 +46,11 @@ public class AdminScheduleBlockService {
                 .title(blankToNull(req.title()))
                 .note(req.note())
                 .build());
+        auditLogService.recordForCurrentAdmin(
+                ActivityAuditAction.ADMIN_SCHEDULE_BLOCK_CREATE,
+                "SCHEDULE_BLOCK",
+                String.valueOf(saved.getId()),
+                saved.getHallId());
         return ScheduleBlockResponse.from(saved);
     }
 
@@ -62,6 +70,11 @@ public class AdminScheduleBlockService {
                 req.blockType(),
                 blankToNull(req.title()),
                 req.note());
+        auditLogService.recordForCurrentAdmin(
+                ActivityAuditAction.ADMIN_SCHEDULE_BLOCK_UPDATE,
+                "SCHEDULE_BLOCK",
+                String.valueOf(id),
+                block.getHallId());
         return ScheduleBlockResponse.from(block);
     }
 
@@ -70,6 +83,8 @@ public class AdminScheduleBlockService {
         if (!scheduleBlockRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 스케줄 블록입니다.");
         }
+        auditLogService.recordForCurrentAdmin(
+                ActivityAuditAction.ADMIN_SCHEDULE_BLOCK_DELETE, "SCHEDULE_BLOCK", String.valueOf(id), null);
         scheduleBlockRepository.deleteById(id);
     }
 

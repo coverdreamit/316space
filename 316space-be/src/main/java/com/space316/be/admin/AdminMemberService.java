@@ -1,5 +1,7 @@
 package com.space316.be.admin;
 
+import com.space316.be.audit.ActivityAuditAction;
+import com.space316.be.audit.AuditLogService;
 import com.space316.be.admin.dto.AdminMemberResponse;
 import com.space316.be.admin.dto.AdminMemberUpdateRequest;
 import com.space316.be.domain.booking.BookingRepository;
@@ -26,6 +28,7 @@ public class AdminMemberService {
     private final InquiryRepository inquiryRepository;
     private final InquiryAnswerRepository inquiryAnswerRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuditLogService auditLogService;
 
     @Transactional(readOnly = true)
     public List<AdminMemberResponse> listMembers(String q) {
@@ -50,6 +53,10 @@ public class AdminMemberService {
         member.updateProfile(req.name().trim(), email, phone);
         member.changeStatus(req.status());
         applyPasswordIfPresent(member, req.password());
+        String detail =
+                req.password() != null && !req.password().isBlank() ? "비밀번호 변경 포함" : null;
+        auditLogService.recordForCurrentAdmin(
+                ActivityAuditAction.ADMIN_MEMBER_UPDATE, "MEMBER", String.valueOf(id), detail);
         return AdminMemberResponse.from(member);
     }
 
@@ -71,6 +78,16 @@ public class AdminMemberService {
         }
         bookingRepository.detachMember(id);
         inquiryRepository.detachMember(id);
+        String actorLabel =
+                memberRepository.findById(actingAdminId).map(Member::getLoginId).orElse("ADMIN");
+        auditLogService.record(
+                ActivityAuditAction.ADMIN_MEMBER_DELETE,
+                actingAdminId,
+                actorLabel,
+                "MEMBER",
+                String.valueOf(id),
+                null,
+                null);
         memberRepository.delete(member);
     }
 

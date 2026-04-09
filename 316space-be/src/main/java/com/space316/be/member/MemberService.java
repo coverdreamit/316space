@@ -1,5 +1,7 @@
 package com.space316.be.member;
 
+import com.space316.be.audit.ActivityAuditAction;
+import com.space316.be.audit.AuditLogService;
 import com.space316.be.auth.JwtProvider;
 import com.space316.be.domain.member.Member;
 import com.space316.be.domain.member.MemberRepository;
@@ -20,6 +22,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
+    private final AuditLogService auditLogService;
 
     @Transactional(readOnly = true)
     public MemberProfileResponse getProfile(Long memberId) {
@@ -30,7 +33,7 @@ public class MemberService {
                 member.getLoginId(), member.getName(), member.getEmail(), member.getPhone());
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public ProfileAccessResponse issueProfileAccess(Long memberId, String password) {
         Member member = memberRepository
                 .findById(memberId)
@@ -40,6 +43,14 @@ public class MemberService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비밀번호가 올바르지 않습니다.");
         }
         String token = jwtProvider.generateProfileEditToken(memberId);
+        auditLogService.record(
+                ActivityAuditAction.PROFILE_ACCESS_ISSUED,
+                memberId,
+                member.getLoginId(),
+                "MEMBER",
+                String.valueOf(memberId),
+                null,
+                null);
         return ProfileAccessResponse.of(token, jwtProvider.getProfileEditExpirationMs());
     }
 
@@ -56,6 +67,14 @@ public class MemberService {
             member.updatePasswordHash(passwordEncoder.encode(req.newPassword()));
         }
         member.updateProfile(req.name().trim(), req.email(), req.phone());
+        auditLogService.record(
+                ActivityAuditAction.PROFILE_UPDATE,
+                memberId,
+                member.getLoginId(),
+                "MEMBER",
+                String.valueOf(memberId),
+                null,
+                req.newPassword() != null ? "비밀번호 변경 포함" : null);
         return new MemberProfileResponse(
                 member.getLoginId(), member.getName(), member.getEmail(), member.getPhone());
     }

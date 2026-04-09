@@ -1,5 +1,7 @@
 package com.space316.be.admin;
 
+import com.space316.be.audit.ActivityAuditAction;
+import com.space316.be.audit.AuditLogService;
 import com.space316.be.admin.dto.BusinessHoursReplaceRequest;
 import com.space316.be.admin.dto.BusinessHoursRowRequest;
 import com.space316.be.admin.dto.BusinessHoursRowResponse;
@@ -22,6 +24,7 @@ public class AdminBusinessHoursService {
 
     private final HallRepository hallRepository;
     private final BusinessHoursRepository businessHoursRepository;
+    private final AuditLogService auditLogService;
 
     @Transactional(readOnly = true)
     public List<BusinessHoursRowResponse> list(String hallId) {
@@ -48,6 +51,8 @@ public class AdminBusinessHoursService {
             businessHoursRepository.save(new BusinessHours(
                     hallId, row.dayOfWeek(), row.openTime(), row.closeTime()));
         }
+        auditLogService.recordForCurrentAdmin(
+                ActivityAuditAction.ADMIN_BUSINESS_HOURS_REPLACE, "HALL", hallId, null);
         return list(hallId);
     }
 

@@ -1,5 +1,7 @@
 package com.space316.be.booking;
 
+import com.space316.be.audit.ActivityAuditAction;
+import com.space316.be.audit.AuditLogService;
 import com.space316.be.booking.dto.AdminBookingCreateRequest;
 import com.space316.be.booking.dto.BookingResponse;
 import com.space316.be.booking.dto.CancelRequest;
@@ -36,6 +38,7 @@ public class BookingService {
     private final SmsVerificationRepository smsVerificationRepository;
     private final SlackIncomingWebhookNotifier slackIncomingWebhookNotifier;
     private final PostgresHallBookingLock postgresHallBookingLock;
+    private final AuditLogService auditLogService;
 
     // 회원 예약
     @Transactional
@@ -68,6 +71,14 @@ public class BookingService {
 
         BookingResponse saved = BookingResponse.from(bookingRepository.save(booking));
         slackIncomingWebhookNotifier.notifyNewBooking("회원", saved);
+        auditLogService.record(
+                ActivityAuditAction.BOOKING_CREATE_MEMBER,
+                memberId,
+                member.getLoginId(),
+                "BOOKING",
+                saved.bookingNo(),
+                null,
+                saved.hallId());
         return saved;
     }
 
@@ -99,6 +110,14 @@ public class BookingService {
 
         BookingResponse saved = BookingResponse.from(bookingRepository.save(booking));
         slackIncomingWebhookNotifier.notifyNewBooking("비회원", saved);
+        auditLogService.record(
+                ActivityAuditAction.BOOKING_CREATE_GUEST,
+                null,
+                "guest",
+                "BOOKING",
+                saved.bookingNo(),
+                null,
+                saved.hallId());
         return saved;
     }
 
@@ -149,7 +168,30 @@ public class BookingService {
         }
 
         booking.cancel(req != null ? req.reason() : null);
-        return BookingResponse.from(booking);
+        BookingResponse out = BookingResponse.from(booking);
+        if (memberId != null) {
+            memberRepository
+                    .findById(memberId)
+                    .ifPresent(
+                            m -> auditLogService.record(
+                                    ActivityAuditAction.BOOKING_CANCEL_MEMBER,
+                                    memberId,
+                                    m.getLoginId(),
+                                    "BOOKING",
+                                    out.bookingNo(),
+                                    null,
+                                    null));
+        } else {
+            auditLogService.record(
+                    ActivityAuditAction.BOOKING_CANCEL_GUEST,
+                    null,
+                    "guest",
+                    "BOOKING",
+                    out.bookingNo(),
+                    null,
+                    null);
+        }
+        return out;
     }
 
     // ── 관리자 전용 ──────────────────────────────────────────
@@ -184,6 +226,8 @@ public class BookingService {
 
         BookingResponse saved = BookingResponse.from(bookingRepository.save(booking));
         slackIncomingWebhookNotifier.notifyNewBooking("관리자 등록", saved);
+        auditLogService.recordForCurrentAdmin(
+                ActivityAuditAction.BOOKING_ADMIN_CREATE, "BOOKING", saved.bookingNo(), saved.hallId());
         return saved;
     }
 
@@ -191,14 +235,23 @@ public class BookingService {
     public BookingResponse adminConfirm(String bookingNo) {
         Booking booking = findBookingOrThrow(bookingNo);
         booking.confirm();
-        return BookingResponse.from(booking);
+        BookingResponse out = BookingResponse.from(booking);
+        auditLogService.recordForCurrentAdmin(
+                ActivityAuditAction.BOOKING_ADMIN_CONFIRM, "BOOKING", out.bookingNo(), null);
+        return out;
     }
 
     @Transactional
     public BookingResponse adminCancel(String bookingNo, CancelRequest req) {
         Booking booking = findBookingOrThrow(bookingNo);
         booking.cancel(req != null ? req.reason() : null);
-        return BookingResponse.from(booking);
+        BookingResponse out = BookingResponse.from(booking);
+        auditLogService.recordForCurrentAdmin(
+                ActivityAuditAction.BOOKING_ADMIN_CANCEL,
+                "BOOKING",
+                out.bookingNo(),
+                req != null ? req.reason() : null);
+        return out;
     }
 
     // ── private helpers ──────────────────────────────────────

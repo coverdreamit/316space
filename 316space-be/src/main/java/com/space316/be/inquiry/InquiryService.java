@@ -1,5 +1,7 @@
 package com.space316.be.inquiry;
 
+import com.space316.be.audit.ActivityAuditAction;
+import com.space316.be.audit.AuditLogService;
 import com.space316.be.domain.inquiry.Inquiry;
 import com.space316.be.domain.inquiry.InquiryAnswer;
 import com.space316.be.domain.inquiry.InquiryStatus;
@@ -32,6 +34,7 @@ public class InquiryService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final SlackIncomingWebhookNotifier slackIncomingWebhookNotifier;
+    private final AuditLogService auditLogService;
 
     @Transactional(readOnly = true)
     public Page<InquiryListItemResponse> getList(
@@ -98,6 +101,25 @@ public class InquiryService {
 
         Inquiry saved = inquiryRepository.save(inquiry);
         slackIncomingWebhookNotifier.notifyNewInquiry(saved);
+        if (member != null) {
+            auditLogService.record(
+                    ActivityAuditAction.INQUIRY_CREATE,
+                    member.getId(),
+                    member.getLoginId(),
+                    "INQUIRY",
+                    String.valueOf(saved.getId()),
+                    null,
+                    saved.getTitle());
+        } else {
+            auditLogService.record(
+                    ActivityAuditAction.INQUIRY_CREATE,
+                    null,
+                    "guest",
+                    "INQUIRY",
+                    String.valueOf(saved.getId()),
+                    null,
+                    saved.getTitle());
+        }
         return toDetailResponse(saved, memberId, plainForDetail);
     }
 
@@ -106,7 +128,9 @@ public class InquiryService {
         Inquiry inquiry = findOrThrow(id);
         assertCanModify(inquiry, memberId, guestPassword);
         inquiry.updateInquiry(req.category(), req.title().trim(), req.content().trim(), req.isPrivate());
-        return toDetailResponse(inquiryRepository.save(inquiry), memberId, guestPassword);
+        Inquiry saved = inquiryRepository.save(inquiry);
+        logInquiryMutation(ActivityAuditAction.INQUIRY_UPDATE, saved, memberId);
+        return toDetailResponse(saved, memberId, guestPassword);
     }
 
     @Transactional
@@ -116,6 +140,12 @@ public class InquiryService {
             assertCanModify(inquiry, memberId, guestPassword);
         }
         inquiryAnswerRepository.findByInquiryId(id).ifPresent(inquiryAnswerRepository::delete);
+        if (isAdmin) {
+            auditLogService.recordForCurrentAdmin(
+                    ActivityAuditAction.INQUIRY_DELETE, "INQUIRY", String.valueOf(id), null);
+        } else {
+            logInquiryMutation(ActivityAuditAction.INQUIRY_DELETE, inquiry, memberId);
+        }
         inquiryRepository.delete(inquiry);
     }
 
@@ -139,6 +169,14 @@ public class InquiryService {
         inquiryAnswerRepository.save(answer);
         inquiry.markAnswered();
 
+        auditLogService.record(
+                ActivityAuditAction.INQUIRY_ANSWER_CREATE,
+                adminId,
+                admin.getLoginId(),
+                "INQUIRY",
+                String.valueOf(inquiryId),
+                null,
+                null);
         return AnswerResponse.from(answer);
     }
 
@@ -148,6 +186,8 @@ public class InquiryService {
                 .orElseThrow(() -> new IllegalArgumentException("답변이 존재하지 않습니다."));
 
         answer.updateContent(req.content());
+        auditLogService.recordForCurrentAdmin(
+                ActivityAuditAction.INQUIRY_ANSWER_UPDATE, "INQUIRY", String.valueOf(inquiryId), null);
         return AnswerResponse.from(answer);
     }
 
@@ -196,6 +236,31 @@ public class InquiryService {
         boolean canModify = inquiry.getStatus() == InquiryStatus.WAITING;
         boolean canEdit = canModify && (mine || guestPwdMatches);
         return InquiryDetailResponse.of(inquiry, guestPost, mine, canEdit, canEdit);
+    }
+
+    private void logInquiryMutation(ActivityAuditAction action, Inquiry inquiry, Long memberId) {
+        if (inquiry.getMember() != null && memberId != null) {
+            memberRepository
+                    .findById(memberId)
+                    .ifPresent(
+                            m -> auditLogService.record(
+                                    action,
+                                    memberId,
+                                    m.getLoginId(),
+                                    "INQUIRY",
+                                    String.valueOf(inquiry.getId()),
+                                    null,
+                                    null));
+        } else {
+            auditLogService.record(
+                    action,
+                    null,
+                    "guest",
+                    "INQUIRY",
+                    String.valueOf(inquiry.getId()),
+                    null,
+                    null);
+        }
     }
 
     private void assertCanModify(Inquiry inquiry, Long memberId, String guestPassword) {
