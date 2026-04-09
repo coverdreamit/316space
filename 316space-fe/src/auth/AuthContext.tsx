@@ -9,6 +9,9 @@ import {
   type ReactNode,
 } from "react";
 import {
+  MSG_NETWORK_UNAVAILABLE,
+  notifyNetworkFailure,
+  notifyUpstreamErrorIfNeeded,
   readErrorMessage,
   setAccessTokenGetter,
   setAuthFailureHandler,
@@ -51,11 +54,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   setAccessTokenGetter(() => authRef.current?.accessToken ?? null);
 
   const login = useCallback(async (loginId: string, password: string) => {
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ loginId: loginId.trim(), password }),
-    });
+    let res: Response;
+    try {
+      res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ loginId: loginId.trim(), password }),
+      });
+    } catch {
+      notifyNetworkFailure();
+      throw new Error(MSG_NETWORK_UNAVAILABLE);
+    }
+    await notifyUpstreamErrorIfNeeded(res);
     if (!res.ok)
       throw new Error(
         await readErrorMessage(res, { replaceForbiddenWithSessionHint: false }),
@@ -84,11 +94,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const phone = payload.phone?.trim();
       if (phone) body.phone = phone;
 
-      const res = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
+      let res: Response;
+      try {
+        res = await fetch("/api/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+      } catch {
+        notifyNetworkFailure();
+        throw new Error(MSG_NETWORK_UNAVAILABLE);
+      }
+      await notifyUpstreamErrorIfNeeded(res);
       if (!res.ok) throw new Error(await readErrorMessage(res));
     },
     [],

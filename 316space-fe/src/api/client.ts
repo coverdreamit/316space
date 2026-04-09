@@ -1,5 +1,53 @@
 let getAccessToken: () => string | null = () => null;
 let onAuthFailure: (() => void) | null = null;
+let onApiWarning: ((message: string) => void) | null = null;
+
+/** 상단 경고 배너. ApiWarningProvider에서 등록합니다. */
+export function setApiWarningHandler(fn: ((message: string) => void) | null): void {
+  onApiWarning = fn;
+}
+
+export const MSG_UPSTREAM_UNAVAILABLE =
+  "서버에 일시적으로 연결할 수 없습니다(게이트웨이·프록시 오류). 잠시 후 다시 시도해 주세요.";
+
+export const MSG_NETWORK_UNAVAILABLE =
+  "네트워크 오류로 서버에 연결하지 못했습니다. 연결 상태를 확인해 주세요.";
+
+function looksLikeGatewayHtml(preview: string): boolean {
+  const head = preview.slice(0, 900).toLowerCase();
+  return (
+    head.includes("bad gateway") ||
+    head.includes("502 bad gateway") ||
+    head.includes("503 service") ||
+    head.includes("504 gateway") ||
+    (head.includes("<html") && head.includes("nginx"))
+  );
+}
+
+function notifyIfUpstreamIssue(res: Response, bodyPreview: string): void {
+  if (res.ok) return;
+  const s = res.status;
+  if (s === 502 || s === 503 || s === 504) {
+    onApiWarning?.(MSG_UPSTREAM_UNAVAILABLE);
+    return;
+  }
+  const ct = res.headers.get("content-type") ?? "";
+  if (ct.includes("text/html") && looksLikeGatewayHtml(bodyPreview)) {
+    onApiWarning?.(MSG_UPSTREAM_UNAVAILABLE);
+  }
+}
+
+/** apiFetch를 쓰지 않는 요청(login 등)에서도 동일한 경고를 띄울 때 사용합니다. */
+export async function notifyUpstreamErrorIfNeeded(res: Response): Promise<void> {
+  if (res.ok) return;
+  const text = await res.clone().text();
+  notifyIfUpstreamIssue(res, text);
+}
+
+/** fetch가 네트워크 단에서 실패했을 때 경고만 띄웁니다. */
+export function notifyNetworkFailure(): void {
+  onApiWarning?.(MSG_NETWORK_UNAVAILABLE);
+}
 
 export function setAccessTokenGetter(fn: () => string | null): void {
   getAccessToken = fn;
@@ -23,12 +71,27 @@ export type ReadErrorMessageOptions = {
   replaceForbiddenWithSessionHint?: boolean;
 };
 
+function upstreamOrHtmlErrorMessage(res: Response, text: string): string | null {
+  if (res.status === 502 || res.status === 503 || res.status === 504) {
+    return MSG_UPSTREAM_UNAVAILABLE;
+  }
+  const trimmed = text.trimStart();
+  if (trimmed.startsWith("<") && looksLikeGatewayHtml(text)) {
+    return MSG_UPSTREAM_UNAVAILABLE;
+  }
+  return null;
+}
+
 async function readErrorMessage(
   res: Response,
   options: ReadErrorMessageOptions = {},
 ): Promise<string> {
   const useSessionHintOn403 = options.replaceForbiddenWithSessionHint !== false;
   const text = await res.text();
+  if (!res.ok) {
+    const upstream = upstreamOrHtmlErrorMessage(res, text);
+    if (upstream) return upstream;
+  }
   try {
     const j = JSON.parse(text) as Record<string, unknown>;
     const msg =
@@ -63,8 +126,18 @@ export async function apiFetch(
   if (init.body != null && !headers.has("Content-Type")) {
     headers.set("Content-Type", "application/json");
   }
-  const res = await fetch(path, { ...init, headers });
+  let res: Response;
+  try {
+    res = await fetch(path, { ...init, headers });
+  } catch {
+    onApiWarning?.(MSG_NETWORK_UNAVAILABLE);
+    throw new Error(MSG_NETWORK_UNAVAILABLE);
+  }
   maybeInvalidateSession(res);
+  if (!res.ok) {
+    const preview = (await res.clone().text()).slice(0, 1200);
+    notifyIfUpstreamIssue(res, preview);
+  }
   return res;
 }
 
