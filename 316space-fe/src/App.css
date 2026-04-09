@@ -1297,8 +1297,12 @@ button.header-account-email:focus-visible {
   min-width: 0;
 }
 
-.contact-inquiry-modal__form--stacked .contact-inquiry-modal__field-narrow .booking-input,
-.contact-inquiry-modal__form--stacked .contact-inquiry-modal__field-narrow select.booking-input {
+.contact-inquiry-modal__form--stacked
+  .contact-inquiry-modal__field-narrow
+  .booking-input,
+.contact-inquiry-modal__form--stacked
+  .contact-inquiry-modal__field-narrow
+  select.booking-input {
   width: 100%;
   box-sizing: border-box;
 }
@@ -1406,7 +1410,6 @@ button.header-account-email:focus-visible {
   padding-top: 1rem;
   border-top: 1px solid var(--line);
 }
-
 
 .modal__header--signup {
   display: flex;
@@ -1629,6 +1632,29 @@ button.header-account-email:focus-visible {
   align-items: flex-end;
   gap: 1.25rem 1.5rem;
   margin-bottom: 1rem;
+}
+
+.admin-toolbar--pagination {
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+}
+
+.admin-select--pagination {
+  flex: 0 0 auto;
+  width: 3rem;
+  min-width: 3rem;
+  max-width: 3rem;
+  font-size: 0.75rem;
+  line-height: 1.25;
+  padding: 0.15rem 0;
+  padding-right: 0.7rem;
+  text-align: center;
+  background-position:
+    calc(100% - 0.28rem) 55%,
+    calc(100% - 0.12rem) 55%;
+  background-size:
+    3px 3px,
+    3px 3px;
 }
 
 .admin-field {

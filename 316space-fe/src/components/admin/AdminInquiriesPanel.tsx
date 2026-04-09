@@ -7,7 +7,9 @@ import {
   type InquiryListItemDto,
   type InquiryStatus,
 } from '../../api/inquiries'
+import AdminGridPagination from './AdminGridPagination'
 import AdminInquiryAnswerModal from './AdminInquiryAnswerModal'
+import { DEFAULT_ADMIN_GRID_PAGE_SIZE, type AdminGridPageSize } from './adminGridPageSize'
 
 const CATEGORY_LABEL: Record<InquiryCategory, string> = {
   BOOKING: '예약',
@@ -34,10 +36,11 @@ function formatDt(iso: string): string {
 export default function AdminInquiriesPanel() {
   const [statusFilter, setStatusFilter] = useState<InquiryStatus | ''>('')
   const [page, setPage] = useState(0)
-  const pageSize = 15
+  const [pageSize, setPageSize] = useState<AdminGridPageSize>(DEFAULT_ADMIN_GRID_PAGE_SIZE)
 
   const [items, setItems] = useState<InquiryListItemDto[]>([])
   const [totalPages, setTotalPages] = useState(0)
+  const [totalElements, setTotalElements] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -51,10 +54,12 @@ export default function AdminInquiriesPanel() {
       const data = await fetchInquiries(page, pageSize, statusFilter === '' ? undefined : statusFilter)
       setItems(data.content ?? [])
       setTotalPages(data.totalPages ?? 0)
+      setTotalElements(data.totalElements ?? 0)
     } catch (e) {
       setError(e instanceof Error ? e.message : '목록을 불러오지 못했습니다.')
       setItems([])
       setTotalPages(0)
+      setTotalElements(0)
     } finally {
       setLoading(false)
     }
@@ -177,29 +182,20 @@ export default function AdminInquiriesPanel() {
         </table>
       </div>
 
-      {totalPages > 1 && (
-        <div className="admin-toolbar" style={{ marginTop: '1rem' }}>
-          <button
-            type="button"
-            className="admin-btn-table"
-            disabled={page <= 0 || loading}
-            onClick={() => setPage(p => Math.max(0, p - 1))}
-          >
-            이전
-          </button>
-          <span className="admin-label" style={{ alignSelf: 'center', textTransform: 'none', letterSpacing: 'normal' }}>
-            {page + 1} / {totalPages}
-          </span>
-          <button
-            type="button"
-            className="admin-btn-table"
-            disabled={page >= totalPages - 1 || loading}
-            onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
-          >
-            다음
-          </button>
-        </div>
-      )}
+      <AdminGridPagination
+        selectId="admin-inquiries-page-size"
+        page={page}
+        totalPages={totalPages}
+        pageSize={pageSize}
+        onPageChange={setPage}
+        onPageSizeChange={size => {
+          setPage(0)
+          setPageSize(size)
+        }}
+        disabled={loading}
+        totalElements={totalElements}
+        hidden={loading}
+      />
 
       {answerInquiryId != null &&
         createPortal(

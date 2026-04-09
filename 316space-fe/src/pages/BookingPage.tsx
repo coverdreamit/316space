@@ -10,9 +10,9 @@ import { fetchHalls, type HallListItem } from '../api/halls'
 import { createMemberBooking } from '../api/memberBookings'
 import { useAuth } from '../auth/AuthContext'
 
-/** 예약 UI 기본 영업 시간 (시작 시각 ~ 마지막 종료 시각) */
-const OPEN_HOUR = 9
-const CLOSE_HOUR = 22
+/** 하루 24시간 예약: 시간 칸 [h, h+1), h = 0..23 (23시 칸은 23:00~24:00) */
+const FIRST_SLOT_HOUR = 0
+const LAST_SLOT_HOUR = 23
 
 const WEEKDAY_LABELS = ['일', '월', '화', '수', '목', '금', '토'] as const
 
@@ -48,15 +48,27 @@ function busyIntervalsForDay(items: AvailabilityItem[], dayYmd: string): { start
     .map(i => ({ start: new Date(i.startAt), end: new Date(i.endAt) }))
 }
 
+function hourSlotBounds(dayYmd: string, h: number): { start: Date; end: Date } {
+  const start = new Date(`${dayYmd}T${pad2(h)}:00:00`)
+  return { start, end: new Date(start.getTime() + 60 * 60 * 1000) }
+}
+
+/** API/비교용: 선택 종료 시각(배타적 upper). endHour === 24 → 익일 00:00 */
+function exclusiveEndLocalIso(dayYmd: string, endHour: number): string {
+  if (endHour < 24) return `${dayYmd}T${pad2(endHour)}:00:00`
+  const d = new Date(`${dayYmd}T00:00:00`)
+  d.setDate(d.getDate() + 1)
+  return `${ymd(d)}T00:00:00`
+}
+
 /**
  * 오늘이면 해당 칸의 시작 정각이 이미 지난 경우 true (17:30이면 17~18칸은 잠금).
  * 1시간 단위 예약은 ‘이미 시작한 시간대’는 예약할 수 없다고 본다.
  */
 function hourSlotPast(h: number, dayYmd: string, now: Date): boolean {
-  if (h < OPEN_HOUR || h >= CLOSE_HOUR) return true
   if (dayYmd < ymd(now)) return true
   if (dayYmd > ymd(now)) return false
-  const slotStart = new Date(`${dayYmd}T${pad2(h)}:00:00`)
+  const { start: slotStart } = hourSlotBounds(dayYmd, h)
   return now >= slotStart
 }
 
@@ -65,13 +77,11 @@ function hourSlotBookedOrBlocked(
   dayYmd: string,
   busy: { start: Date; end: Date }[],
 ): boolean {
-  if (h < OPEN_HOUR || h >= CLOSE_HOUR) return true
-  const slotStart = new Date(`${dayYmd}T${pad2(h)}:00:00`)
-  const slotEnd = new Date(`${dayYmd}T${pad2(h + 1)}:00:00`)
+  const { start: slotStart, end: slotEnd } = hourSlotBounds(dayYmd, h)
   return busy.some(b => slotStart < b.end && slotEnd > b.start)
 }
 
-/** [h, h+1) 구간이 영업·미과거·비어 있으면 true */
+/** [h, h+1) 구간이 미과거·비어 있으면 true */
 function hourSlotFree(
   h: number,
   dayYmd: string,
@@ -85,7 +95,7 @@ function hourSlotFree(
 function dayHasAnyFreeSlot(dayYmd: string, items: AvailabilityItem[], now: Date): boolean {
   if (dayYmd < ymd(now)) return false
   const busy = busyIntervalsForDay(items, dayYmd)
-  for (let h = OPEN_HOUR; h < CLOSE_HOUR; h++) {
+  for (let h = FIRST_SLOT_HOUR; h <= LAST_SLOT_HOUR; h++) {
     if (hourSlotFree(h, dayYmd, busy, now)) return true
   }
   return false
@@ -147,8 +157,8 @@ export default function BookingPage() {
   const [loadingHalls, setLoadingHalls] = useState(true)
   const [loadingMonth, setLoadingMonth] = useState(false)
 
-  const [startHour, setStartHour] = useState(OPEN_HOUR)
-  const [endHour, setEndHour] = useState(OPEN_HOUR + 1)
+  const [startHour, setStartHour] = useState(FIRST_SLOT_HOUR)
+  const [endHour, setEndHour] = useState(FIRST_SLOT_HOUR + 1)
   /** 시간 칸 두 번 클릭으로 구간 잡기: 첫 클릭 시각 */
   const [rangeFirst, setRangeFirst] = useState<number | null>(null)
   /** 일간 뷰에서 현재 시각이 지나면 슬롯 색·선택 가능 여부를 갱신 */
@@ -179,7 +189,7 @@ export default function BookingPage() {
   const freeByHour = useMemo(() => {
     const now = new Date()
     const m: Record<number, boolean> = {}
-    for (let h = OPEN_HOUR; h < CLOSE_HOUR; h++) {
+    for (let h = FIRST_SLOT_HOUR; h <= LAST_SLOT_HOUR; h++) {
       m[h] = hourSlotFree(h, detailYmd, busyForDetail, now)
     }
     return m
@@ -188,7 +198,7 @@ export default function BookingPage() {
   const pastByHour = useMemo(() => {
     const now = new Date()
     const m: Record<number, boolean> = {}
-    for (let h = OPEN_HOUR; h < CLOSE_HOUR; h++) {
+    for (let h = FIRST_SLOT_HOUR; h <= LAST_SLOT_HOUR; h++) {
       m[h] = hourSlotPast(h, detailYmd, now)
     }
     return m
@@ -198,11 +208,11 @@ export default function BookingPage() {
     const now = new Date()
     if (phase !== 'day' || !detailYmd) return false
     if (detailYmd < todayYmd) return false
-    if (endHour <= startHour) return false
+    if (startHour < FIRST_SLOT_HOUR || startHour > LAST_SLOT_HOUR) return false
+    if (endHour <= startHour || endHour > 24) return false
     const selStart = new Date(`${detailYmd}T${pad2(startHour)}:00:00`)
-    const selEnd = new Date(`${detailYmd}T${pad2(endHour)}:00:00`)
+    const selEnd = new Date(exclusiveEndLocalIso(detailYmd, endHour))
     if (selEnd <= selStart || selStart <= now || selEnd <= now) return false
-    if (startHour < OPEN_HOUR || endHour > CLOSE_HOUR) return false
     if (selectionOverlapsBusy(selStart, selEnd, busyForDetail)) return false
     return rangeFullyFree(startHour, endHour, detailYmd, busyForDetail, now)
   }, [phase, detailYmd, todayYmd, startHour, endHour, busyForDetail, slotClockTick])
@@ -281,7 +291,7 @@ export default function BookingPage() {
     const now = new Date()
     const busy = busyIntervalsForDay(itemsByHall[hallId] ?? [], detailYmd)
     let found = false
-    for (let s = OPEN_HOUR; s < CLOSE_HOUR; s++) {
+    for (let s = FIRST_SLOT_HOUR; s <= LAST_SLOT_HOUR; s++) {
       if (rangeFullyFree(s, s + 1, detailYmd, busy, now)) {
         setStartHour(s)
         setEndHour(s + 1)
@@ -290,8 +300,8 @@ export default function BookingPage() {
       }
     }
     if (!found) {
-      setStartHour(OPEN_HOUR)
-      setEndHour(OPEN_HOUR + 1)
+      setStartHour(FIRST_SLOT_HOUR)
+      setEndHour(FIRST_SLOT_HOUR + 1)
     }
   }, [hallId, detailYmd, phase, itemsByHall, slotClockTick])
 
@@ -369,11 +379,11 @@ export default function BookingPage() {
       return
     }
     if (!selectionValid) {
-      setSubmitError('선택한 시간이 비어 있지 않거나, 과거 시간이거나, 영업 시간 밖입니다.')
+      setSubmitError('선택한 시간이 비어 있지 않거나, 과거 시간입니다.')
       return
     }
     const startAt = `${detailYmd}T${pad2(startHour)}:00:00`
-    const endAt = `${detailYmd}T${pad2(endHour)}:00:00`
+    const endAt = exclusiveEndLocalIso(detailYmd, endHour)
     setSubmitting(true)
     try {
       const res = await createMemberBooking({
@@ -410,7 +420,7 @@ export default function BookingPage() {
             'booking-cal__hall-mark',
             past ? 'booking-cal__hall-mark--past' : free ? 'booking-cal__hall-mark--free' : 'booking-cal__hall-mark--busy',
           ].join(' ')}
-          title={`${h.name}: ${past ? '지난 날' : free ? '예약 가능 시간 있음' : '해당일 영업시간 내 예약 불가'}`}
+          title={`${h.name}: ${past ? '지난 날' : free ? '예약 가능 시간 있음' : '해당일 예약 가능한 시간 없음'}`}
           aria-hidden
         />
       )
@@ -557,12 +567,12 @@ export default function BookingPage() {
             </div>
 
             <p className="booking-hint">
-              {OPEN_HOUR}시~{CLOSE_HOUR}시, 한 칸은 1시간입니다. 가능한 칸을 눌러 시작·다음 칸으로 끝을 정합니다 (두 번째
-              클릭). · {slotMinutes}분 단위 정책과 동일하게 맞춰 두었습니다.
+              0시~24시(자정), 한 칸은 1시간입니다. 가능한 칸을 눌러 시작·다음 칸으로 끝을 정합니다 (두 번째 클릭). ·{' '}
+              {slotMinutes}분 단위 정책과 동일하게 맞춰 두었습니다.
             </p>
 
             <div className="booking-slot-grid" role="list" aria-label="시간대">
-              {Array.from({ length: CLOSE_HOUR - OPEN_HOUR }, (_, i) => OPEN_HOUR + i).map(h => {
+              {Array.from({ length: LAST_SLOT_HOUR - FIRST_SLOT_HOUR + 1 }, (_, i) => FIRST_SLOT_HOUR + i).map(h => {
                 const past = pastByHour[h]
                 const free = freeByHour[h]
                 const inRange = h >= startHour && h < endHour
@@ -583,7 +593,7 @@ export default function BookingPage() {
                     onClick={() => onHourSlotClick(h)}
                   >
                     <span className="booking-slot__time">
-                      {pad2(h)}:00 – {pad2(h + 1)}:00
+                      {pad2(h)}:00 – {h < LAST_SLOT_HOUR ? `${pad2(h + 1)}:00` : '24:00'}
                     </span>
                   </button>
                 )
@@ -607,7 +617,7 @@ export default function BookingPage() {
               <p className="booking-selection-summary">
                 선택 시간:{' '}
                 <strong>
-                  {pad2(startHour)}:00 ~ {pad2(endHour)}:00
+                  {pad2(startHour)}:00 ~ {endHour === 24 ? '24:00' : `${pad2(endHour)}:00`}
                 </strong>{' '}
                 ({endHour - startHour}시간)
                 {rangeFirst !== null && (
@@ -658,7 +668,7 @@ export default function BookingPage() {
 
               {!selectionValid && (
                 <p className="booking-hint booking-hint--warn">
-                  선택한 구간이 비어 있지 않거나, 과거이거나, 영업 시간을 벗어났습니다. 녹색 칸만 눌러 구간을 잡아 주세요.
+                  선택한 구간이 비어 있지 않거나, 과거 시간입니다. 녹색 칸만 눌러 구간을 잡아 주세요.
                 </p>
               )}
 

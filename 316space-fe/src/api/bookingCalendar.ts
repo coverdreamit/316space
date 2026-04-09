@@ -85,15 +85,6 @@ export const DAY_OF_WEEK_LABEL: Record<DayOfWeekName, string> = {
   SUNDAY: '일',
 }
 
-/** openTime / closeTime — "HH:mm:ss" 또는 "HH:mm" 로컬 시각 문자열 */
-export interface BusinessHoursDto {
-  id: number
-  hallId: string
-  dayOfWeek: DayOfWeekName
-  openTime: string
-  closeTime: string
-}
-
 export interface HallClosureDto {
   id: number
   /** null 이면 전체 시설 */

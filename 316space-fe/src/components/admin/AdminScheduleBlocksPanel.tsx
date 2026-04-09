@@ -85,6 +85,7 @@ export default function AdminScheduleBlocksPanel() {
 
   return (
     <div className="admin-module">
+      <h3 className="admin-panel-section-title">스케줄 블록</h3>
       <div className="admin-toolbar">
         <div className="admin-field">
           <label className="admin-label" htmlFor="admin-block-from">
