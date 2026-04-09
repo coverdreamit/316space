@@ -36,7 +36,8 @@ public class MemberService {
                 .findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
         if (!passwordEncoder.matches(password, member.getPasswordHash())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "비밀번호가 올바르지 않습니다.");
+            // 401이면 프론트 전역 로그아웃과 겹침 — 재인증 실패는 400으로 구분
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "비밀번호가 올바르지 않습니다.");
         }
         String token = jwtProvider.generateProfileEditToken(memberId);
         return ProfileAccessResponse.of(token, jwtProvider.getProfileEditExpirationMs());

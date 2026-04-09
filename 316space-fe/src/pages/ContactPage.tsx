@@ -63,7 +63,7 @@ export default function ContactPage() {
   const inquiryOverlayRef = useRef<HTMLDivElement>(null)
   const detailOverlayRef = useRef<HTMLDivElement>(null)
   const inquiryCategoryRef = useRef<HTMLSelectElement>(null)
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, loginId } = useAuth()
 
   const [authorName, setAuthorName] = useState('')
   const [authorPhone, setAuthorPhone] = useState('')
@@ -130,7 +130,12 @@ export default function ContactPage() {
   }, [loadList])
 
   useEffect(() => {
-    if (!isAuthenticated) return
+    if (!isAuthenticated) {
+      setAuthorName('')
+      setAuthorEmail('')
+      setAuthorPhone('')
+      return
+    }
     let cancelled = false
     ;(async () => {
       try {
@@ -140,13 +145,17 @@ export default function ContactPage() {
         setAuthorEmail(data.email ?? '')
         setAuthorPhone(data.phone?.replace(/\D/g, '') ?? '')
       } catch {
-        /* ignore */
+        if (cancelled) return
+        // 이전 세션·다른 계정 값이 남지 않게 함 (프로필 조회 실패 시)
+        setAuthorName('')
+        setAuthorEmail('')
+        setAuthorPhone('')
       }
     })()
     return () => {
       cancelled = true
     }
-  }, [isAuthenticated])
+  }, [isAuthenticated, loginId])
 
   const closeDetail = useCallback(() => {
     setDetailOpen(false)
@@ -480,7 +489,7 @@ export default function ContactPage() {
                 value={authorName}
                 onChange={e => setAuthorName(e.target.value)}
                 maxLength={50}
-                autoComplete="name"
+                autoComplete="off"
                 required
               />
             </div>

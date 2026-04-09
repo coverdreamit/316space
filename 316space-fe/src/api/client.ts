@@ -10,9 +10,10 @@ export function setAuthFailureHandler(fn: (() => void) | null): void {
   onAuthFailure = fn;
 }
 
+/** 401만 세션 만료로 본다. 403은 로그인은 됐으나 리소스 권한이 없는 경우가 많아 로그아웃하면 안 됨. */
 function maybeInvalidateSession(res: Response): void {
   if (res.ok) return;
-  if (res.status !== 401 && res.status !== 403) return;
+  if (res.status !== 401) return;
   if (!getAccessToken()) return;
   onAuthFailure?.();
 }
