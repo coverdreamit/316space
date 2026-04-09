@@ -73,12 +73,17 @@ export default function AdminPage() {
   const onTabKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLButtonElement>, id: TabId) => {
       const i = TAB_ORDER.indexOf(id)
-      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+      if (
+        e.key === 'ArrowDown' ||
+        e.key === 'ArrowUp' ||
+        e.key === 'ArrowRight' ||
+        e.key === 'ArrowLeft'
+      ) {
         e.preventDefault()
-        const next =
-          e.key === 'ArrowRight'
-            ? TAB_ORDER[(i + 1) % TAB_ORDER.length]
-            : TAB_ORDER[(i - 1 + TAB_ORDER.length) % TAB_ORDER.length]
+        const forward = e.key === 'ArrowDown' || e.key === 'ArrowRight'
+        const next = forward
+          ? TAB_ORDER[(i + 1) % TAB_ORDER.length]
+          : TAB_ORDER[(i - 1 + TAB_ORDER.length) % TAB_ORDER.length]
         focusTab(next)
       } else if (e.key === 'Home') {
         e.preventDefault()
@@ -105,24 +110,31 @@ export default function AdminPage() {
       </header>
 
       <div className="admin-tabs">
-        <div role="tablist" aria-label="관리 메뉴" className="admin-tablist">
-          {TAB_ORDER.map(id => (
-            <button
-              key={id}
-              type="button"
-              role="tab"
-              id={`admin-tab-${id}`}
-              className="admin-tab"
-              aria-selected={activeTab === id}
-              aria-controls="admin-panel"
-              tabIndex={activeTab === id ? 0 : -1}
-              onClick={() => setActiveTab(id)}
-              onKeyDown={e => onTabKeyDown(e, id)}
-            >
-              {TAB_LABELS[id]}
-            </button>
-          ))}
-        </div>
+        <aside className="admin-sidebar">
+          <div
+            role="tablist"
+            aria-label="관리 메뉴"
+            aria-orientation="vertical"
+            className="admin-tablist"
+          >
+            {TAB_ORDER.map(id => (
+              <button
+                key={id}
+                type="button"
+                role="tab"
+                id={`admin-tab-${id}`}
+                className="admin-tab"
+                aria-selected={activeTab === id}
+                aria-controls="admin-panel"
+                tabIndex={activeTab === id ? 0 : -1}
+                onClick={() => setActiveTab(id)}
+                onKeyDown={e => onTabKeyDown(e, id)}
+              >
+                {TAB_LABELS[id]}
+              </button>
+            ))}
+          </div>
+        </aside>
 
         <div
           id="admin-panel"

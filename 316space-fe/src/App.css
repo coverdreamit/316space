@@ -1485,18 +1485,31 @@ button.header-account-email:focus-visible {
   margin-left: 0.15rem;
 }
 
-/* —— Admin (탭 · 필드 · 목록 뼈대) —— */
+/* —— Admin (사이드 탭 · 필드 · 목록 뼈대) —— */
 .admin-tabs {
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(1rem, 3vw, 2rem);
   margin-top: 0.5rem;
+}
+
+.admin-sidebar {
+  flex-shrink: 0;
+  width: min(13.5rem, 32vw);
+  position: sticky;
+  top: calc(var(--site-header-h, 0px) + 1rem);
+  align-self: flex-start;
 }
 
 .admin-tablist {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem 0.5rem;
-  border-bottom: 1px solid var(--line);
-  padding-bottom: 0;
-  margin-bottom: 1.25rem;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  gap: 0.2rem;
+  margin: 0;
+  padding: 0 1rem 0 0;
+  border-bottom: none;
+  border-right: 1px solid var(--line);
 }
 
 .admin-tab {
@@ -1508,32 +1521,85 @@ button.header-account-email:focus-visible {
   color: var(--fg-muted);
   background: transparent;
   border: none;
-  border-bottom: 2px solid transparent;
-  padding: 0.65rem 0.85rem;
-  margin-bottom: -1px;
+  border-left: 3px solid transparent;
+  padding: 0.55rem 0.5rem 0.55rem 0.85rem;
+  width: 100%;
+  text-align: left;
   cursor: pointer;
   outline: none;
+  border-radius: 0 2px 2px 0;
   transition:
     color 0.2s ease,
-    border-color 0.2s ease;
+    border-color 0.2s ease,
+    background-color 0.2s ease;
 }
 
 .admin-tab:hover {
   color: var(--fg);
+  background: color-mix(in srgb, var(--fg) 4%, transparent);
 }
 
 .admin-tab:focus-visible {
   color: var(--fg);
-  border-bottom-color: var(--accent);
+  border-left-color: var(--accent);
 }
 
 .admin-tab[aria-selected="true"] {
   color: var(--fg);
-  border-bottom-color: var(--fg);
+  border-left-color: var(--fg);
+  background: color-mix(in srgb, var(--fg) 6%, transparent);
 }
 
 .admin-tabpanel {
+  flex: 1;
+  min-width: 0;
   outline: none;
+}
+
+@media (max-width: 52rem) {
+  .admin-tabs {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .admin-sidebar {
+    width: 100%;
+    position: static;
+    top: auto;
+  }
+
+  .admin-tablist {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.4rem;
+    padding: 0 0 0.65rem;
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .admin-tab {
+    width: auto;
+    border-left: none;
+    border-bottom: 2px solid transparent;
+    padding: 0.55rem 0.75rem;
+    border-radius: 2px 2px 0 0;
+  }
+
+  .admin-tab:focus-visible {
+    border-left-color: transparent;
+    border-bottom-color: var(--accent);
+  }
+
+  .admin-tab[aria-selected="true"] {
+    border-left-color: transparent;
+    border-bottom-color: var(--fg);
+    background: transparent;
+  }
+
+  .admin-tab:hover {
+    background: transparent;
+  }
 }
 
 .admin-tabpanel:focus-visible {
