@@ -1,13 +1,14 @@
-import { useCallback, useEffect, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import {
   adminCancelBooking,
   adminConfirmBooking,
-  createAdminBooking,
   fetchAdminBookings,
   type PageDto,
 } from '../../api/adminBookings'
 import { fetchAdminHalls, type HallAdminDto } from '../../api/adminHalls'
 import { BOOKING_STATUS_LABEL, type BookingDto, type BookingStatus } from '../../api/bookingCalendar'
+import AdminBookingCreateModal from './AdminBookingCreateModal'
 import AdminGridPagination from './AdminGridPagination'
 import AdminScheduleBlocksPanel from './AdminScheduleBlocksPanel'
 import { DEFAULT_ADMIN_GRID_PAGE_SIZE, type AdminGridPageSize } from './adminGridPageSize'
@@ -35,11 +36,6 @@ function formatRange(iso: string): string {
   }
 }
 
-function toIsoDateTime(local: string): string {
-  if (!local) return ''
-  return local.length === 16 ? `${local}:00` : local
-}
-
 export default function AdminBookingsPanel() {
   const [halls, setHalls] = useState<HallAdminDto[]>([])
   const [hallsLoading, setHallsLoading] = useState(true)
@@ -53,16 +49,7 @@ export default function AdminBookingsPanel() {
   const [bookingData, setBookingData] = useState<PageDto<BookingDto> | null>(null)
   const [bookingLoading, setBookingLoading] = useState(false)
   const [bookingError, setBookingError] = useState<string | null>(null)
-
-  const [createGuestName, setCreateGuestName] = useState('')
-  const [createGuestPhone, setCreateGuestPhone] = useState('')
-  const [createHallId, setCreateHallId] = useState('')
-  const [createStart, setCreateStart] = useState('')
-  const [createEnd, setCreateEnd] = useState('')
-  const [createHeadcount, setCreateHeadcount] = useState('')
-  const [createPurpose, setCreatePurpose] = useState('')
-  const [createNote, setCreateNote] = useState('')
-  const [createSubmitting, setCreateSubmitting] = useState(false)
+  const [createModalOpen, setCreateModalOpen] = useState(false)
 
   const loadHalls = useCallback(async () => {
     setHallsLoading(true)
@@ -81,14 +68,6 @@ export default function AdminBookingsPanel() {
   useEffect(() => {
     void loadHalls()
   }, [loadHalls])
-
-  useEffect(() => {
-    if (halls.length === 0) return
-    const ids = new Set(halls.map(h => h.hallId))
-    if (!createHallId || !ids.has(createHallId)) {
-      setCreateHallId(halls[0].hallId)
-    }
-  }, [halls, createHallId])
 
   const loadBookings = useCallback(async () => {
     setBookingLoading(true)
@@ -122,47 +101,6 @@ export default function AdminBookingsPanel() {
   useEffect(() => {
     void loadBookings()
   }, [loadBookings])
-
-  const submitCreateBooking = async (e: FormEvent) => {
-    e.preventDefault()
-    setCreateSubmitting(true)
-    try {
-      const body: Parameters<typeof createAdminBooking>[0] = {
-        guestName: createGuestName.trim(),
-        guestPhone: createGuestPhone.trim(),
-        hallId: createHallId,
-        startAt: toIsoDateTime(createStart),
-        endAt: toIsoDateTime(createEnd),
-        purpose: createPurpose.trim() || null,
-        note: createNote.trim() || null,
-      }
-      const hc = createHeadcount.trim()
-      if (hc !== '') {
-        const n = Number(hc)
-        if (!Number.isFinite(n) || n < 1) {
-          window.alert('인원은 1 이상의 숫자로 입력하거나 비워 두세요.')
-          setCreateSubmitting(false)
-          return
-        }
-        body.headcount = n
-      } else {
-        body.headcount = null
-      }
-      await createAdminBooking(body)
-      setCreateGuestName('')
-      setCreateGuestPhone('')
-      setCreateHeadcount('')
-      setCreatePurpose('')
-      setCreateNote('')
-      setBookingPage(0)
-      await loadBookings()
-      window.alert('예약이 등록되었습니다.')
-    } catch (err) {
-      window.alert(err instanceof Error ? err.message : '등록에 실패했습니다.')
-    } finally {
-      setCreateSubmitting(false)
-    }
-  }
 
   const onConfirmBooking = async (b: BookingDto) => {
     try {
@@ -265,8 +203,13 @@ export default function AdminBookingsPanel() {
           <button type="button" className="admin-btn-table" onClick={() => void loadBookings()} disabled={bookingLoading}>
             새로고침
           </button>
-          <button type="button" className="admin-btn-table" onClick={() => void loadHalls()} disabled={hallsLoading}>
-            홀 목록 갱신
+          <button
+            type="button"
+            className="admin-btn-table"
+            onClick={() => setCreateModalOpen(true)}
+            disabled={hallsLoading || halls.length === 0}
+          >
+            예약 추가
           </button>
         </div>
         {hallsError && <p className="admin-banner admin-banner--error">{hallsError}</p>}
@@ -338,126 +281,18 @@ export default function AdminBookingsPanel() {
         />
       </div>
 
-      <div className="admin-module">
-        <h3 className="admin-panel-section-title">대리 예약 등록</h3>
-        <form onSubmit={e => void submitCreateBooking(e)} className="admin-toolbar" style={{ alignItems: 'flex-start' }}>
-          <div className="admin-field">
-            <label className="admin-label" htmlFor="admin-create-name">
-              예약자명
-            </label>
-            <input
-              id="admin-create-name"
-              className="admin-input"
-              value={createGuestName}
-              onChange={e => setCreateGuestName(e.target.value)}
-              maxLength={50}
-              required
-            />
-          </div>
-          <div className="admin-field">
-            <label className="admin-label" htmlFor="admin-create-phone">
-              연락처
-            </label>
-            <input
-              id="admin-create-phone"
-              className="admin-input"
-              value={createGuestPhone}
-              onChange={e => setCreateGuestPhone(e.target.value)}
-              maxLength={20}
-              required
-            />
-          </div>
-          <div className="admin-field">
-            <label className="admin-label" htmlFor="admin-create-hall">
-              호실
-            </label>
-            <select
-              id="admin-create-hall"
-              className="admin-select"
-              value={createHallId}
-              onChange={e => setCreateHallId(e.target.value)}
-              required
-              disabled={halls.length === 0}
-            >
-              {halls.length === 0 ? (
-                <option value="">hall 테이블에 데이터가 없습니다</option>
-              ) : (
-                halls.map(h => (
-                  <option key={h.id} value={h.hallId}>
-                    {h.name} ({h.hallId})
-                  </option>
-                ))
-              )}
-            </select>
-          </div>
-          <div className="admin-field">
-            <label className="admin-label" htmlFor="admin-create-start">
-              시작
-            </label>
-            <input
-              id="admin-create-start"
-              className="admin-input"
-              type="datetime-local"
-              value={createStart}
-              onChange={e => setCreateStart(e.target.value)}
-              required
-            />
-          </div>
-          <div className="admin-field">
-            <label className="admin-label" htmlFor="admin-create-end">
-              종료
-            </label>
-            <input
-              id="admin-create-end"
-              className="admin-input"
-              type="datetime-local"
-              value={createEnd}
-              onChange={e => setCreateEnd(e.target.value)}
-              required
-            />
-          </div>
-          <div className="admin-field">
-            <label className="admin-label" htmlFor="admin-create-headcount">
-              인원
-            </label>
-            <input
-              id="admin-create-headcount"
-              className="admin-input"
-              type="number"
-              min={1}
-              placeholder="선택"
-              value={createHeadcount}
-              onChange={e => setCreateHeadcount(e.target.value)}
-            />
-          </div>
-          <div className="admin-field">
-            <label className="admin-label" htmlFor="admin-create-purpose">
-              용도
-            </label>
-            <input
-              id="admin-create-purpose"
-              className="admin-input"
-              value={createPurpose}
-              onChange={e => setCreatePurpose(e.target.value)}
-              maxLength={100}
-            />
-          </div>
-          <div className="admin-field" style={{ minWidth: 'min(100%, 14rem)' }}>
-            <label className="admin-label" htmlFor="admin-create-note">
-              비고
-            </label>
-            <input
-              id="admin-create-note"
-              className="admin-input"
-              value={createNote}
-              onChange={e => setCreateNote(e.target.value)}
-            />
-          </div>
-          <button type="submit" className="admin-btn-table" disabled={createSubmitting || halls.length === 0}>
-            등록
-          </button>
-        </form>
-      </div>
+      {createModalOpen &&
+        createPortal(
+          <AdminBookingCreateModal
+            halls={halls}
+            onClose={() => setCreateModalOpen(false)}
+            onCreated={async () => {
+              setBookingPage(0)
+              await loadBookings()
+            }}
+          />,
+          document.body,
+        )}
 
       <AdminScheduleBlocksPanel />
     </>
