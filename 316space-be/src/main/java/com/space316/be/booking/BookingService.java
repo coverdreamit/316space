@@ -35,6 +35,7 @@ public class BookingService {
     private final MemberRepository memberRepository;
     private final SmsVerificationRepository smsVerificationRepository;
     private final SlackIncomingWebhookNotifier slackIncomingWebhookNotifier;
+    private final PostgresHallBookingLock postgresHallBookingLock;
 
     // 회원 예약
     @Transactional
@@ -49,6 +50,7 @@ public class BookingService {
         }
 
         validateTime(req.startAt(), req.endAt());
+        postgresHallBookingLock.lockHallForNewBooking(req.hallId());
         validateNoOverlap(req.hallId(), req.startAt(), req.endAt());
 
         Booking booking = Booking.builder()
@@ -79,6 +81,7 @@ public class BookingService {
         }
 
         validateTime(req.startAt(), req.endAt());
+        postgresHallBookingLock.lockHallForNewBooking(req.hallId());
         validateNoOverlap(req.hallId(), req.startAt(), req.endAt());
 
         Booking booking = Booking.builder()
@@ -162,14 +165,16 @@ public class BookingService {
     @Transactional
     public BookingResponse adminCreateBooking(AdminBookingCreateRequest req) {
         validateTime(req.startAt(), req.endAt());
-        validateNoOverlap(req.hallId().trim(), req.startAt(), req.endAt());
+        String hall = req.hallId().trim();
+        postgresHallBookingLock.lockHallForNewBooking(hall);
+        validateNoOverlap(hall, req.startAt(), req.endAt());
 
         Booking booking = Booking.builder()
                 .bookingNo(generateBookingNo())
                 .member(null)
                 .guestName(req.guestName().trim())
                 .guestPhone(req.guestPhone().trim())
-                .hallId(req.hallId().trim())
+                .hallId(hall)
                 .startAt(req.startAt())
                 .endAt(req.endAt())
                 .headcount(req.headcount())

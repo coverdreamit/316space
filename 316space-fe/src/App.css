@@ -1142,6 +1142,40 @@ button.header-account-email:focus-visible {
   margin-top: 0;
 }
 
+.modal__hint--warn {
+  color: var(--fg-muted);
+  opacity: 0.95;
+  border-left: 2px solid var(--accent, #c45c26);
+  padding-left: 0.65rem;
+  margin-top: 0.35rem;
+}
+
+.admin-booking-modal__schedule .booking-slot-grid {
+  margin: 0.35rem 0 0.5rem;
+  max-height: min(38vh, 15rem);
+  overflow-y: auto;
+}
+
+.admin-booking-modal__slot-hint {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: var(--fg-muted);
+  margin: 0.35rem 0 0.15rem;
+}
+
+.admin-booking-modal__selection {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  margin: 0.35rem 0 0;
+  color: var(--fg);
+}
+
+.admin-booking-modal__selection-hint {
+  font-weight: 400;
+  color: var(--fg-muted);
+}
+
 .modal__visually-hidden {
   position: absolute;
   width: 1px;

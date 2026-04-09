@@ -9,6 +9,7 @@ import {
 import { fetchHalls, type HallListItem } from '../api/halls'
 import { createMemberBooking } from '../api/memberBookings'
 import { useAuth } from '../auth/AuthContext'
+import { isHourRangeBookable, mergeAvailabilityItemsForDay } from '../booking/hourSlotCore'
 
 /** 하루 24시간 예약: 시간 칸 [h, h+1), h = 0..23 (23시 칸은 23:00~24:00) */
 const FIRST_SLOT_HOUR = 0
@@ -386,6 +387,22 @@ export default function BookingPage() {
     const endAt = exclusiveEndLocalIso(detailYmd, endHour)
     setSubmitting(true)
     try {
+      const fresh = await fetchBookingAvailability({
+        hallId,
+        from: `${detailYmd}T00:00:00`,
+        to: `${detailYmd}T23:59:59`,
+      })
+      const nowSubmit = new Date()
+      if (!isHourRangeBookable(detailYmd, startHour, endHour, fresh.items, nowSubmit)) {
+        setSubmitError(
+          '해당 시간은 방금 다른 예약으로 채워졌습니다. 시간표를 갱신했으니 녹색 구간을 다시 선택해 주세요.',
+        )
+        setItemsByHall(prev => ({
+          ...prev,
+          [hallId]: mergeAvailabilityItemsForDay(prev[hallId] ?? [], detailYmd, fresh.items),
+        }))
+        return
+      }
       const res = await createMemberBooking({
         hallId,
         startAt,

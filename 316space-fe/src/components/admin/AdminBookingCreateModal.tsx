@@ -1,11 +1,21 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import { createAdminBooking } from '../../api/adminBookings'
+import { fetchBookingAvailability } from '../../api/bookingAvailability'
+import type { AvailabilityItem } from '../../api/bookingCalendar'
 import { type HallAdminDto } from '../../api/adminHalls'
-
-function toIsoDateTime(local: string): string {
-  if (!local) return ''
-  return local.length === 16 ? `${local}:00` : local
-}
+import {
+  busyIntervalsForDay,
+  exclusiveEndLocalIso,
+  FIRST_SLOT_HOUR,
+  hourSlotFree,
+  hourSlotPast,
+  isHourRangeBookable,
+  LAST_SLOT_HOUR,
+  pad2,
+  rangeFullyFree,
+  selectionOverlapsBusy,
+  ymd,
+} from '../../booking/hourSlotCore'
 
 interface AdminBookingCreateModalProps {
   halls: HallAdminDto[]
@@ -18,12 +28,19 @@ export default function AdminBookingCreateModal({ halls, onClose, onCreated }: A
   const [guestName, setGuestName] = useState('')
   const [guestPhone, setGuestPhone] = useState('')
   const [hallId, setHallId] = useState('')
-  const [start, setStart] = useState('')
-  const [end, setEnd] = useState('')
+  const [dateYmd, setDateYmd] = useState(() => ymd(new Date()))
+  const [startHour, setStartHour] = useState(FIRST_SLOT_HOUR)
+  const [endHour, setEndHour] = useState(FIRST_SLOT_HOUR + 1)
+  const [rangeFirst, setRangeFirst] = useState<number | null>(null)
+  const [items, setItems] = useState<AvailabilityItem[]>([])
+  const [avLoading, setAvLoading] = useState(false)
+  const [slotClockTick, setSlotClockTick] = useState(0)
   const [headcount, setHeadcount] = useState('')
   const [purpose, setPurpose] = useState('')
   const [note, setNote] = useState('')
   const [submitting, setSubmitting] = useState(false)
+
+  const todayYmd = ymd(new Date())
 
   useEffect(() => {
     closeBtnRef.current?.focus()
@@ -40,16 +57,133 @@ export default function AdminBookingCreateModal({ halls, onClose, onCreated }: A
     setHallId(prev => (prev && ids.has(prev) ? prev : halls[0].hallId))
   }, [halls])
 
+  useEffect(() => {
+    if (!hallId || !dateYmd) return
+    let cancelled = false
+    setAvLoading(true)
+    ;(async () => {
+      try {
+        const from = `${dateYmd}T00:00:00`
+        const to = `${dateYmd}T23:59:59`
+        const res = await fetchBookingAvailability({ hallId, from, to })
+        if (!cancelled) setItems(res.items)
+      } catch {
+        if (!cancelled) setItems([])
+      } finally {
+        if (!cancelled) setAvLoading(false)
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [hallId, dateYmd])
+
+  useEffect(() => {
+    setRangeFirst(null)
+  }, [dateYmd, hallId])
+
+  useEffect(() => {
+    if (avLoading) return
+    const busy = busyIntervalsForDay(items, dateYmd)
+    const now = new Date()
+    for (let s = FIRST_SLOT_HOUR; s <= LAST_SLOT_HOUR; s++) {
+      if (rangeFullyFree(s, s + 1, dateYmd, busy, now)) {
+        setStartHour(s)
+        setEndHour(s + 1)
+        return
+      }
+    }
+    setStartHour(FIRST_SLOT_HOUR)
+    setEndHour(FIRST_SLOT_HOUR + 1)
+  }, [dateYmd, hallId, avLoading, items])
+
+  useEffect(() => {
+    if (dateYmd !== todayYmd) return
+    const id = window.setInterval(() => setSlotClockTick(t => t + 1), 30_000)
+    return () => window.clearInterval(id)
+  }, [dateYmd, todayYmd])
+
+  const busyForDetail = useMemo(
+    () => busyIntervalsForDay(items, dateYmd),
+    [items, dateYmd],
+  )
+
+  const freeByHour = useMemo(() => {
+    const now = new Date()
+    const m: Record<number, boolean> = {}
+    for (let h = FIRST_SLOT_HOUR; h <= LAST_SLOT_HOUR; h++) {
+      m[h] = hourSlotFree(h, dateYmd, busyForDetail, now)
+    }
+    return m
+  }, [dateYmd, busyForDetail, slotClockTick])
+
+  const selectionValid = useMemo(() => {
+    const now = new Date()
+    if (!dateYmd) return false
+    if (dateYmd < todayYmd) return false
+    if (startHour < FIRST_SLOT_HOUR || startHour > LAST_SLOT_HOUR) return false
+    if (endHour <= startHour || endHour > 24) return false
+    const selStart = new Date(`${dateYmd}T${pad2(startHour)}:00:00`)
+    const selEnd = new Date(exclusiveEndLocalIso(dateYmd, endHour))
+    if (selEnd <= selStart) return false
+    if (dateYmd === todayYmd && (selStart <= now || selEnd <= now)) return false
+    if (selectionOverlapsBusy(selStart, selEnd, busyForDetail)) return false
+    return rangeFullyFree(startHour, endHour, dateYmd, busyForDetail, now)
+  }, [
+    dateYmd,
+    todayYmd,
+    startHour,
+    endHour,
+    busyForDetail,
+    slotClockTick,
+  ])
+
+  const onHourSlotClick = (h: number) => {
+    if (!freeByHour[h]) return
+    const busy = busyForDetail
+    const now = new Date()
+    if (rangeFirst === null) {
+      setRangeFirst(h)
+      setStartHour(h)
+      setEndHour(h + 1)
+      return
+    }
+    const from = Math.min(rangeFirst, h)
+    const to = Math.max(rangeFirst, h) + 1
+    if (!rangeFullyFree(from, to, dateYmd, busy, now)) return
+    setStartHour(from)
+    setEndHour(to)
+    setRangeFirst(null)
+  }
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
+    if (!selectionValid) {
+      window.alert('날짜·시간 구간을 다시 선택해 주세요. 과거·겹치는 시간은 선택할 수 없습니다.')
+      return
+    }
     setSubmitting(true)
     try {
+      const fresh = await fetchBookingAvailability({
+        hallId,
+        from: `${dateYmd}T00:00:00`,
+        to: `${dateYmd}T23:59:59`,
+      })
+      if (!isHourRangeBookable(dateYmd, startHour, endHour, fresh.items, new Date())) {
+        setItems(fresh.items)
+        window.alert(
+          '해당 시간은 방금 다른 예약으로 채워졌습니다. 슬롯을 갱신했으니 비어 있는 구간을 다시 선택해 주세요.',
+        )
+        return
+      }
+      const startAt = `${dateYmd}T${pad2(startHour)}:00:00`
+      const endAt = exclusiveEndLocalIso(dateYmd, endHour)
       const body: Parameters<typeof createAdminBooking>[0] = {
         guestName: guestName.trim(),
         guestPhone: guestPhone.trim(),
         hallId,
-        startAt: toIsoDateTime(start),
-        endAt: toIsoDateTime(end),
+        startAt,
+        endAt,
         purpose: purpose.trim() || null,
         note: note.trim() || null,
       }
@@ -75,6 +209,11 @@ export default function AdminBookingCreateModal({ halls, onClose, onCreated }: A
       setSubmitting(false)
     }
   }
+
+  const hourCells = useMemo(
+    () => Array.from({ length: LAST_SLOT_HOUR - FIRST_SLOT_HOUR + 1 }, (_, i) => FIRST_SLOT_HOUR + i),
+    [],
+  )
 
   return (
     <div
@@ -153,32 +292,70 @@ export default function AdminBookingCreateModal({ halls, onClose, onCreated }: A
               )}
             </select>
           </div>
-          <div className="modal__field">
-            <label className="modal__label" htmlFor="admin-create-start">
-              시작
+
+          <div className="modal__field admin-booking-modal__schedule">
+            <label className="modal__label" htmlFor="admin-create-date">
+              예약일 · 시간 (1시간 단위)
             </label>
             <input
-              id="admin-create-start"
+              id="admin-create-date"
               className="modal__input"
-              type="datetime-local"
-              value={start}
-              onChange={e => setStart(e.target.value)}
+              type="date"
+              min={todayYmd}
+              value={dateYmd}
+              onChange={e => setDateYmd(e.target.value)}
               required
             />
+            <p className="admin-booking-modal__slot-hint">
+              녹색 칸을 눌러 시작 시각을 고른 뒤, 끝 시각 칸을 한 번 더 눌러 구간을 정합니다. 오늘은 이미 지난
+              시간은 선택할 수 없습니다.
+            </p>
+            {avLoading && <p className="modal__hint">일정 불러오는 중…</p>}
+            <div className="booking-slot-grid" role="list" aria-label="시간대">
+              {hourCells.map(h => {
+                const now = new Date()
+                const isPast = hourSlotPast(h, dateYmd, now)
+                const free = freeByHour[h]
+                const inRange = h >= startHour && h < endHour
+                const toneClass = isPast ? 'booking-slot--past' : free ? 'booking-slot--free' : 'booking-slot--busy'
+                const pickedClass =
+                  inRange && free
+                    ? 'booking-slot--picked'
+                    : inRange && isPast
+                      ? 'booking-slot--picked-past'
+                      : ''
+                return (
+                  <button
+                    key={h}
+                    type="button"
+                    role="listitem"
+                    disabled={!free}
+                    className={['booking-slot', toneClass, pickedClass].filter(Boolean).join(' ')}
+                    onClick={() => onHourSlotClick(h)}
+                  >
+                    <span className="booking-slot__time">
+                      {pad2(h)}:00 – {h < LAST_SLOT_HOUR ? `${pad2(h + 1)}:00` : '24:00'}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+            <p className="admin-booking-modal__selection">
+              선택:{' '}
+              <strong>
+                {dateYmd} {pad2(startHour)}:00 ~ {endHour === 24 ? '24:00' : `${pad2(endHour)}:00`}
+              </strong>
+              {rangeFirst !== null && (
+                <span className="admin-booking-modal__selection-hint"> · 두 번째 칸을 눌러 종료 시각을 정하세요</span>
+              )}
+            </p>
+            {!selectionValid && !avLoading && (
+              <p className="modal__hint modal__hint--warn">
+                선택한 구간을 쓸 수 없습니다. 과거·예약·블록과 겹치지 않는 녹색 구간만 잡아 주세요.
+              </p>
+            )}
           </div>
-          <div className="modal__field">
-            <label className="modal__label" htmlFor="admin-create-end">
-              종료
-            </label>
-            <input
-              id="admin-create-end"
-              className="modal__input"
-              type="datetime-local"
-              value={end}
-              onChange={e => setEnd(e.target.value)}
-              required
-            />
-          </div>
+
           <div className="modal__field">
             <label className="modal__label" htmlFor="admin-create-headcount">
               인원 <span className="modal__optional">(선택)</span>
@@ -221,7 +398,11 @@ export default function AdminBookingCreateModal({ halls, onClose, onCreated }: A
               <button type="button" className="modal__signup" onClick={onClose} disabled={submitting}>
                 취소
               </button>
-              <button type="submit" className="modal__submit" disabled={submitting || halls.length === 0}>
+              <button
+                type="submit"
+                className="modal__submit"
+                disabled={submitting || halls.length === 0 || !selectionValid}
+              >
                 {submitting ? '등록 중…' : '등록'}
               </button>
             </div>
