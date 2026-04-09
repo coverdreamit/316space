@@ -68,7 +68,7 @@ export default function ContactPage() {
   const [authorName, setAuthorName] = useState('')
   const [authorPhone, setAuthorPhone] = useState('')
   const [authorEmail, setAuthorEmail] = useState('')
-  const [category, setCategory] = useState<InquiryCategory>('ETC')
+  const [category, setCategory] = useState<InquiryCategory>(() => CATEGORY_OPTIONS[0].value)
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [isPrivate, setIsPrivate] = useState(false)
@@ -363,6 +363,7 @@ export default function ContactPage() {
         isPrivate,
         guestPassword: isAuthenticated ? null : guestPwToStore,
       })
+      setCategory(CATEGORY_OPTIONS[0].value)
       setTitle('')
       setContent('')
       setIsPrivate(false)
