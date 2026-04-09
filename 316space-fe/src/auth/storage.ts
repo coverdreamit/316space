@@ -14,7 +14,6 @@ export function loadStoredAuth(): StoredAuth | null {
         : typeof parsed.email === 'string'
           ? parsed.email
           : ''
-    if (!loginId) return null
     return { accessToken: parsed.accessToken, role: parsed.role, loginId }
   } catch {
     return null

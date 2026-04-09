@@ -17,6 +17,9 @@ public class AppSetting {
 
   public static final String KEY_SLACK_INCOMING_WEBHOOK_URL = "slack.incoming_webhook_url";
 
+  /** 값이 "false"이면 예약·문의 Slack 전송을 하지 않음. 없으면 켜짐으로 간주. */
+  public static final String KEY_SLACK_NOTIFICATIONS_ENABLED = "slack.notifications_enabled";
+
   @Id
   @Column(name = "setting_key", length = 100)
   private String settingKey;

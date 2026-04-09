@@ -4,6 +4,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -39,10 +40,15 @@ function toStoredAuth(data: TokenResponse, loginId: string): StoredAuth {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [auth, setAuth] = useState<StoredAuth | null>(() => loadStoredAuth());
+  const authRef = useRef(auth);
+  authRef.current = auth;
 
-  useEffect(() => {
-    setAccessTokenGetter(() => auth?.accessToken ?? null);
-  }, [auth?.accessToken]);
+  /**
+   * 자식 컴포넌트의 useEffect가 부모 AuthProvider의 useEffect보다 먼저 실행될 수 있어,
+   * 토큰 getter를 렌더마다 동기 갱신합니다. 그렇지 않으면 /admin 새로고침 시 첫 API가
+   * Authorization 없이 나가 401 → 세션 정리로 로그아웃처럼 보일 수 있습니다.
+   */
+  setAccessTokenGetter(() => authRef.current?.accessToken ?? null);
 
   const login = useCallback(async (loginId: string, password: string) => {
     const res = await fetch("/api/auth/login", {

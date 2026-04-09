@@ -11,32 +11,17 @@ import org.springframework.stereotype.Service;
 public class SlackWebhookUrlProvider {
 
   private final AppSettingRepository appSettingRepository;
-  private final SlackProperties slackProperties;
 
-  /** DB 값이 있으면 우선, 없으면 `slack.incoming-webhook-url`(환경 변수) */
+  /** 관리자 화면에서 DB에 저장한 웹훅만 사용합니다(환경 변수 폴백 없음). */
   public Optional<String> currentWebhookUrl() {
-    Optional<String> fromDb =
-        appSettingRepository
-            .findById(AppSetting.KEY_SLACK_INCOMING_WEBHOOK_URL)
-            .map(AppSetting::getSettingValue)
-            .map(String::trim)
-            .filter(s -> !s.isEmpty());
-    if (fromDb.isPresent()) {
-      return fromDb;
-    }
-    String env = slackProperties.incomingWebhookUrl();
-    if (env != null && !env.isBlank()) {
-      return Optional.of(env.trim());
-    }
-    return Optional.empty();
-  }
-
-  public boolean hasDatabaseValue() {
     return appSettingRepository
         .findById(AppSetting.KEY_SLACK_INCOMING_WEBHOOK_URL)
         .map(AppSetting::getSettingValue)
         .map(String::trim)
-        .filter(s -> !s.isEmpty())
-        .isPresent();
+        .filter(s -> !s.isEmpty());
+  }
+
+  public boolean hasDatabaseValue() {
+    return currentWebhookUrl().isPresent();
   }
 }

@@ -20,6 +20,7 @@ public class SlackIncomingWebhookNotifier {
   private static final Logger log = LoggerFactory.getLogger(SlackIncomingWebhookNotifier.class);
 
   private final SlackWebhookUrlProvider slackWebhookUrlProvider;
+  private final SlackNotificationsEnabled slackNotificationsEnabled;
   private final RestClient restClient = RestClient.create();
 
   public void notifyNewBooking(String sourceLabel, BookingResponse b) {
@@ -102,6 +103,9 @@ public class SlackIncomingWebhookNotifier {
   }
 
   private void sendText(String text) {
+    if (!slackNotificationsEnabled.isEnabled()) {
+      return;
+    }
     slackWebhookUrlProvider.currentWebhookUrl().ifPresent(url -> postSlackText(url, text));
   }
 
