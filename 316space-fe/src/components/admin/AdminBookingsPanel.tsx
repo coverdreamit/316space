@@ -19,9 +19,9 @@ function ymd(d: Date): string {
 }
 
 function defaultBookingRange(): { from: string; to: string } {
-  const end = new Date()
   const start = new Date()
-  start.setDate(start.getDate() - 30)
+  const end = new Date()
+  end.setDate(end.getDate() + 7)
   return { from: ymd(start), to: ymd(end) }
 }
 
