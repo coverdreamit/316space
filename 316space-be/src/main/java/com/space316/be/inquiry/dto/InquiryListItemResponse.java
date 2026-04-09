@@ -17,12 +17,13 @@ public record InquiryListItemResponse(
 ) {
     private static final String PRIVATE_TITLE = "비공개 문의입니다.";
 
-    public static InquiryListItemResponse from(Inquiry inquiry, boolean canAccess) {
+    public static InquiryListItemResponse from(Inquiry inquiry, boolean canAccess, boolean isAdmin) {
+        String author = isAdmin ? inquiry.getAuthorName() : maskName(inquiry.getAuthorName());
         return new InquiryListItemResponse(
                 inquiry.getId(),
                 inquiry.getCategory(),
                 canAccess ? inquiry.getTitle() : PRIVATE_TITLE,
-                maskName(inquiry.getAuthorName()),
+                author,
                 inquiry.isPrivate(),
                 inquiry.getMember() == null,
                 inquiry.getStatus(),

@@ -41,7 +41,7 @@ public class InquiryService {
                 : inquiryRepository.findByStatusOrderByCreatedAtDesc(statusFilter, pageable);
         return page.map(inquiry -> {
             boolean canAccess = canAccessForList(inquiry, memberId, isAdmin);
-            return InquiryListItemResponse.from(inquiry, canAccess);
+            return InquiryListItemResponse.from(inquiry, canAccess, isAdmin);
         });
     }
 
