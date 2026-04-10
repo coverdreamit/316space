@@ -19,6 +19,7 @@ import com.space316.be.slack.SlackIncomingWebhookNotifier;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -146,6 +147,22 @@ public class BookingService {
                 .stream()
                 .map(BookingResponse::from)
                 .toList();
+    }
+
+    /**
+     * 확정(CONFIRMED)되었고 이용 종료 시각이 지난 예약만 (종료−시작) 구간을 합산한 누적 이용 시간(분).
+     */
+    @Transactional(readOnly = true)
+    public long getMyTotalUsageMinutes(Long memberId) {
+        LocalDateTime now = LocalDateTime.now();
+        return bookingRepository.findByMemberIdOrderByCreatedAtDesc(memberId).stream()
+                .filter(b -> b.getStatus() == BookingStatus.CONFIRMED)
+                .filter(b -> !b.getEndAt().isAfter(now))
+                .mapToLong(b -> {
+                    long m = ChronoUnit.MINUTES.between(b.getStartAt(), b.getEndAt());
+                    return Math.max(0L, m);
+                })
+                .sum();
     }
 
     // 예약 취소

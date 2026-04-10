@@ -1280,6 +1280,244 @@ button.header-account-email:focus-visible {
   max-width: 26rem;
 }
 
+.modal--account {
+  width: 100%;
+  max-width: min(28rem, calc(100vw - 2rem));
+  max-height: min(88vh, 40rem);
+  overflow-y: auto;
+  padding-bottom: 1.5rem;
+}
+
+.account-modal__body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+  padding: 0 1.75rem 0.5rem;
+}
+
+.account-modal__section {
+  border-top: 1px solid var(--line);
+  padding-top: 1.1rem;
+}
+
+.account-modal__section:first-of-type {
+  border-top: none;
+  padding-top: 0;
+}
+
+.account-modal__section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.account-modal__section-title {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin: 0 0 0.5rem;
+  opacity: 0.85;
+}
+
+.account-modal__section-head .account-modal__section-title {
+  margin-bottom: 0;
+}
+
+.account-modal__text-link {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s ease;
+  white-space: nowrap;
+}
+
+.account-modal__text-link:hover,
+.account-modal__text-link:focus-visible {
+  border-bottom-color: var(--accent);
+}
+
+.account-modal__usage-value {
+  font-family: var(--font-sans);
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin: 0.15rem 0 0;
+}
+
+.account-modal__hint {
+  margin-top: 0.35rem;
+  margin-bottom: 0;
+}
+
+.account-modal__empty {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  opacity: 0.65;
+  margin: 0.25rem 0 0;
+}
+
+.account-modal__list-meta {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  line-height: 1.45;
+  opacity: 0.68;
+  margin: 0.15rem 0 0.35rem;
+}
+
+.account-modal__list-scroll {
+  max-height: min(15rem, 36vh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 0.15rem;
+  margin-top: 0.1rem;
+}
+
+.account-modal__list-scroll:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.account-modal__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.account-modal__list--compact .account-modal__card {
+  padding: 0.55rem 0.65rem;
+}
+
+.account-modal__card {
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  padding: 0.65rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.account-modal__card--muted {
+  opacity: 0.82;
+}
+
+.account-modal__card-main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.account-modal__hall {
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.account-modal__time {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  opacity: 0.88;
+}
+
+.account-modal__meta {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  opacity: 0.62;
+}
+
+.account-modal__card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.15rem;
+}
+
+.account-modal__btn-danger {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--fg);
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.account-modal__btn-danger:hover:not(:disabled),
+.account-modal__btn-danger:focus-visible:not(:disabled) {
+  color: #b42318;
+  border-color: #b42318;
+}
+
+.account-modal__btn-danger:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.account-modal__change-hint {
+  margin: 0.15rem 0 0;
+  font-size: 0.75rem;
+}
+
+.account-modal__dl {
+  margin: 0 0 1rem;
+  display: grid;
+  gap: 0.5rem 1rem;
+}
+
+.account-modal__dl > div {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr;
+  gap: 0.5rem;
+  align-items: baseline;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+}
+
+.account-modal__dl dt {
+  margin: 0;
+  opacity: 0.55;
+  font-weight: 500;
+}
+
+.account-modal__dl dd {
+  margin: 0;
+  word-break: break-word;
+}
+
+.account-modal__profile-edit {
+  margin-top: 0.25rem;
+}
+
+.modal__submit--secondary {
+  margin-top: 0.5rem;
+  background: transparent;
+  color: var(--fg);
+  border: 1px solid var(--line-strong);
+}
+
+.modal__submit--secondary:hover:not(:disabled) {
+  border-color: var(--fg);
+  color: var(--fg);
+  background: transparent;
+}
+
 .modal--inquiry {
   width: 100%;
   max-width: min(36rem, calc(100vw - 2rem));

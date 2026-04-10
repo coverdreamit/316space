@@ -6,6 +6,7 @@ import com.space316.be.booking.dto.BookingResponse;
 import com.space316.be.booking.dto.CancelRequest;
 import com.space316.be.booking.dto.GuestBookingRequest;
 import com.space316.be.booking.dto.MemberBookingRequest;
+import com.space316.be.booking.dto.MemberBookingUsageResponse;
 import com.space316.be.domain.booking.BookingStatus;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
@@ -81,6 +82,15 @@ public class BookingController {
     public ResponseEntity<List<BookingResponse>> getMyBookings(
             @AuthenticationPrincipal Long memberId) {
         return ResponseEntity.ok(bookingService.getMyBookings(memberId));
+    }
+
+    /** 회원 누적 이용 시간(분): 확정·이용 종료 후 예약만 합산 */
+    @GetMapping("/api/members/me/booking-usage")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<MemberBookingUsageResponse> getMyBookingUsage(
+            @AuthenticationPrincipal Long memberId) {
+        return ResponseEntity.ok(
+                new MemberBookingUsageResponse(bookingService.getMyTotalUsageMinutes(memberId)));
     }
 
     /** 예약 취소

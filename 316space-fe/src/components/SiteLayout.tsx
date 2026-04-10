@@ -2,12 +2,13 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 import { navItems } from '../nav'
+import AccountModal from './AccountModal'
 import LoginModal from './LoginModal'
 import ProfileModal from './ProfileModal'
 import ProfileReauthModal from './ProfileReauthModal'
 import SignupModal from './SignupModal'
 
-type ModalState = 'none' | 'login' | 'signup' | 'profile-reauth' | 'profile'
+type ModalState = 'none' | 'login' | 'signup' | 'account' | 'profile-reauth' | 'profile'
 
 const ADMIN_ROLE = 'ADMIN'
 
@@ -16,12 +17,27 @@ export default function SiteLayout() {
   const navigate = useNavigate()
   const { isAuthenticated, loginId, logout, role } = useAuth()
   const contentRef = useRef<HTMLDivElement>(null)
+  const resumeAccountAfterProfileRef = useRef(false)
   const [modal, setModal] = useState<ModalState>('none')
   const [profileAccessToken, setProfileAccessToken] = useState<string | null>(null)
 
-  const closeProfileFlow = () => {
+  const handleProfileModalClose = () => {
     setProfileAccessToken(null)
-    setModal('none')
+    if (resumeAccountAfterProfileRef.current) {
+      resumeAccountAfterProfileRef.current = false
+      setModal('account')
+    } else {
+      setModal('none')
+    }
+  }
+
+  const handleProfileReauthClose = () => {
+    if (resumeAccountAfterProfileRef.current) {
+      resumeAccountAfterProfileRef.current = false
+      setModal('account')
+    } else {
+      setModal('none')
+    }
   }
 
   useEffect(() => {
@@ -57,9 +73,8 @@ export default function SiteLayout() {
               type="button"
               className="header-account-email"
               title={loginId ?? undefined}
-              onClick={() =>
-                role === ADMIN_ROLE ? navigate('/admin') : setModal('profile-reauth')
-              }
+              aria-label="내 정보"
+              onClick={() => (role === ADMIN_ROLE ? navigate('/admin') : setModal('account'))}
             >
               {loginId}
             </button>
@@ -100,9 +115,18 @@ export default function SiteLayout() {
           onSwitchToLogin={() => setModal('login')}
         />
       )}
+      {modal === 'account' && (
+        <AccountModal
+          onClose={() => setModal('none')}
+          onRequestProfileEdit={() => {
+            resumeAccountAfterProfileRef.current = true
+            setModal('profile-reauth')
+          }}
+        />
+      )}
       {modal === 'profile-reauth' && (
         <ProfileReauthModal
-          onClose={() => setModal('none')}
+          onClose={handleProfileReauthClose}
           onVerified={token => {
             setProfileAccessToken(token)
             setModal('profile')
@@ -110,7 +134,7 @@ export default function SiteLayout() {
         />
       )}
       {modal === 'profile' && profileAccessToken && (
-        <ProfileModal profileAccessToken={profileAccessToken} onClose={closeProfileFlow} />
+        <ProfileModal profileAccessToken={profileAccessToken} onClose={handleProfileModalClose} />
       )}
 
       <div className="page-content" ref={contentRef}>
