@@ -49,6 +49,10 @@ public class Member extends BaseEntity {
     @Column(nullable = false, length = 20)
     private MemberStatus status;
 
+    /** 확정·이용 종료 후 예약에서 적립된 누적 이용 시간(분). */
+    @Column(nullable = false)
+    private long totalUsageMinutes;
+
     @Builder
     private Member(String loginId, String email, String passwordHash, String name, String phone) {
         this.loginId = loginId;
@@ -58,6 +62,7 @@ public class Member extends BaseEntity {
         this.phone = phone;
         this.role = MemberRole.USER;
         this.status = MemberStatus.ACTIVE;
+        this.totalUsageMinutes = 0L;
     }
 
     public void promoteToAdmin() {
@@ -76,5 +81,16 @@ public class Member extends BaseEntity {
 
     public void updatePasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
+    }
+
+    public void addUsageMinutes(long minutes) {
+        if (minutes <= 0) {
+            return;
+        }
+        if (this.totalUsageMinutes > Long.MAX_VALUE - minutes) {
+            this.totalUsageMinutes = Long.MAX_VALUE;
+        } else {
+            this.totalUsageMinutes += minutes;
+        }
     }
 }

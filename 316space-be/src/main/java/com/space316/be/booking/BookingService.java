@@ -19,7 +19,6 @@ import com.space316.be.slack.SlackIncomingWebhookNotifier;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +39,7 @@ public class BookingService {
     private final SlackIncomingWebhookNotifier slackIncomingWebhookNotifier;
     private final PostgresHallBookingLock postgresHallBookingLock;
     private final AuditLogService auditLogService;
+    private final BookingUsageAccrualService bookingUsageAccrualService;
 
     // 회원 예약
     @Transactional
@@ -150,19 +150,13 @@ public class BookingService {
     }
 
     /**
-     * 확정(CONFIRMED)되었고 이용 종료 시각이 지난 예약만 (종료−시작) 구간을 합산한 누적 이용 시간(분).
+     * DB에 저장된 회원 누적 이용 시간(분). 조회 시점에 미적립 예약이 있으면 먼저 반영합니다.
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public long getMyTotalUsageMinutes(Long memberId) {
         LocalDateTime now = LocalDateTime.now();
-        return bookingRepository.findByMemberIdOrderByCreatedAtDesc(memberId).stream()
-                .filter(b -> b.getStatus() == BookingStatus.CONFIRMED)
-                .filter(b -> !b.getEndAt().isAfter(now))
-                .mapToLong(b -> {
-                    long m = ChronoUnit.MINUTES.between(b.getStartAt(), b.getEndAt());
-                    return Math.max(0L, m);
-                })
-                .sum();
+        bookingUsageAccrualService.applyPendingForMember(memberId, now);
+        return memberRepository.findById(memberId).map(Member::getTotalUsageMinutes).orElse(0L);
     }
 
     // 예약 취소

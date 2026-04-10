@@ -48,4 +48,28 @@ public interface BookingRepository extends JpaRepository<Booking, Long>, JpaSpec
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE Booking b SET b.member = null WHERE b.member.id = :memberId")
     void detachMember(@Param("memberId") Long memberId);
+
+    @Query("""
+            SELECT b.id FROM Booking b
+            WHERE b.member.id = :memberId
+              AND b.usageApplied = false
+              AND b.status = 'CONFIRMED'
+              AND b.endAt <= :now
+            ORDER BY b.id
+            """)
+    List<Long> findIdsPendingUsageForMember(@Param("memberId") Long memberId, @Param("now") LocalDateTime now);
+
+    @Query("""
+            SELECT b.id FROM Booking b
+            WHERE b.usageApplied = false
+              AND b.status = 'CONFIRMED'
+              AND b.member IS NOT NULL
+              AND b.endAt <= :now
+            ORDER BY b.id
+            """)
+    List<Long> findIdsPendingUsage(@Param("now") LocalDateTime now);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("UPDATE Booking b SET b.usageApplied = true WHERE b.id = :id AND b.usageApplied = false")
+    int markUsageApplied(@Param("id") Long id);
 }

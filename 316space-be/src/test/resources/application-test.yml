@@ -1,5 +1,8 @@
 # 단위 테스트: 원격 DB·Flyway 없이 컨텍스트만 로드
 spring:
+  task:
+    scheduling:
+      enabled: false
   datasource:
     url: jdbc:h2:mem:testdb;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
     driver-class-name: org.h2.Driver

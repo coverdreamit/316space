@@ -72,6 +72,10 @@ public class Booking extends BaseEntity {
     @Column(length = 255)
     private String cancelReason;
 
+    /** 확정·이용 종료 후 회원 누적 시간에 반영했으면 true (중복 적립 방지). */
+    @Column(nullable = false)
+    private boolean usageApplied;
+
     @Builder
     private Booking(String bookingNo, Member member, String guestName, String guestPhone,
             String hallId, LocalDateTime startAt, LocalDateTime endAt,
@@ -87,6 +91,7 @@ public class Booking extends BaseEntity {
         this.purpose = purpose;
         this.note = note;
         this.status = BookingStatus.PENDING;
+        this.usageApplied = false;
     }
 
     public void confirm() {

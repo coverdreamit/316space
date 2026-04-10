@@ -27,6 +27,11 @@ jwt:
   expiration-ms: 1800000 # 30분
   profile-edit-expiration-ms: 600000 # 개인정보 변경 화면 진입용(10분)
 
+# 누적 이용 시간 적립 스케줄(밀리초, 기본 5분)
+app:
+  booking-usage-accrual:
+    delay-ms: ${BOOKING_USAGE_ACCRUAL_DELAY_MS:300000}
+
 admin:
   login-id: ${ADMIN_LOGIN_ID:admin}
   email: ${ADMIN_EMAIL:admin@316space.com}
