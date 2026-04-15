@@ -140,15 +140,17 @@ export default function SiteLayout() {
       <div className="page-content" ref={contentRef}>
         <Outlet />
 
-        <footer className="site-footer">
-          <nav className="footer-nav" aria-label="약관 및 지원">
-            <a href="#terms">Terms &amp; Support</a>
-            <span className="sep" aria-hidden>
-              ·
-            </span>
-            <a href="#privacy">Privacy Policy</a>
-          </nav>
-        </footer>
+        {pathname !== '/' && (
+          <footer className="site-footer">
+            <nav className="footer-nav" aria-label="약관 및 지원">
+              <a href="#terms">Terms &amp; Support</a>
+              <span className="sep" aria-hidden>
+                ·
+              </span>
+              <a href="#privacy">Privacy Policy</a>
+            </nav>
+          </footer>
+        )}
       </div>
     </div>
   )

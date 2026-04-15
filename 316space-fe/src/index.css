@@ -1,3 +1,43 @@
+@font-face {
+  font-family: "Gmarket Sans";
+  src: url("/fonts/GmarketSansLight.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Gmarket Sans";
+  src: url("/fonts/GmarketSansMedium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Gmarket Sans";
+  src: url("/fonts/GmarketSansBold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Abuget";
+  src: url("/fonts/Abuget.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Freeman";
+  src: url("/fonts/Freeman-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 html {
   scroll-behavior: smooth;
   height: 100%;
@@ -12,8 +52,10 @@ html {
   --line: rgba(26, 26, 24, 0.08);
   --line-strong: rgba(26, 26, 24, 0.2);
   --accent: #9a7b4f;
-  --font-display: 'Noto Serif KR', Georgia, serif;
-  --font-sans: 'Noto Sans KR', system-ui, sans-serif;
+  --font-display: "Gmarket Sans", "Noto Serif KR", serif;
+  --font-sans: "Gmarket Sans", "Noto Sans KR", system-ui, sans-serif;
+  --font-abuget: "Abuget", cursive;
+  --font-freeman: "Freeman", "Gmarket Sans", sans-serif;
   font-family: var(--font-sans);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;

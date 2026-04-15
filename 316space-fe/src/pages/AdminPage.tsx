@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Navigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 import AdminAuditLogsPanel from '../components/admin/AdminAuditLogsPanel'
 import AdminBookingsPanel from '../components/admin/AdminBookingsPanel'
@@ -63,7 +63,24 @@ export default function AdminPage() {
   )
 
   if (!isAuthenticated || role !== ADMIN_ROLE) {
-    return <Navigate to="/" replace />
+    return (
+      <main className="page-document">
+        <header className="page-document__hero">
+          <h1 className="page-document__title">관리자 페이지</h1>
+          <p className="page-document__lead">
+            이 페이지는 관리자 계정으로 로그인한 경우에만 접근할 수 있습니다.
+          </p>
+        </header>
+        <div className="contact-inquiry-toolbar">
+          <Link to="/" className="contact-cta">
+            홈으로 이동
+          </Link>
+          <Link to="/contact" className="contact-cta">
+            문의하기
+          </Link>
+        </div>
+      </main>
+    )
   }
 
   return (
