@@ -1,47 +1,69 @@
-import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 const IMG = {
-  hero: '/home/hero-bg.jpg',
-  rentalBanner: '/home/rental-banner.jpg',
-  gallery: '/home/gallery-main.jpg',
-  floorplan: '/home/floorplan.png',
-  map: '/home/contact-map.png',
-} as const
+  hero: "/home/hero-bg.jpg",
+  rentalBanner: "/home/rental-banner.jpg",
+  gallery: "/home/gallery-main.jpg",
+  floorplan: "/home/floorplan.png",
+  map: "/home/contact-map.png",
+} as const;
 
 const GALLERY_FRAMES = [
-  { src: '/home/51ae7f1f91bcc1adcaa7e88e67c6c76aa5cf7066.jpg', alt: '공간 갤러리 이미지 1' },
-  { src: '/home/71452c591d3767da004105dc999f121e6a067d0b.jpg', alt: '공간 갤러리 이미지 2' },
-  { src: '/home/8ed3cea858341eb947f24b319ff65f74781459cf.jpg', alt: '공간 갤러리 이미지 3' },
-  { src: '/home/526a9a28ef06bbb525204ed19d54d60dd631cb42.jpg', alt: '공간 갤러리 이미지 4' },
-  { src: '/home/a1dec223c6836951d4dbf42231e82feec9835d4e.jpg', alt: '공간 갤러리 이미지 5' },
-] as const
+  {
+    src: "/home/51ae7f1f91bcc1adcaa7e88e67c6c76aa5cf7066.jpg",
+    alt: "공간 갤러리 이미지 1",
+  },
+  {
+    src: "/home/71452c591d3767da004105dc999f121e6a067d0b.jpg",
+    alt: "공간 갤러리 이미지 2",
+  },
+  {
+    src: "/home/8ed3cea858341eb947f24b319ff65f74781459cf.jpg",
+    alt: "공간 갤러리 이미지 3",
+  },
+  {
+    src: "/home/526a9a28ef06bbb525204ed19d54d60dd631cb42.jpg",
+    alt: "공간 갤러리 이미지 4",
+  },
+  {
+    src: "/home/a1dec223c6836951d4dbf42231e82feec9835d4e.jpg",
+    alt: "공간 갤러리 이미지 5",
+  },
+] as const;
 
 export default function HomePage() {
-  const [galleryIndex, setGalleryIndex] = useState(0)
-  const [brokenSlides, setBrokenSlides] = useState<Record<string, true>>({})
-  const slides = GALLERY_FRAMES
+  const [galleryIndex, setGalleryIndex] = useState(0);
+  const [brokenSlides, setBrokenSlides] = useState<Record<string, true>>({});
+  const slides = GALLERY_FRAMES;
 
   useEffect(() => {
-    document.title = '316 spacebox'
-  }, [])
+    document.title = "316 spacebox";
+  }, []);
 
   const goGallery = (dir: -1 | 1) => {
-    setGalleryIndex(i => {
-      const n = slides.length
-      return (i + dir + n) % n
-    })
-  }
+    setGalleryIndex((i) => {
+      const n = slides.length;
+      return (i + dir + n) % n;
+    });
+  };
 
   return (
     <main className="home-landing" data-figma-node="2001:4">
       <section className="home-hero" aria-label="메인 비주얼">
         <div className="home-hero__bg">
-          <img src={IMG.hero} alt="" className="home-hero__bg-img" decoding="async" />
+          <img
+            src={IMG.hero}
+            alt=""
+            className="home-hero__bg-img"
+            decoding="async"
+          />
         </div>
         <div className="home-hero__overlay" aria-hidden />
         <div className="home-hero__inner">
-          <p className="home-hero__tagline">서울 최고급 사운드 기반 퍼포먼스 스튜디오</p>
+          <p className="home-hero__tagline">
+            서울 최고급 사운드 기반 퍼포먼스 스튜디오
+          </p>
           <div className="home-hero__title-row">
             <span className="home-hero__mark" aria-hidden>
               316
@@ -63,7 +85,12 @@ export default function HomePage() {
       <div className="home-body">
         <section className="home-rental" aria-labelledby="home-rental-heading">
           <div className="home-rental__banner">
-            <img src={IMG.rentalBanner} alt="" className="home-rental__banner-img" decoding="async" />
+            <img
+              src={IMG.rentalBanner}
+              alt=""
+              className="home-rental__banner-img"
+              decoding="async"
+            />
             <div className="home-rental__overlay">
               <span className="home-rental__watermark" aria-hidden>
                 spacebox
@@ -86,12 +113,16 @@ export default function HomePage() {
         <section className="home-gallery" aria-label="공간 갤러리">
           <div className="home-gallery__frame">
             <img
-              src={brokenSlides[slides[galleryIndex].src] ? IMG.gallery : slides[galleryIndex].src}
+              src={
+                brokenSlides[slides[galleryIndex].src]
+                  ? IMG.gallery
+                  : slides[galleryIndex].src
+              }
               alt={slides[galleryIndex].alt}
               className="home-gallery__img"
               decoding="async"
               onError={() =>
-                setBrokenSlides(prev => ({
+                setBrokenSlides((prev) => ({
                   ...prev,
                   [slides[galleryIndex].src]: true,
                 }))
@@ -121,11 +152,19 @@ export default function HomePage() {
             Emergency Exit
           </h2>
           <div className="home-floor__figure">
-            <img src={IMG.floorplan} alt="비상구 및 동선 안내 도면" className="home-floor__img" decoding="async" />
+            <img
+              src={IMG.floorplan}
+              alt="비상구 및 동선 안내 도면"
+              className="home-floor__img"
+              decoding="async"
+            />
           </div>
         </section>
 
-        <section className="home-contact" aria-labelledby="home-contact-heading">
+        <section
+          className="home-contact"
+          aria-labelledby="home-contact-heading"
+        >
           <h2 id="home-contact-heading" className="home-section-title">
             Contact Us
           </h2>
@@ -139,11 +178,17 @@ export default function HomePage() {
                 (지번) 서울 서초구 서초동 1692-3
               </p>
               <p className="home-contact__note">
-                24시간 연중무휴(시설 기준). 세부 휴무·점검 일정은 추후 이곳에 반영해 주세요.
+                24시간 연중무휴(시설 기준). 세부 휴무·점검 일정은 추후 이곳에
+                반영해 주세요.
               </p>
             </div>
             <div className="home-contact__map">
-              <img src={IMG.map} alt="오시는 길 지도" className="home-contact__map-img" decoding="async" />
+              <img
+                src={IMG.map}
+                alt="오시는 길 지도"
+                className="home-contact__map-img"
+                decoding="async"
+              />
             </div>
           </div>
         </section>
@@ -155,10 +200,12 @@ export default function HomePage() {
             <Link to="/special-offers">리뷰이벤트</Link>
           </nav>
           <p className="home-site-footer__line">
-            316spacebox · 주소 서울 서초구 서초중앙로24길 10, B2 · 전화 010-5746-8376
+            316spacebox · 주소 서울 서초구 서초중앙로24길 10, B2 · 전화
+            010-5746-8376
           </p>
           <p className="home-site-footer__line">
-            이메일 316spacebox@mail.com · 개인정보처리관리자 홍길동 316spacebox@mail.com
+            이메일 316spacebox@mail.com · 개인정보처리관리자 홍길동
+            316spacebox@mail.com
           </p>
           <div className="home-site-footer__admin">
             <Link to="/admin" className="home-site-footer__admin-btn">
@@ -168,5 +215,5 @@ export default function HomePage() {
         </footer>
       </div>
     </main>
-  )
+  );
 }
