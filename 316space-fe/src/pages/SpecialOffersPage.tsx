@@ -52,7 +52,7 @@ const OFFERS: readonly OfferCard[] = [
 
 export default function SpecialOffersPage() {
   useEffect(() => {
-    document.title = "특별혜택 · 316 spacebox";
+    document.title = "Special Offers · 316 spacebox";
   }, []);
 
   return (
@@ -62,7 +62,7 @@ export default function SpecialOffersPage() {
     >
       <header className="special-offers__hero">
         <h1 id="special-offers-heading" className="special-offers__title">
-          특별혜택
+          Special Offers
         </h1>
         <p className="special-offers__subtitle">
           댄스, 보컬, 촬영까지 원하는 방식으로 자유롭게 이용하세요. 1일 대여부터
