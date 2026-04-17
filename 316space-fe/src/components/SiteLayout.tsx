@@ -59,7 +59,7 @@ export default function SiteLayout() {
               <li key={`${to}-${label}`}>
                 <NavLink
                   to={to}
-                  end={to === '/'}
+                  end
                   className={({ isActive }) =>
                     isActive ? 'site-nav-link site-nav-link--active' : 'site-nav-link'
                   }
