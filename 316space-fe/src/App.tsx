@@ -18,7 +18,8 @@ export default function App() {
       <Route path="/" element={<SiteLayout />}>
         <Route index element={<Navigate to="/guide" replace />} />
         <Route path="guide" element={<GuidePage />} />
-        <Route path="price-info" element={<PriceInfoPage />} />
+        <Route path="price-info" element={<Navigate to="/price-information" replace />} />
+        <Route path="price-information" element={<PriceInfoPage />} />
         <Route path="equipment-rental" element={<EquipmentRentalPage />} />
         <Route path="review-event" element={<ReviewEventPage />} />
         <Route path="home" element={<HomePage />} />
