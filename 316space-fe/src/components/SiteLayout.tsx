@@ -47,13 +47,16 @@ export default function SiteLayout() {
   return (
     <div className="page">
       <header className="site-header">
-        <Link to="/" className="brand-ko brand-link">
-          316스페이스
+        <Link to="/home" className="brand-link" aria-label="316 spacebox 홈">
+          <span className="brand-logo" aria-hidden>
+            <span className="brand-logo__316">316</span>
+            <span className="brand-logo__word">spacebox</span>
+          </span>
         </Link>
         <nav className="site-nav" aria-label="주요 메뉴">
           <ul className="site-nav-list">
             {navItems.map(({ to, label }) => (
-              <li key={to}>
+              <li key={`${to}-${label}`}>
                 <NavLink
                   to={to}
                   end={to === '/'}
@@ -94,7 +97,7 @@ export default function SiteLayout() {
             onClick={() => setModal('login')}
             style={{ background: 'none', border: 'none', cursor: 'pointer' }}
           >
-            Login
+            LOGIN
           </button>
         )}
       </header>

@@ -196,7 +196,6 @@ export default function HomePage() {
         <footer className="home-site-footer">
           <nav className="home-site-footer__nav" aria-label="푸터 링크">
             <Link to="/contact">개인정보처리방침</Link>
-            <Link to="/about">가이드</Link>
             <Link to="/special-offers">특별혜택</Link>
           </nav>
           <p className="home-site-footer__line">
