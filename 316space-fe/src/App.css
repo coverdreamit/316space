@@ -472,75 +472,420 @@ button.header-account-email:focus-visible {
   font-weight: 600;
 }
 
-.floorplan-figure {
-  margin: 0 0 2rem;
-  border: 1px solid var(--line);
-  background: var(--bg-deep);
-  overflow: auto;
+/* ── 특별혜택: Figma Desktop - 1 (11:297) 티켓 Subtract + 점선, 호버 시 Frame 29~31 요금표 ── */
+
+.special-offers {
+  --special-cut: var(--bg);
+  --special-brown: #47362d;
+  --special-muted: #6f5e54;
 }
 
-.floorplan-image {
-  display: block;
-  width: 100%;
-  height: auto;
+.special-offers__hero {
+  margin-bottom: clamp(2rem, 4.8vw, 3rem);
+  text-align: center;
 }
 
-.offer-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(0.75rem, 2vw, 1.25rem);
-  align-items: stretch;
-}
-
-.offer-card {
-  min-width: 0;
-  min-height: 100%;
-  border: 1px solid var(--line);
-  padding: 0;
-  background: var(--bg-deep);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.offer-card__media {
-  aspect-ratio: 16 / 10;
-  background: var(--bg);
-  overflow: hidden;
-}
-
-.offer-card__img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-}
-
-.offer-card__content {
-  padding: 1.1rem 1.25rem 1.25rem;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.offer-card__title {
+.special-offers__title {
   font-family: var(--font-sans);
-  font-size: 1.25rem;
-  font-weight: 400;
-  line-height: 1.65;
-  margin: 0 0 0.65rem;
+  font-size: clamp(2.625rem, 6vw, 4rem);
+  font-weight: 700;
+  line-height: 1.06;
+  letter-spacing: -0.01em;
+  margin: 0 0 1rem;
+  color: var(--special-brown);
 }
 
-.offer-card__body {
+.special-offers__subtitle {
+  font-family: var(--font-sans);
+  font-size: clamp(1rem, 1.9vw, 1.125rem);
+  font-weight: 500;
+  line-height: 1.58;
+  letter-spacing: -0.01em;
+  color: var(--special-muted);
+  margin: 0 auto;
+  max-width: 48rem;
+}
+
+.special-offers__grid {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: min(1040px, 100%);
+  margin: 0 auto;
+  gap: 0;
+  list-style: none;
+  padding: 0;
+}
+
+@media (max-width: 1100px) {
+  .special-offers__grid {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.25rem;
+  }
+}
+
+.special-offers__card {
+  position: relative;
+  width: auto;
+  min-width: 0;
+  outline: none;
+}
+
+.special-offers__card--day {
+  width: 319px;
+  min-height: 346px;
+}
+
+.special-offers__card--month {
+  width: 330px;
+  min-height: 343px;
+}
+
+.special-offers__card--year {
+  width: 317px;
+  min-height: 333px;
+}
+
+.special-offers__card:focus-visible .special-offers__ticket {
+  box-shadow:
+    0 4px 4px rgba(0, 0, 0, 0.25),
+    0 0 0 2px var(--accent);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .special-offers__card:hover {
+    z-index: 2;
+  }
+
+  .special-offers__card:hover .special-offers__ticket {
+    box-shadow: 0 6px 22px rgba(26, 26, 24, 0.14);
+  }
+}
+
+/* 티켓 본체 (Figma shadow 0 4 4 / 25%) */
+.special-offers__ticket {
+  position: relative;
+  width: 281px;
+  min-height: 305px;
+  margin: 0 auto;
+  border-radius: 14px;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  transition: box-shadow 0.22s ease;
+}
+
+.special-offers__card--day .special-offers__ticket {
+  margin-top: 17px;
+}
+
+.special-offers__card--month .special-offers__ticket {
+  margin-top: 17px;
+}
+
+.special-offers__card--year .special-offers__ticket {
+  margin-top: 17px;
+}
+
+.special-offers__card--day .special-offers__ticket {
+  background: linear-gradient(165deg, #d8cdc2 0%, #c4b4a4 55%, #b8a797 100%);
+}
+
+.special-offers__card--month .special-offers__ticket {
+  background: #fff;
+  border: 1px solid rgba(71, 54, 45, 0.12);
+}
+
+.special-offers__card--year .special-offers__ticket {
+  background: linear-gradient(165deg, #5a4a42 0%, #45352d 45%, #3a2e27 100%);
+}
+
+/* 양옆 원형 노치: 페이지 배경색으로 덮어 “Subtract” 느낌 */
+.special-offers__notch {
+  position: absolute;
+  top: 58%;
+  width: 2.125rem;
+  height: 2.125rem;
+  border-radius: 50%;
+  background: var(--special-cut);
+  z-index: 4;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 1px rgba(71, 54, 45, 0.06);
+}
+
+.special-offers__notch--left {
+  left: -1.0625rem;
+  transform: translateY(-50%);
+}
+
+.special-offers__notch--right {
+  right: -1.0625rem;
+  transform: translateY(-50%);
+}
+
+.special-offers__card--month .special-offers__notch {
+  box-shadow: inset 0 0 0 1px rgba(71, 54, 45, 0.08);
+}
+
+.special-offers__ticket-inner {
+  position: relative;
+  z-index: 1;
+  min-height: 305px;
+  padding: 22px 18px 16px;
+}
+
+.special-offers__card-face {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-height: 267px;
+}
+
+.special-offers__ticket-top {
+  position: relative;
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  width: 100%;
+  padding: 0 0.25rem 0.25rem;
+}
+
+.special-offers__ticket-bottom {
+  flex: 0 1 auto;
+  padding: 0 0.15rem;
+}
+
+.special-offers__perforation {
+  width: 207px;
+  margin: 0.2rem auto 0.55rem;
+  border: 0;
+  border-top: 1px dashed rgba(255, 255, 255, 0.55);
+}
+
+.special-offers__card--month .special-offers__perforation {
+  border-top-color: rgba(111, 94, 84, 0.45);
+}
+
+.special-offers__card--year .special-offers__perforation {
+  border-top-color: rgba(255, 255, 255, 0.45);
+}
+
+.special-offers__card-title {
+  font-family: var(--font-sans);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  margin: 0;
+  transition:
+    opacity 0.18s ease,
+    visibility 0.18s ease;
+}
+
+.special-offers__card--day .special-offers__card-title,
+.special-offers__card--year .special-offers__card-title {
+  color: #fff;
+}
+
+.special-offers__card--month .special-offers__card-title {
+  color: var(--special-muted);
+}
+
+.special-offers__card-desc {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.55;
+  margin: 0;
+  max-width: 16.625rem;
+}
+
+.special-offers__card--day .special-offers__card-desc,
+.special-offers__card--year .special-offers__card-desc {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.special-offers__card--month .special-offers__card-desc {
+  color: var(--special-muted);
+}
+
+.special-offers__card-detail {
+  position: absolute;
+  inset: 0.1rem 0 0 14px;
+  z-index: 3;
+  padding: 4px 0 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 0.45rem;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.2s ease,
+    visibility 0.2s ease;
+}
+
+.special-offers__detail-title {
   font-family: var(--font-sans);
   font-size: 0.875rem;
-  line-height: 1.65;
-  color: var(--fg-muted);
+  font-weight: 700;
   margin: 0;
+  letter-spacing: 0.02em;
+  text-align: center;
+}
+
+.special-offers__card--day .special-offers__detail-title,
+.special-offers__card--year .special-offers__detail-title {
+  color: #fff;
+}
+
+.special-offers__card--month .special-offers__detail-title {
+  color: var(--special-brown);
+}
+
+.special-offers__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  background: transparent;
+}
+
+.special-offers__card--month .special-offers__table {
+  border-color: rgba(71, 54, 45, 0.55);
+}
+
+.special-offers__th,
+.special-offers__th-row,
+.special-offers__td {
+  padding: 7px 6px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  vertical-align: middle;
+}
+
+.special-offers__card--month .special-offers__th,
+.special-offers__card--month .special-offers__th-row,
+.special-offers__card--month .special-offers__td {
+  border-color: rgba(71, 54, 45, 0.38);
+}
+
+.special-offers__th {
+  font-weight: 700;
+  font-size: 0.625rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.special-offers__card--month .special-offers__th {
+  background: rgba(71, 54, 45, 0.05);
+  color: var(--special-muted);
+}
+
+.special-offers__card--day .special-offers__th,
+.special-offers__card--year .special-offers__th {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.special-offers__th-row {
+  font-weight: 700;
+  text-align: left;
+  width: 34%;
+}
+
+.special-offers__card--day .special-offers__th-row,
+.special-offers__card--day .special-offers__td,
+.special-offers__card--year .special-offers__th-row,
+.special-offers__card--year .special-offers__td {
+  color: #fff;
+}
+
+.special-offers__card--month .special-offers__th-row,
+.special-offers__card--month .special-offers__td {
+  color: var(--special-brown);
+}
+
+.special-offers__sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .special-offers__card:hover .special-offers__card-detail,
+  .special-offers__card:focus-within .special-offers__card-detail {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .special-offers__card:hover .special-offers__card-title,
+  .special-offers__card:focus-within .special-offers__card-title {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .special-offers__card--day,
+  .special-offers__card--month,
+  .special-offers__card--year {
+    width: min(100%, 330px);
+    min-height: 0;
+  }
+
+  .special-offers__ticket {
+    width: 100%;
+    min-height: 0;
+    margin-top: 0;
+  }
+
+  .special-offers__ticket-inner {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 1rem 0.9rem 1rem;
+  }
+
+  .special-offers__card-face {
+    min-height: 0;
+  }
+
+  .special-offers__card-detail {
+    position: relative;
+    inset: 0;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    margin-top: 0.4rem;
+    padding-top: 0.5rem;
+  }
+
+  .special-offers__ticket-top {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.35rem;
+  }
+
+  .special-offers__card-title {
+    text-align: center;
+  }
 }
 
 .contact-block {

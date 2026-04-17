@@ -1,60 +1,156 @@
-import { useEffect } from 'react'
+import { useEffect } from "react";
 
-const offers = [
+type OfferVariant = "day" | "month" | "year";
+
+type OfferCard = {
+  variant: OfferVariant;
+  title: string;
+  description: string;
+  figmaTicket: string;
+  figmaDesktop: string;
+  figmaHover: string;
+  rows: { label: string; weekday: string; weekend: string }[];
+};
+
+const OFFERS: readonly OfferCard[] = [
   {
-    title: '1일 통임대',
-    body: '하루 동안 공간 전체를 자유롭게 이용할 수 있는 상품입니다. 단체 연습, 촬영, 행사, 워크숍 등 긴 시간 여유 있게 사용하고 싶은 분들께 적합합니다.',
-    imageSrc: '/offers/offer-1day.png',
-    imageAlt: '스튜디오 음향 장비(믹싱 앰프)',
+    variant: "day",
+    title: "1일 대관",
+    description:
+      "하루 동안 전체를 자유롭게 이용할 수 있는 상품입니다. (단체 연습, 촬영, 행사, 워크숍 등)",
+    figmaTicket: "2003:8",
+    figmaDesktop: "11:297",
+    figmaHover: "2030:65",
+    rows: [
+      { label: "1~4홀", weekday: "70,000원", weekend: "80,000원" },
+      { label: "5홀", weekday: "140,000원", weekend: "160,000원" },
+    ],
   },
   {
-    title: '1달 정기권',
-    body: '정기적으로 연습하거나 레슨을 운영하는 분들을 위한 월 이용 상품입니다. 반복 예약이 필요한 개인 및 팀에게 실용적인 선택입니다.',
-    imageSrc: '/offers/offer-1month.png',
-    imageAlt: '316 스페이스 1개월 정기권 티켓 이미지',
+    variant: "month",
+    title: "1달 정기권",
+    description:
+      "정기적으로 연습하거나 레슨을 운영하는 분들을 위한 월 이용 상품입니다.",
+    figmaTicket: "2003:9",
+    figmaDesktop: "11:297",
+    figmaHover: "2030:126",
+    rows: [
+      { label: "1~4홀", weekday: "55,000원", weekend: "65,000원" },
+      { label: "5홀", weekday: "110,000원", weekend: "120,000원" },
+    ],
   },
   {
-    title: '1년 정기권',
-    body: '장기간 꾸준히 공간을 이용하는 분들을 위한 연간 이용 상품입니다. 팀 운영, 클래스 진행, 장기 프로젝트에 더욱 합리적으로 이용하실 수 있습니다.',
-    imageSrc: '/offers/offer-1year.png',
-    imageAlt: '316 스페이스 1년 월간회원권 티켓 이미지',
+    variant: "year",
+    title: "1년 정기권",
+    description:
+      "장기간 꾸준히 공간을 이용하는 분들을 위한 연간 이용 상품입니다. (팀 운영, 클래스 진행, 장기 프로젝트 등)",
+    figmaTicket: "2003:10",
+    figmaDesktop: "11:297",
+    figmaHover: "2030:127",
+    rows: [
+      { label: "1~4홀", weekday: "750,000원", weekend: "850,000원" },
+      { label: "5홀", weekday: "1,500,000원", weekend: "1,600,000원" },
+    ],
   },
-] as const
+] as const;
 
 export default function SpecialOffersPage() {
   useEffect(() => {
-    document.title = 'Special Offers · 316 SPACE'
-  }, [])
+    document.title = "특별혜택 · 316 spacebox";
+  }, []);
 
   return (
-    <main className="page-document">
-      <header className="page-document__hero">
-        <h1 className="page-document__title">Special Offers</h1>
-        <p className="page-document__lead">요금 안내</p>
-        <p className="page-document__prose page-document__prose--tight">
-          댄스, 보컬, 연습, 모임, 촬영 등 다양한 목적으로 이용할 수 있는 공간입니다. 이용 패턴에 맞춰 1일 통임대부터 월·연 정기권까지 선택해 보세요.
+    <main
+      className="page-document special-offers"
+      data-figma-node="11:297"
+      aria-labelledby="special-offers-heading"
+    >
+      <header className="special-offers__hero">
+        <h1 id="special-offers-heading" className="special-offers__title">
+          특별혜택
+        </h1>
+        <p className="special-offers__subtitle">
+          댄스, 보컬, 촬영까지 원하는 방식으로 자유롭게 이용하세요. 1일 대여부터
+          월·연 정기권까지 선택 가능합니다.
         </p>
       </header>
 
-      <ul className="offer-list">
-        {offers.map((o) => (
-          <li key={o.title} className="offer-card">
-            <div className="offer-card__media">
-              <img
-                className="offer-card__img"
-                src={o.imageSrc}
-                alt={o.imageAlt}
-                loading="lazy"
-                decoding="async"
+      <div className="special-offers__grid" role="list">
+        {OFFERS.map((o) => (
+          <article
+            key={o.title}
+            className={`special-offers__card special-offers__card--${o.variant}`}
+            role="listitem"
+            tabIndex={0}
+            data-figma-desktop={o.figmaDesktop}
+            data-figma-ticket={o.figmaTicket}
+            data-figma-hover={o.figmaHover}
+          >
+            <div className="special-offers__ticket">
+              <span
+                className="special-offers__notch special-offers__notch--left"
+                aria-hidden
               />
+              <span
+                className="special-offers__notch special-offers__notch--right"
+                aria-hidden
+              />
+
+              <div className="special-offers__ticket-inner">
+                <div className="special-offers__card-face">
+                  <div className="special-offers__ticket-top">
+                    <h2 className="special-offers__card-title">{o.title}</h2>
+
+                    <div className="special-offers__card-detail">
+                      <p className="special-offers__detail-title">{o.title}</p>
+                      <table className="special-offers__table">
+                        <caption className="special-offers__sr-only">
+                          {o.title} 평일·주말 요금
+                        </caption>
+                        <thead>
+                          <tr>
+                            <th scope="col" className="special-offers__th">
+                              구분
+                            </th>
+                            <th scope="col" className="special-offers__th">
+                              평일
+                            </th>
+                            <th scope="col" className="special-offers__th">
+                              주말
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {o.rows.map((row) => (
+                            <tr key={row.label}>
+                              <th
+                                scope="row"
+                                className="special-offers__th-row"
+                              >
+                                {row.label}
+                              </th>
+                              <td className="special-offers__td">
+                                {row.weekday}
+                              </td>
+                              <td className="special-offers__td">
+                                {row.weekend}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <div className="special-offers__perforation" aria-hidden />
+                  <div className="special-offers__ticket-bottom">
+                    <p className="special-offers__card-desc">{o.description}</p>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="offer-card__content">
-              <h2 className="offer-card__title">{o.title}</h2>
-              <p className="offer-card__body">{o.body}</p>
-            </div>
-          </li>
+          </article>
         ))}
-      </ul>
+      </div>
     </main>
-  )
+  );
 }

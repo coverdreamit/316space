@@ -197,7 +197,7 @@ export default function HomePage() {
           <nav className="home-site-footer__nav" aria-label="푸터 링크">
             <Link to="/contact">개인정보처리방침</Link>
             <Link to="/about">가이드</Link>
-            <Link to="/special-offers">리뷰이벤트</Link>
+            <Link to="/special-offers">특별혜택</Link>
           </nav>
           <p className="home-site-footer__line">
             316spacebox · 주소 서울 서초구 서초중앙로24길 10, B2 · 전화
